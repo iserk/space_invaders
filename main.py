@@ -165,14 +165,19 @@ class Explosion(GameObject):
 
 class Shot(GameObject):
     SHOT_LENGTH = 10
+    SCORE_COST = 10
 
     def __init__(self, pos: Position, velocity: Position, color: tuple):
+        global score
+
         super().__init__()
         self.pos = pos
         self.velocity = velocity
         self.color = color
 
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
+
+        score -= Shot.SCORE_COST
 
         # Plays sound BLASTER_Deep_Muffled_stereo.wav
         pygame.mixer.Sound("assets/audio/BLASTER_Deep_Muffled_stereo.wav").play()
