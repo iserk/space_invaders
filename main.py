@@ -8,14 +8,6 @@ SCREEN_SIZE = (800, 600)
 BG_COLOR = (0, 0, 0)
 FPS_CAP = 120
 
-HERO_SPEED = 200
-HERO_ANIMATION_FPS = 6
-
-ENEMY_SPEED = 10
-ENEMY_ANIMATION_FPS = 2
-
-EXPLOSION_ANIMATION_FPS = 6
-
 
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
 
@@ -78,6 +70,9 @@ GameObject.objects = []
 
 
 class Character(GameObject):
+    SPEED = 200
+    ANIMATION_FPS = 6
+
     def __init__(self, pos: Position, sprite: Sprite):
         super().__init__()
         self.pos = pos
@@ -85,16 +80,16 @@ class Character(GameObject):
 
     def draw(self, surface):
         surface.blit(
-            self.sprite.frames[round(HERO_ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Character.ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.pos.x -= HERO_SPEED * dt / 1000
+            self.pos.x -= Character.SPEED * dt / 1000
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.pos.x += HERO_SPEED * dt / 1000
+            self.pos.x += Character.SPEED * dt / 1000
 
         # Hero will appear from another side of the screen if he goes out of bounds
         if self.pos.x < 0:
@@ -104,6 +99,8 @@ class Character(GameObject):
 
 
 class Enemy(GameObject):
+    SPEED = 10
+    ANIMATION_FPS = 2
     SCORE = 100
 
     def __init__(self, pos: Position, sprite: Sprite):
@@ -113,15 +110,17 @@ class Enemy(GameObject):
 
     def draw(self, surface):
         surface.blit(
-            self.sprite.frames[round(ENEMY_ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Enemy.ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
     def update(self, dt):
-        self.pos.y += ENEMY_SPEED * dt / 1000
+        self.pos.y += Enemy.SPEED * dt / 1000
 
 
 class Explosion(GameObject):
+    ANIMATION_FPS = 6
+
     def __init__(self, pos: Position):
         explosion_sprite = Sprite(
             frames=get_frames(pygame.image.load("assets/images/explosion.png"), 40, 40, 6),
@@ -143,7 +142,7 @@ class Explosion(GameObject):
             surface.blit(self.sprite.frames[self.frame], tuple(self.pos))
 
     def update(self, dt):
-        self.frame = round(EXPLOSION_ANIMATION_FPS * (pygame.time.get_ticks() - self.start_time) / 1000)
+        self.frame = round(Explosion.ANIMATION_FPS * (pygame.time.get_ticks() - self.start_time) / 1000)
         if self.frame >= len(self.sprite.frames):
             self.destroy()
 
@@ -194,11 +193,11 @@ def get_frames(spritesheet, frame_width, frame_height, num_frames):
 def init_enemies():
     sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40, height=40)
     enemies = []
-    for row in range(3):
-        for col in range(10):
+    for row in range(4):
+        for col in range(8):
             enemies.append(
                 Enemy(
-                    pos=Position(100 + col * (sprite.width + 100), 100 + 100 * row),
+                    pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
                 )
             )
