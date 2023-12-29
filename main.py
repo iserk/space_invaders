@@ -114,17 +114,28 @@ def get_frames(spritesheet, frame_width, frame_height, num_frames):
     return frames
 
 
-def show_fps(screen, clock):
+def init_font():
+    pygame.font.init()
+    font = pygame.font.Font("assets/fonts/Revamped.otf", 18)
+    return font
+
+
+def show_stats(screen, clock):
     fps = str(int(clock.get_fps()))
-    fps_text = pygame.font.SysFont("Arial", 18).render(fps, True, pygame.Color("lime"))
+    fps_text = font.render(fps, True, pygame.Color("lime"))
     screen.blit(fps_text, (8, 8))
 
-    objects_text = pygame.font.SysFont("Arial", 18).render(str(len(GameObject.objects)), True, pygame.Color("lime"))
-    screen.blit(objects_text, (screen_size[0] - 100, 8))
+    score_text = font.render(str(score), True, pygame.Color("lime"))
+    screen.blit(score_text, (screen_size[0] / 2 - score_text.get_width() / 2, 8))
 
+    objects_text = font.render(str(len(GameObject.objects)), True, pygame.Color("lime"))
+    screen.blit(objects_text, (screen_size[0] - objects_text.get_width() - 8, 8))
 
 
 if __name__ == '__main__':
+    score = 0
+    font = init_font()
+
     pygame.init()
 
     screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -144,6 +155,7 @@ if __name__ == '__main__':
 
     loop = True
     while loop:
+        score += 1
         dt = clock.tick(FPS_CAP)
         total_time = pygame.time.get_ticks() - start_time
 
@@ -151,7 +163,7 @@ if __name__ == '__main__':
 
         GameObject.update_all(dt)
         GameObject.draw_all(screen)
-        show_fps(screen, clock)
+        show_stats(screen, clock)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
