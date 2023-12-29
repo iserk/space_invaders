@@ -1,5 +1,6 @@
 import math
 import random
+import enum
 
 import pygame
 from collections import namedtuple
@@ -12,6 +13,11 @@ FPS_CAP = 120
 
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
 
+
+class GameStatus(enum.Enum):
+    PLAYING = 0
+    VICTORY = 1
+    DEFEAT = 2
 
 
 class Position:
@@ -49,9 +55,6 @@ class GameObject:
     def __init__(self):
         self.destroyed = False
         GameObject.objects.append(self)
-
-    def __del__(self):
-        self.destroy()
 
     def draw(self, surface):
         pass
@@ -106,9 +109,11 @@ class Character(GameObject):
             self.pos.x = 0
 
     def destroy(self):
-        global game_is_over
+        global game_status
         super().destroy()
-        game_is_over = True
+        game_status = GameStatus.DEFEAT
+        pygame.mixer.music.load("assets/audio/defeat.wav")
+        pygame.mixer.music.play()
 
 
 class Enemy(GameObject):
@@ -130,8 +135,21 @@ class Enemy(GameObject):
         )
 
     def update(self, dt):
+        global game_status, screen_size
         self.pos.y += Enemy.SPEED * dt / 1000
-        self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 4) * 20)
+        self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 4) * 40)
+
+        if (self.pos.y > screen_size[1] - self.sprite.height
+                and game_status == GameStatus.PLAYING):
+
+            game_status = GameStatus.DEFEAT
+            # Play defeat music
+            pygame.mixer.music.load("assets/audio/defeat.wav")
+            pygame.mixer.music.play()
+
+        if self.pos.y > screen_size[1]:
+            self.destroy()
+
         if random.randint(0, 10000) < 5:
             InvaderShot(
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
@@ -266,7 +284,7 @@ def init_music():
 
 
 def show_stats(screen, clock):
-    global game_is_over
+    global game_status
 
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, True, pygame.Color("lime"))
@@ -278,14 +296,18 @@ def show_stats(screen, clock):
     objects_text = font.render(str(len(GameObject.objects)), True, pygame.Color("lime"))
     screen.blit(objects_text, (screen_size[0] - objects_text.get_width() - 8, 8))
 
-    if game_is_over:
-        game_over_text = font.render("GAME OVER", True, pygame.Color("red"))
-        screen.blit(game_over_text, (screen_size[0] / 2 - game_over_text.get_width() / 2, screen_size[1] / 2))
+    match game_status:
+        case GameStatus.DEFEAT:
+            game_over_text = font.render("GAME OVER", True, pygame.Color("red"))
+            screen.blit(game_over_text, (screen_size[0] / 2 - game_over_text.get_width() / 2, screen_size[1] / 2))
+        case GameStatus.VICTORY:
+            victory_text = font.render("VICTORY", True, pygame.Color("lime"))
+            screen.blit(victory_text, (screen_size[0] / 2 - victory_text.get_width() / 2, screen_size[1] / 2))
 
 
 if __name__ == '__main__':
     score = 0
-    game_is_over = False
+    game_status = GameStatus.PLAYING
     font = init_font()
 
     pygame.init()
@@ -321,6 +343,12 @@ if __name__ == '__main__':
         screen.fill(BG_COLOR)
 
         GameObject.update_all(dt)
+        if game_status == GameStatus.PLAYING and len([obj for obj in GameObject.objects if isinstance(obj, Enemy)]) == 0:
+            game_status = GameStatus.VICTORY
+            # Play victory music
+            pygame.mixer.music.load("assets/audio/victory.wav")
+            pygame.mixer.music.play()
+
         GameObject.draw_all(screen)
         show_stats(screen, clock)
 
