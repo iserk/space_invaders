@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from collections import namedtuple
 
@@ -6,9 +8,14 @@ SCREEN_SIZE = (800, 600)
 BG_COLOR = (0, 0, 0)
 FPS_CAP = 120
 
-SPEED = 100
+HERO_SPEED = 200
 HERO_ANIMATION_FPS = 6
+
+ENEMY_SPEED = 10
 ENEMY_ANIMATION_FPS = 2
+
+EXPLOSION_ANIMATION_FPS = 6
+
 
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
 
@@ -30,6 +37,12 @@ class Position:
 
     def __truediv__(self, other: float):
         return Position(self.x / other, self.y / other)
+
+    def get_normalized(self):
+        return Position(self.x / self.get_length(), self.y / self.get_length())
+
+    def get_length(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
 
 
 class GameObject:
@@ -79,9 +92,9 @@ class Character(GameObject):
     def update(self, dt):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.pos.x -= SPEED * dt / 1000
+            self.pos.x -= HERO_SPEED * dt / 1000
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.pos.x += SPEED * dt / 1000
+            self.pos.x += HERO_SPEED * dt / 1000
 
         # Hero will appear from another side of the screen if he goes out of bounds
         if self.pos.x < 0:
@@ -91,6 +104,8 @@ class Character(GameObject):
 
 
 class Enemy(GameObject):
+    SCORE = 100
+
     def __init__(self, pos: Position, sprite: Sprite):
         super().__init__()
         self.pos = pos
@@ -103,23 +118,68 @@ class Enemy(GameObject):
         )
 
     def update(self, dt):
-        pass
+        self.pos.y += ENEMY_SPEED * dt / 1000
+
+
+class Explosion(GameObject):
+    def __init__(self, pos: Position):
+        explosion_sprite = Sprite(
+            frames=get_frames(pygame.image.load("assets/images/explosion.png"), 40, 40, 6),
+            width=40,
+            height=40
+        )
+
+        super().__init__()
+        self.pos = pos
+        self.sprite = explosion_sprite
+        self.frame = 0
+        self.start_time = pygame.time.get_ticks()
+
+        # Plays a random explosion sound
+        pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
+
+    def draw(self, surface):
+        if self.frame < len(self.sprite.frames):
+            surface.blit(self.sprite.frames[self.frame], tuple(self.pos))
+
+    def update(self, dt):
+        self.frame = round(EXPLOSION_ANIMATION_FPS * (pygame.time.get_ticks() - self.start_time) / 1000)
+        if self.frame >= len(self.sprite.frames):
+            self.destroy()
 
 
 class Shot(GameObject):
+    SHOT_LENGTH = 10
+
     def __init__(self, pos: Position, velocity: Position, color: tuple):
         super().__init__()
         self.pos = pos
         self.velocity = velocity
         self.color = color
 
+        self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
+
+        # Plays sound BLASTER_Deep_Muffled_stereo.wav
+        pygame.mixer.Sound("assets/audio/BLASTER_Deep_Muffled_stereo.wav").play()
+
     def draw(self, surface):
-        pygame.draw.line(surface, self.color, tuple(self.pos), tuple(self.pos + self.velocity))
+        pygame.draw.line(surface, self.color, tuple(self.pos), tuple(self.pos + self.direction), 2)
 
     def update(self, dt):
+        global score
+
         self.pos += self.velocity * dt / 1000
+
         if self.pos.y < 0:
             self.destroy()
+
+        for enemy in GameObject.objects:
+            if (isinstance(enemy, Enemy) and enemy.pos.x <= self.pos.x <= enemy.pos.x + enemy.sprite.width
+                    and enemy.pos.y <= self.pos.y <= enemy.pos.y + enemy.sprite.height):
+                score += Enemy.SCORE
+                Explosion(pos=enemy.pos)
+                enemy.destroy()
+                self.destroy()
 
 
 def get_frames(spritesheet, frame_width, frame_height, num_frames):
@@ -134,14 +194,14 @@ def get_frames(spritesheet, frame_width, frame_height, num_frames):
 def init_enemies():
     sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40, height=40)
     enemies = []
-    for i in range(10):
-        enemies.append(
-            Enemy(
-                pos=Position(100 + i * (sprite.width + 100), 100),
-                sprite=sprite
+    for row in range(3):
+        for col in range(10):
+            enemies.append(
+                Enemy(
+                    pos=Position(100 + col * (sprite.width + 100), 100 + 100 * row),
+                    sprite=sprite
+                )
             )
-        )
-    return enemies
 
 
 def init_font():
@@ -191,7 +251,6 @@ if __name__ == '__main__':
 
     loop = True
     while loop:
-        score += 1
         dt = clock.tick(FPS_CAP)
         total_time = pygame.time.get_ticks() - start_time
 
