@@ -210,6 +210,12 @@ def init_font():
     return font
 
 
+def init_music():
+    pygame.mixer.init()
+    pygame.mixer.music.load("assets/audio/Enemies.wav")
+    pygame.mixer.music.play(loops=-1)
+
+
 def show_stats(screen, clock):
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, True, pygame.Color("lime"))
@@ -248,6 +254,8 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
 
     start_time = pygame.time.get_ticks()
+
+    init_music()
 
     loop = True
     while loop:
