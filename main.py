@@ -142,7 +142,6 @@ class GameScene(Scene):
 
     def update(self, dt):
         super().update(dt)
-        print(self.game.status)
         if len([obj for obj in self.objects if isinstance(obj, Enemy)]) == 0:
             self.game.switch_to_scene(self.game.scenes[2])
 
@@ -163,7 +162,7 @@ class GameScene(Scene):
     def activate(self):
         self.game.status = GameStatus.PLAYING
         pygame.mixer.init()
-        pygame.mixer.music.load("assets/audio/Enemies.wav")
+        pygame.mixer.music.load("assets/audio/combat_music.wav")
         pygame.mixer.music.play(loops=-1)
 
 
@@ -382,7 +381,7 @@ class HeroShot(Shot):
     def __init__(self, scene: Scene, pos: Position, velocity: Position):
         super().__init__(scene, pos, velocity, HeroShot.COLOR)
         self.scene.game.score -= HeroShot.SCORE_COST
-        pygame.mixer.Sound("assets/audio/BLASTER_Deep_Muffled_stereo.wav").play()
+        pygame.mixer.Sound("assets/audio/hero_shot.wav").play()
 
     def update(self, dt):
         super().update(dt)
