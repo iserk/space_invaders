@@ -139,8 +139,12 @@ if __name__ == '__main__':
     pygame.init()
 
     screen = pygame.display.set_mode(SCREEN_SIZE)
-    screen_size = pygame.display.get_surface().get_size()
 
+    # Set window title and icon
+    pygame.display.set_caption("Space Invaders")
+    pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
+
+    screen_size = pygame.display.get_surface().get_size()
     screen_center = screen_size[0] / 2, screen_size[1] / 2
 
     sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
