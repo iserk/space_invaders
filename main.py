@@ -116,6 +116,12 @@ class Enemy(GameObject):
 
     def update(self, dt):
         self.pos.y += Enemy.SPEED * dt / 1000
+        if random.randint(0, 1000) < 5:
+            Shot(
+                pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
+                velocity=Position(0, 200),
+                color=(255, 0, 0)
+            )
 
 
 class Explosion(GameObject):
