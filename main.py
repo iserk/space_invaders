@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame
@@ -17,6 +18,9 @@ class Position:
         self.x = x
         self.y = y
 
+    def __repr__(self):
+        return f"Position(x={self.x}, y={self.y})"
+
     def __iter__(self):
         yield self.x
         yield self.y
@@ -35,6 +39,9 @@ class Position:
 
     def get_length(self):
         return (self.x ** 2 + self.y ** 2) ** 0.5
+
+    def copy(self):
+        return Position(self.x, self.y)
 
 
 class GameObject:
@@ -108,6 +115,8 @@ class Enemy(GameObject):
         self.pos = pos
         self.sprite = sprite
 
+        self.initial_pos = pos.copy()
+
     def draw(self, surface):
         surface.blit(
             self.sprite.frames[round(Enemy.ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
@@ -116,7 +125,8 @@ class Enemy(GameObject):
 
     def update(self, dt):
         self.pos.y += Enemy.SPEED * dt / 1000
-        if random.randint(0, 1000) < 5:
+        self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 4) * 20)
+        if random.randint(0, 10000) < 5:
             Shot(
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
                 velocity=Position(0, 200),
