@@ -8,6 +8,7 @@ FPS_CAP = 120
 
 SPEED = 100
 HERO_ANIMATION_FPS = 6
+ENEMY_ANIMATION_FPS = 2
 
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
 
@@ -89,6 +90,22 @@ class Character(GameObject):
             self.pos.x = 0
 
 
+class Enemy(GameObject):
+    def __init__(self, pos: Position, sprite: Sprite):
+        super().__init__()
+        self.pos = pos
+        self.sprite = sprite
+
+    def draw(self, surface):
+        surface.blit(
+            self.sprite.frames[round(ENEMY_ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
+            tuple(self.pos)
+        )
+
+    def update(self, dt):
+        pass
+
+
 class Shot(GameObject):
     def __init__(self, pos: Position, velocity: Position, color: tuple):
         super().__init__()
@@ -112,6 +129,19 @@ def get_frames(spritesheet, frame_width, frame_height, num_frames):
         frame = spritesheet.subsurface(pygame.Rect(i * frame_width, 0, frame_width, frame_height))
         frames.append(frame)
     return frames
+
+
+def init_enemies():
+    sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40, height=40)
+    enemies = []
+    for i in range(10):
+        enemies.append(
+            Enemy(
+                pos=Position(100 + i * (sprite.width + 100), 100),
+                sprite=sprite
+            )
+        )
+    return enemies
 
 
 def init_font():
@@ -152,6 +182,8 @@ if __name__ == '__main__':
         Position(x=screen_center[0], y=screen_size[1] - sprite.height - 32),
         sprite=sprite
     )
+
+    init_enemies()
 
     clock = pygame.time.Clock()
 
