@@ -13,6 +13,7 @@ FPS_CAP = 120
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
 
 
+
 class Position:
     def __init__(self, x, y):
         self.x = x
@@ -104,6 +105,11 @@ class Character(GameObject):
         elif self.pos.x > screen_size[0] - self.sprite.width:
             self.pos.x = 0
 
+    def destroy(self):
+        global game_is_over
+        super().destroy()
+        game_is_over = True
+
 
 class Enemy(GameObject):
     SPEED = 10
@@ -127,10 +133,9 @@ class Enemy(GameObject):
         self.pos.y += Enemy.SPEED * dt / 1000
         self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 4) * 20)
         if random.randint(0, 10000) < 5:
-            Shot(
+            InvaderShot(
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
                 velocity=Position(0, 200),
-                color=(255, 0, 0)
             )
 
 
@@ -165,11 +170,8 @@ class Explosion(GameObject):
 
 class Shot(GameObject):
     SHOT_LENGTH = 10
-    SCORE_COST = 10
 
     def __init__(self, pos: Position, velocity: Position, color: tuple):
-        global score
-
         super().__init__()
         self.pos = pos
         self.velocity = velocity
@@ -177,21 +179,30 @@ class Shot(GameObject):
 
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
-        score -= Shot.SCORE_COST
-
-        # Plays sound BLASTER_Deep_Muffled_stereo.wav
-        pygame.mixer.Sound("assets/audio/BLASTER_Deep_Muffled_stereo.wav").play()
-
     def draw(self, surface):
         pygame.draw.line(surface, self.color, tuple(self.pos), tuple(self.pos + self.direction), 2)
 
     def update(self, dt):
-        global score
-
         self.pos += self.velocity * dt / 1000
 
-        if self.pos.y < 0:
+        if self.pos.y < 0 or self.pos.y > screen_size[1]:
             self.destroy()
+
+
+class HeroShot(Shot):
+    SCORE_COST = 10
+
+    def __init__(self, pos: Position, velocity: Position):
+        global score
+
+        super().__init__(pos, velocity, (0, 255, 255))
+        score -= HeroShot.SCORE_COST
+        pygame.mixer.Sound("assets/audio/BLASTER_Deep_Muffled_stereo.wav").play()
+
+    def update(self, dt):
+        global score
+
+        super().update(dt)
 
         for enemy in GameObject.objects:
             if (isinstance(enemy, Enemy) and enemy.pos.x <= self.pos.x <= enemy.pos.x + enemy.sprite.width
@@ -200,6 +211,24 @@ class Shot(GameObject):
                 Explosion(pos=enemy.pos)
                 enemy.destroy()
                 self.destroy()
+
+
+class InvaderShot(Shot):
+
+    def __init__(self, pos: Position, velocity: Position):
+        super().__init__(pos, velocity, (255, 63, 63))
+        pygame.mixer.Sound(f"assets/audio/invader_shot{random.randint(1, 2)}.wav").play()
+
+    def update(self, dt):
+        global hero
+
+        super().update(dt)
+
+        if (hero.pos.x <= self.pos.x <= hero.pos.x + hero.sprite.width
+                and hero.pos.y <= self.pos.y <= hero.pos.y + hero.sprite.height):
+            Explosion(pos=hero.pos)
+            hero.destroy()
+            self.destroy()
 
 
 def get_frames(spritesheet, frame_width, frame_height, num_frames):
@@ -237,6 +266,8 @@ def init_music():
 
 
 def show_stats(screen, clock):
+    global game_is_over
+
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, True, pygame.Color("lime"))
     screen.blit(fps_text, (8, 8))
@@ -247,9 +278,14 @@ def show_stats(screen, clock):
     objects_text = font.render(str(len(GameObject.objects)), True, pygame.Color("lime"))
     screen.blit(objects_text, (screen_size[0] - objects_text.get_width() - 8, 8))
 
+    if game_is_over:
+        game_over_text = font.render("GAME OVER", True, pygame.Color("red"))
+        screen.blit(game_over_text, (screen_size[0] / 2 - game_over_text.get_width() / 2, screen_size[1] / 2))
+
 
 if __name__ == '__main__':
     score = 0
+    game_is_over = False
     font = init_font()
 
     pygame.init()
@@ -295,10 +331,9 @@ if __name__ == '__main__':
                 if event.key == pygame.K_ESCAPE:
                     loop = False
                 elif event.key == pygame.K_SPACE:
-                    Shot(
+                    HeroShot(
                         pos=hero.pos + Position(hero.sprite.width / 2, hero.sprite.height / 2),
                         velocity=Position(0, -300),
-                        color=(255, 255, 255)
                     )
 
         pygame.display.flip()
