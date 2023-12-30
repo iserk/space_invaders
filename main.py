@@ -6,7 +6,7 @@ import pygame
 from collections import namedtuple
 
 
-SCREEN_SIZE = (800, 600)
+SCREEN_SIZE = (1000, 800)
 BG_COLOR = (0, 0, 0)
 FPS_CAP = 120
 
@@ -20,15 +20,21 @@ class GameStatus(enum.Enum):
     DEFEAT = 2
 
 
+class SceneSwitchException(Exception):
+    pass
+
+
 class GameManager:
     def __init__(self):
+        self.dt = 0
+        self.total_time = 0
         self.score = 0
         self.scenes = []
         self.current_scene = None
         self.status = GameStatus.PLAYING
 
         pygame.init()
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF)
         # Set window title and icon
         pygame.display.set_caption("Space Invaders")
         pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
@@ -44,20 +50,25 @@ class GameManager:
         self.is_running = True
 
     def switch_to_scene(self, scene):
+        scene.will_activate(prev_scene=self.current_scene)
         if self.current_scene is not None:
-            scene.objects = self.current_scene.objects.copy()
+            # scene.objects = self.current_scene.objects.copy()
             self.current_scene.deactivate()
         self.current_scene = scene
         scene.activate()
 
     def update(self, dt):
-        self.current_scene.update(dt)
+        try:
+            self.current_scene.update(dt)
+        except SceneSwitchException as e:
+            self.switch_to_scene(e.args[0])
 
     def handle_events(self):
         for event in pygame.event.get():
             # Handle events for the current scene
             # If the scene returns False, it means that the event was handled and we can skip the rest of the loop
-            if not self.current_scene.handle_event(event):
+            result = self.current_scene.handle_event(event)
+            if not result:
                 continue
             if event.type == pygame.QUIT:
                 game.is_running = False
@@ -83,19 +94,11 @@ class Scene:
         fps_text = self.game.font.render(fps, True, pygame.Color("lime"))
         screen.blit(fps_text, (8, 8))
 
-        score_text = self.game.font.render(str(self.game.score), True, pygame.Color("lime"))
+        score_text = self.game.font.render(f"{self.game.score:08}", True, pygame.Color("lime"))
         screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
 
         objects_text = self.game.font.render(str(len(self.objects)), True, pygame.Color("lime"))
         screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
-
-        match self.game.status:
-            case GameStatus.DEFEAT:
-                game_over_text = self.game.font.render("GAME OVER", True, pygame.Color("red"))
-                screen.blit(game_over_text, (self.game.screen_size[0] / 2 - game_over_text.get_width() / 2, self.game.screen_size[1] / 2))
-            case GameStatus.VICTORY:
-                victory_text = self.game.font.render("VICTORY", True, pygame.Color("lime"))
-                screen.blit(victory_text, (self.game.screen_size[0] / 2 - victory_text.get_width() / 2, self.game.screen_size[1] / 2))
 
     def draw(self, surface):
         for obj in self.objects:
@@ -110,35 +113,20 @@ class Scene:
     def handle_event(self, event):
         return True
 
+    def will_activate(self, prev_scene=None):
+        pass
+
     def activate(self):
         pass
 
     def deactivate(self):
-        pass
+        self.objects = []
 
 
 class GameScene(Scene):
     def __init__(self, game: GameManager):
         super().__init__(game)
-
-        sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
-        self.hero = Character(
-            scene=self,
-            pos=Position(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
-            sprite=sprite
-        )
-
-        sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40,
-                        height=40)
-        for row in range(3):
-            for col in range(8):
-                Enemy(
-                    scene=self,
-                    pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
-                    sprite=sprite
-                )
-
-        self.start_time = pygame.time.get_ticks()
+        self.start_time = None
 
     def update(self, dt):
         super().update(dt)
@@ -149,17 +137,32 @@ class GameScene(Scene):
         super().draw(surface)
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                HeroShot(
-                    scene=self,
-                    pos=self.hero.pos + Position(self.hero.sprite.width / 2, self.hero.sprite.height / 2),
-                    velocity=Position(0, -300),
-                )
-                # return False
+        for obj in self.objects:
+            # If the event was handled, we can skip the rest of the loop
+            if not obj.handle_event(event):
+                return False
         return True
 
     def activate(self):
+        sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
+        self.hero = Character(
+            scene=self,
+            pos=Position(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
+            sprite=sprite
+        )
+
+        sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40,
+                        height=40)
+        for row in range(4):
+            for col in range(10):
+                Enemy(
+                    scene=self,
+                    pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
+                    sprite=sprite
+                )
+
+        self.start_time = pygame.time.get_ticks()
+
         self.game.status = GameStatus.PLAYING
         pygame.mixer.init()
         pygame.mixer.music.load("assets/audio/combat_music.wav")
@@ -170,11 +173,31 @@ class DefeatScene(Scene):
     def __init__(self, game: GameManager):
         super().__init__(game)
 
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                self.game.switch_to_scene(self.game.scenes[0])
+                return False
+        return True
+
     def update(self, dt):
         super().update(dt)
 
-    def draw(self, surface):
-        super().draw(surface)
+    def draw(self, screen):
+        super().draw(screen)
+        game_over_text = self.game.font.render("GAME OVER", True, pygame.Color("red"))
+        screen.blit(game_over_text, (self.game.screen_size[0] / 2 - game_over_text.get_width() / 2, self.game.screen_size[1] / 2))
+
+        key_text = self.game.font.render("Press <R> to try again, <ESC> to quit", True, pygame.Color("gray"))
+        self.game.screen.blit(key_text,
+                              (self.game.screen_size[0] / 2 - key_text.get_width() / 2,
+                               self.game.screen_size[1] / 2 + 120))
+
+    def will_activate(self, prev_scene=None):
+        super().will_activate(prev_scene)
+
+        if prev_scene is not None:
+            self.objects = prev_scene.objects.copy()
 
     def activate(self):
         self.game.status = GameStatus.DEFEAT
@@ -183,8 +206,19 @@ class DefeatScene(Scene):
 
 
 class VictoryScene(Scene):
+    BONUS_TIME_LIMIT = 15000  # 15 seconds
+
     def __init__(self, game: GameManager):
         super().__init__(game)
+        self.time_elapsed = 0
+        self.time_bonus = 0
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                self.game.switch_to_scene(self.game.scenes[0])
+                return False
+        return True
 
     def update(self, dt):
         super().update(dt)
@@ -192,12 +226,39 @@ class VictoryScene(Scene):
     def draw(self, surface):
         super().draw(surface)
 
-        score_text = self.game.font.render(str(self.game.score), True, pygame.Color("lime"))
-        self.game.screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
-
         victory_text = self.game.font.render("VICTORY", True, pygame.Color("lime"))
         self.game.screen.blit(victory_text,
-                    (self.game.screen_size[0] / 2 - victory_text.get_width() / 2, self.game.screen_size[1] / 2))
+                    (self.game.screen_size[0] / 2 - victory_text.get_width() / 2, self.game.screen_size[1] / 2 - 80))
+
+        score_text = self.game.font.render(f"SCORE: {self.game.score}", True, pygame.Color("lime"))
+        self.game.screen.blit(score_text,
+                              (self.game.screen_size[0] / 2 - score_text.get_width() / 2,
+                               self.game.screen_size[1] / 2 - 40))
+
+        time_bonus_text = self.game.font.render(f"TIME BONUS: {self.time_bonus}", True, pygame.Color("lime"))
+        self.game.screen.blit(time_bonus_text,
+                              (self.game.screen_size[0] / 2 - time_bonus_text.get_width() / 2,
+                               self.game.screen_size[1] / 2))
+
+        total_score = self.game.font.render(f"TOTAL SCORE: {self.game.score + self.time_bonus}", True, pygame.Color("lime"))
+        self.game.screen.blit(total_score,
+                              (self.game.screen_size[0] / 2 - total_score.get_width() / 2,
+                               self.game.screen_size[1] / 2 + 40))
+
+        key_text = self.game.font.render("Press <R> to try again, <ESC> to quit", True, pygame.Color("gray"))
+        self.game.screen.blit(key_text,
+                              (self.game.screen_size[0] / 2 - key_text.get_width() / 2,
+                               self.game.screen_size[1] / 2 + 120))
+
+    def will_activate(self, prev_scene=None):
+        super().will_activate(prev_scene)
+
+        if prev_scene is not None:
+            self.time_elapsed = pygame.time.get_ticks() - prev_scene.start_time
+            self.time_bonus = max(0, round(self.BONUS_TIME_LIMIT - self.time_elapsed))
+
+        if prev_scene is not None:
+            self.objects = prev_scene.objects.copy()
 
     def activate(self):
         self.game.status = GameStatus.VICTORY
@@ -248,12 +309,16 @@ class GameObject:
     def update(self, dt):
         pass
 
+    def handle_event(self, event):
+        """Returns True if the event was not handled and should be passed to the next object"""
+        return True
+
     def destroy(self):
         self.destroyed = True
 
 
 class Character(GameObject):
-    SPEED = 200
+    SPEED = 300
     ANIMATION_FPS = 6
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
@@ -263,16 +328,16 @@ class Character(GameObject):
 
     def draw(self, surface):
         surface.blit(
-            self.sprite.frames[round(Character.ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Character.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.pos.x -= Character.SPEED * dt / 1000
+            self.pos.x -= self.SPEED * self.scene.game.dt / 1000
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.pos.x += Character.SPEED * dt / 1000
+            self.pos.x += self.SPEED * self.scene.game.dt / 1000
 
         # Hero will appear from another side of the screen if he goes out of bounds
         if self.pos.x < 0:
@@ -280,13 +345,25 @@ class Character(GameObject):
         elif self.pos.x > self.scene.game.screen_size[0] - self.sprite.width:
             self.pos.x = 0
 
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                HeroShot(
+                    scene=self.scene,
+                    pos=self.pos + Position(self.sprite.width / 2, self.sprite.height / 2),
+                    velocity=Position(0, -300),
+                )
+                return False
+        return True
+
     def destroy(self):
         super().destroy()
-        self.scene.game.switch_to_scene(self.scene.game.scenes[1])
+        raise SceneSwitchException(self.scene.game.scenes[1])
+        # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
 
 
 class Enemy(GameObject):
-    SPEED = 10
+    SPEED = 20
     ANIMATION_FPS = 2
     SCORE = 100
 
@@ -299,18 +376,20 @@ class Enemy(GameObject):
 
     def draw(self, surface):
         surface.blit(
-            self.sprite.frames[round(Enemy.ANIMATION_FPS * total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Enemy.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
     def update(self, dt):
         self.pos.y += Enemy.SPEED * dt / 1000
-        self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 4) * 40)
+        self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
                 and self.scene.game.status == GameStatus.PLAYING):
 
-            self.scene.game.switch_to_scene(self.scene.game.scenes[1])
+            raise SceneSwitchException(self.scene.game.scenes[1])
+            # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
+            # return
 
         if self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
@@ -430,12 +509,12 @@ if __name__ == '__main__':
     game.switch_to_scene(game.scenes[0])
 
     while game.is_running:
-        dt = game.clock.tick(FPS_CAP)
-        total_time = pygame.time.get_ticks() - game.start_time
+        game.dt = game.clock.tick(FPS_CAP)
+        game.total_time = pygame.time.get_ticks() - game.start_time
 
         game.screen.fill(BG_COLOR)
         game.handle_events()
-        game.update(dt)
+        game.update(game.dt)
         game.draw(game.screen)
 
         pygame.display.flip()
