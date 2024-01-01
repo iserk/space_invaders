@@ -9,6 +9,9 @@ The player controls a spaceship that can move horizontally and shoot projectiles
 The objective is to destroy all the aliens before they reach the bottom of the screen.
 The aliens can also shoot bullets and the player loses if the spaceship is hit by an alien bullet or if an alien reaches the bottom of the screen.
 
+## 📷 Screenshot
+![Space Invaders Redux](docs/screenshot.png "Screenshot")
+
 ## 🎮 Controls
 `←` or `a` — Move the spaceship left  
 `→` or `d` — Move the spaceship right  
