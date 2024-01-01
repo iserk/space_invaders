@@ -79,6 +79,9 @@ class GameManager:
     def draw(self, surface):
         self.current_scene.draw(surface)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
 
 class Scene:
     def __init__(self, game: GameManager):
@@ -122,6 +125,13 @@ class Scene:
     def deactivate(self):
         self.objects = []
 
+    def transfer_objects_from(self, scene):
+        for obj in scene.objects:
+            self.add(obj)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(game={self.game})"
+
 
 class GameScene(Scene):
     def __init__(self, game: GameManager):
@@ -144,6 +154,7 @@ class GameScene(Scene):
         return True
 
     def activate(self):
+        self.game.score = 0
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
         self.hero = Character(
             scene=self,
@@ -197,7 +208,7 @@ class DefeatScene(Scene):
         super().will_activate(prev_scene)
 
         if prev_scene is not None:
-            self.objects = prev_scene.objects.copy()
+            self.transfer_objects_from(prev_scene)
 
     def activate(self):
         self.game.status = GameStatus.DEFEAT
@@ -258,7 +269,7 @@ class VictoryScene(Scene):
             self.time_bonus = max(0, round(self.BONUS_TIME_LIMIT - self.time_elapsed))
 
         if prev_scene is not None:
-            self.objects = prev_scene.objects.copy()
+            self.transfer_objects_from(prev_scene)
 
     def activate(self):
         self.game.status = GameStatus.VICTORY
@@ -315,6 +326,9 @@ class GameObject:
 
     def destroy(self):
         self.destroyed = True
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(scene={self.scene})"
 
 
 class Character(GameObject):
@@ -484,12 +498,13 @@ class InvaderShot(Shot):
     def update(self, dt):
         super().update(dt)
 
-        hero = self.scene.hero
-        if (hero.pos.x <= self.pos.x <= hero.pos.x + hero.sprite.width
-                and hero.pos.y <= self.pos.y <= hero.pos.y + hero.sprite.height):
-            Explosion(scene=self.scene, pos=hero.pos)
-            hero.destroy()
-            self.destroy()
+        if hasattr(self.scene, "hero"):
+            hero = self.scene.hero
+            if (hero.pos.x <= self.pos.x <= hero.pos.x + hero.sprite.width
+                    and hero.pos.y <= self.pos.y <= hero.pos.y + hero.sprite.height):
+                Explosion(scene=self.scene, pos=hero.pos)
+                hero.destroy()
+                self.destroy()
 
 
 def get_frames(spritesheet, frame_width, frame_height, num_frames):
