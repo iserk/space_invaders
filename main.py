@@ -25,6 +25,8 @@ class SceneSwitchException(Exception):
 
 
 class GameManager:
+    BONUS_TIME_LIMIT = 15000  # 15 seconds
+
     def __init__(self):
         self.dt = 0
         self.total_time = 0
@@ -94,14 +96,19 @@ class Scene:
 
     def show_stats(self, screen, clock):
         fps = str(int(clock.get_fps()))
-        fps_text = self.game.font.render(fps, True, pygame.Color("lime"))
+        fps_text = self.game.font.render(f'FPS: {fps}', True, pygame.Color("lime"))
         screen.blit(fps_text, (8, 8))
 
-        score_text = self.game.font.render(f"{self.game.score:08}", True, pygame.Color("lime"))
+        score_text = self.game.font.render(f"Score: {self.game.score:08}", True, pygame.Color("lime"))
         screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
 
-        objects_text = self.game.font.render(str(len(self.objects)), True, pygame.Color("lime"))
-        screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
+        # objects_text = self.game.font.render(f'Objects: {len(self.objects):04}', True, pygame.Color("lime"))
+        # screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
+
+        time_remaining = max(0, self.game.BONUS_TIME_LIMIT - pygame.time.get_ticks() - self.game.start_time) / 1000
+
+        time_text = self.game.font.render(f'Bonus time: {time_remaining:.1f} s', True, pygame.Color("lime"))
+        screen.blit(time_text, (self.game.screen_size[0] - time_text.get_width() - 8, 8))
 
     def draw(self, surface):
         for obj in self.objects:
@@ -155,6 +162,8 @@ class GameScene(Scene):
 
     def activate(self):
         self.game.score = 0
+        self.game.start_time = pygame.time.get_ticks()
+        
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
         self.hero = Character(
             scene=self,
@@ -217,8 +226,6 @@ class DefeatScene(Scene):
 
 
 class VictoryScene(Scene):
-    BONUS_TIME_LIMIT = 15000  # 15 seconds
-
     def __init__(self, game: GameManager):
         super().__init__(game)
         self.time_elapsed = 0
@@ -266,7 +273,7 @@ class VictoryScene(Scene):
 
         if prev_scene is not None:
             self.time_elapsed = pygame.time.get_ticks() - prev_scene.start_time
-            self.time_bonus = max(0, round(self.BONUS_TIME_LIMIT - self.time_elapsed))
+            self.time_bonus = max(0, round(self.game.BONUS_TIME_LIMIT - self.time_elapsed))
 
         if prev_scene is not None:
             self.transfer_objects_from(prev_scene)
