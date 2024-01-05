@@ -91,12 +91,31 @@ class GameManager:
                     case pygame.K_e:
                         game.time_scale = 2
 
-
     def draw(self, surface):
         self.current_scene.draw(surface)
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
+
+    def run(self):
+        while self.is_running:
+            self.dt = round(self.clock.tick(FPS_CAP) * self.time_scale)
+
+            if not self.is_paused:
+                # game.total_time = pygame.time.get_ticks() - game.start_time
+                self.total_time += self.dt
+                self.current_scene.total_time += self.dt
+
+            self.screen.fill(BG_COLOR)
+            self.handle_events()
+
+            if not self.is_paused:
+                self.update(game.dt)
+            self.draw(game.screen)
+
+            pygame.display.flip()
+
+        pygame.quit()
 
 
 class Scene:
@@ -557,21 +576,4 @@ if __name__ == '__main__':
     game.scenes.append(VictoryScene(game))
     game.switch_to_scene(game.scenes[0])
 
-    while game.is_running:
-        game.dt = round(game.clock.tick(FPS_CAP) * game.time_scale)
-
-        if not game.is_paused:
-            # game.total_time = pygame.time.get_ticks() - game.start_time
-            game.total_time += game.dt
-            game.current_scene.total_time += game.dt
-
-        game.screen.fill(BG_COLOR)
-        game.handle_events()
-
-        if not game.is_paused:
-            game.update(game.dt)
-        game.draw(game.screen)
-
-        pygame.display.flip()
-
-    pygame.quit()
+    game.run()
