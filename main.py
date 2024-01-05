@@ -5,6 +5,8 @@ import enum
 import pygame
 from collections import namedtuple
 
+from camera import Camera
+
 
 SCREEN_SIZE = (1000, 800)
 BG_COLOR = (0, 0, 0)
@@ -91,8 +93,8 @@ class GameManager:
                     case pygame.K_e:
                         game.time_scale = 2
 
-    def draw(self, surface):
-        self.current_scene.draw(surface)
+    def draw(self):
+        self.current_scene.draw()
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -111,7 +113,7 @@ class GameManager:
 
             if not self.is_paused:
                 self.update(game.dt)
-            self.draw(game.screen)
+            self.draw()
 
             pygame.display.flip()
 
@@ -124,6 +126,7 @@ class Scene:
         self.objects = []
         self.total_time = 0
         self.bonus_time_left = 0
+        self.camera = Camera(self.game.screen, 0, 0)
 
     def activate(self):
         # print(f"Activated {self.__class__.__name__}")
@@ -156,10 +159,10 @@ class Scene:
             pause_text = self.game.font.render('Paused', True, pygame.Color("aqua"))
             screen.blit(pause_text, (self.game.screen_center[0] - pause_text.get_width(), self.game.screen_center[1]))
 
-    def draw(self, surface):
+    def draw(self):
         for obj in self.objects:
-            obj.draw(surface)
-        self.show_stats(surface, self.game.clock)
+            obj.draw(self.camera)
+        self.show_stats(self.camera.screen, self.game.clock)
 
     def update(self, dt):
         self.objects = [obj for obj in self.objects if not obj.destroyed]
@@ -196,8 +199,8 @@ class GameScene(Scene):
         if len([obj for obj in self.objects if isinstance(obj, Enemy)]) == 0:
             self.game.switch_to_scene(self.game.scenes[2])
 
-    def draw(self, surface):
-        super().draw(surface)
+    def draw(self):
+        super().draw()
 
     def handle_event(self, event):
         for obj in self.objects:
@@ -248,13 +251,13 @@ class DefeatScene(Scene):
     def update(self, dt):
         super().update(dt)
 
-    def draw(self, screen):
-        super().draw(screen)
+    def draw(self,):
+        super().draw()
         game_over_text = self.game.font.render("GAME OVER", True, pygame.Color("red"))
-        screen.blit(game_over_text, (self.game.screen_size[0] / 2 - game_over_text.get_width() / 2, self.game.screen_size[1] / 2))
+        self.camera.screen.blit(game_over_text, (self.game.screen_size[0] / 2 - game_over_text.get_width() / 2, self.game.screen_size[1] / 2))
 
         key_text = self.game.font.render("Press <R> to try again, <ESC> to quit", True, pygame.Color("gray"))
-        self.game.screen.blit(key_text,
+        self.camera.screen.blit(key_text,
                               (self.game.screen_size[0] / 2 - key_text.get_width() / 2,
                                self.game.screen_size[1] / 2 + 120))
 
@@ -292,30 +295,30 @@ class VictoryScene(Scene):
     def update(self, dt):
         super().update(dt)
 
-    def draw(self, surface):
-        super().draw(surface)
+    def draw(self):
+        super().draw()
 
         victory_text = self.game.font.render("VICTORY", True, pygame.Color("lime"))
-        self.game.screen.blit(victory_text,
+        self.camera.screen.blit(victory_text,
                     (self.game.screen_size[0] / 2 - victory_text.get_width() / 2, self.game.screen_size[1] / 2 - 80))
 
         score_text = self.game.font.render(f"SCORE: {self.game.score}", True, pygame.Color("lime"))
-        self.game.screen.blit(score_text,
+        self.camera.screen.blit(score_text,
                               (self.game.screen_size[0] / 2 - score_text.get_width() / 2,
                                self.game.screen_size[1] / 2 - 40))
 
         time_bonus_text = self.game.font.render(f"TIME BONUS: {self.time_bonus}", True, pygame.Color("lime"))
-        self.game.screen.blit(time_bonus_text,
+        self.camera.screen.blit(time_bonus_text,
                               (self.game.screen_size[0] / 2 - time_bonus_text.get_width() / 2,
                                self.game.screen_size[1] / 2))
 
         total_score = self.game.font.render(f"TOTAL SCORE: {self.game.score + self.time_bonus}", True, pygame.Color("lime"))
-        self.game.screen.blit(total_score,
+        self.camera.screen.screen.blit(total_score,
                               (self.game.screen_size[0] / 2 - total_score.get_width() / 2,
                                self.game.screen_size[1] / 2 + 40))
 
         key_text = self.game.font.render("Press <R> to try again, <ESC> to quit", True, pygame.Color("gray"))
-        self.game.screen.blit(key_text,
+        self.camera.screen.blit(key_text,
                               (self.game.screen_size[0] / 2 - key_text.get_width() / 2,
                                self.game.screen_size[1] / 2 + 120))
 
@@ -367,7 +370,7 @@ class GameObject:
         self.scene.add(self)
         self.destroyed = False
 
-    def draw(self, surface):
+    def draw(self, camera):
         pass
 
     def update(self, dt):
@@ -393,8 +396,8 @@ class Character(GameObject):
         self.pos = pos
         self.sprite = sprite
 
-    def draw(self, surface):
-        surface.blit(
+    def draw(self, camera):
+        camera.screen.blit(
             self.sprite.frames[round(Character.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
@@ -441,8 +444,8 @@ class Enemy(GameObject):
 
         self.initial_pos = pos.copy()
 
-    def draw(self, surface):
-        surface.blit(
+    def draw(self, camera):
+        camera.screen.blit(
             self.sprite.frames[round(Enemy.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
@@ -475,6 +478,9 @@ class Explosion(GameObject):
     def __init__(self, scene: Scene, pos: Position):
         super().__init__(scene)
 
+        # sleep for 20 ms to emphasize the effect
+        # pygame.time.wait(20)
+
         explosion_sprite = Sprite(
             frames=get_frames(pygame.image.load("assets/images/explosion.png"), 40, 40, 6),
             width=40,
@@ -489,9 +495,9 @@ class Explosion(GameObject):
         # Plays a random explosion sound
         pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
 
-    def draw(self, surface):
+    def draw(self, camera):
         if self.frame < len(self.sprite.frames):
-            surface.blit(self.sprite.frames[self.frame], tuple(self.pos))
+            camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos))
 
     def update(self, dt):
         self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / 1000)
@@ -510,8 +516,8 @@ class Shot(GameObject):
 
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
-    def draw(self, surface):
-        pygame.draw.line(surface, self.color, tuple(self.pos), tuple(self.pos + self.direction), 2)
+    def draw(self, camera):
+        pygame.draw.line(camera.screen, self.color, tuple(self.pos), tuple(self.pos + self.direction), 2)
 
     def update(self, dt):
         self.pos += self.velocity * dt / 1000
