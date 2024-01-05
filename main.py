@@ -6,6 +6,7 @@ import pygame
 from collections import namedtuple
 
 from camera import Camera
+from noise import fractal_noise
 
 
 SCREEN_SIZE = (1000, 800)
@@ -71,9 +72,12 @@ class GameManager:
         if self.trauma > 0:
             self.trauma -= (dt / 1000)
 
-            amplitude = self.trauma ** 3 * 10
-            self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
-            self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
+            amplitude = self.trauma ** 3 * 20
+            # self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
+            # self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
+            # self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
+            self.current_scene.camera.x = fractal_noise(self.total_time / 100, 5, 1) * amplitude
+            self.current_scene.camera.y = fractal_noise(self.total_time / 100, 5, 1) * amplitude
             self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
         else:
             self.trauma = 0
@@ -93,19 +97,23 @@ class GameManager:
                     continue
 
             if event.type == pygame.QUIT:
-                game.is_running = False
+                self.is_running = False
             elif event.type == pygame.KEYDOWN:
                 match event.key:
                     case pygame.K_ESCAPE:
-                        game.is_running = False
+                        self.is_running = False
                     case pygame.K_p:
-                        game.is_paused = not game.is_paused
+                        self.is_paused = not self.is_paused
                     case pygame.K_q:
-                        game.time_scale = 0.25
+                        self.time_scale = 0.25
                     case pygame.K_w:
-                        game.time_scale = 1
+                        self.time_scale = 1
                     case pygame.K_e:
-                        game.time_scale = 2
+                        self.time_scale = 2
+                    case pygame.K_t:
+                        self.traumatize(1)
+                    case pygame.K_r:
+                        self.switch_to_scene(self.scenes[0])
 
     def draw(self):
         self.current_scene.draw()
