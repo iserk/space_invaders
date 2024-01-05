@@ -14,7 +14,7 @@ class Camera:
     def __repr__(self):
         return f'Camera({self.x}, {self.y})'
 
-    def transform(self):
+    def display(self, screen):
         temp_screen = self.screen
 
         if self.roll != 0:
@@ -24,6 +24,5 @@ class Camera:
             temp_screen = pygame.transform.scale(temp_screen, (
                 self.screen_size[0] * self.scale_x, self.screen_size[1] * self.scale_y))
 
-        temp_screen.blit(temp_screen, (-self.x, -self.y))
-        return temp_screen
+        screen.blit(temp_screen, (-self.x, -self.y))
 

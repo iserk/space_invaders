@@ -124,7 +124,8 @@ class GameManager:
             # camera.y = random.randint(-10, 10)
             # camera.roll = random.randint(-100, 100) / 100
 
-            self.screen.blit(camera.transform(), (0, 0))
+            # self.screen.blit(camera.transform(), (0, 0))
+            camera.display(self.screen)
             pygame.display.flip()
 
         pygame.quit()
