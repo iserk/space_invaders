@@ -24,11 +24,11 @@ The player earns points by destroying alien invaders.
 
 `Space` — Shoot a projectile
 
-`q` — Slow down the game (time factor 0.25x)
-`e` — Speed up the game (time factor 2x)
-`w` — Reset the game speed (time factor 1x)
+`q` — Slow down the game (time factor 0.25x)  
+`e` — Speed up the game (time factor 2x)  
+`w` — Reset the game speed (time factor 1x)  
 
-`p` — Pause the game
+`p` — Pause the game  
 `Esc` — Quit the game  
 
 ## 📦 Requirements
