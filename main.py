@@ -28,6 +28,8 @@ class SceneSwitchException(Exception):
 
 class GameManager:
     BONUS_TIME_LIMIT = 15000  # 15 seconds
+    MAX_TRAUMA = 1
+    MIN_TRAUMA = 0
 
     def __init__(self):
         self.dt = 0
@@ -39,7 +41,7 @@ class GameManager:
         self.time_scale = 1
 
         pygame.init()
-        self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF)
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF, vsync=True)
 
         # Set window title and icon
         pygame.display.set_caption("Space Invaders")
@@ -55,6 +57,7 @@ class GameManager:
         self.start_time = pygame.time.get_ticks()
         self.is_running = True
         self.is_paused = False
+        self.trauma = 0
 
     def switch_to_scene(self, scene):
         scene.will_activate(prev_scene=self.current_scene)
@@ -65,6 +68,16 @@ class GameManager:
         scene.activate()
 
     def update(self, dt):
+        if self.trauma > 0:
+            self.trauma -= (dt / 1000)
+
+            amplitude = self.trauma ** 3 * 10
+            self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
+            self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
+            self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
+        else:
+            self.trauma = 0
+
         try:
             self.current_scene.update(dt)
         except SceneSwitchException as e:
@@ -100,6 +113,10 @@ class GameManager:
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
+    def traumatize(self, trauma):
+        self.trauma += trauma
+        self.trauma = min(self.trauma, self.MAX_TRAUMA)
+
     def run(self):
         while self.is_running:
             self.dt = round(self.clock.tick(FPS_CAP) * self.time_scale)
@@ -111,9 +128,9 @@ class GameManager:
 
             camera = self.current_scene.camera
 
-            # factor = random.randint(0, 1)
-            # self.camera_screen.fill((255 * factor, 64 * factor, 64 * factor))
-            camera.screen.fill(BG_COLOR)
+            factor = self.trauma ** 3
+            camera.screen.fill((64 * factor, 32 * factor, 32 * factor))
+            # camera.screen.fill(BG_COLOR)
             self.handle_events()
 
             if not self.is_paused:
@@ -138,6 +155,7 @@ class Scene:
         self.total_time = 0
         self.bonus_time_left = 0
         self.camera = Camera(self.game.screen_size, 0, 0)
+        self.is_input_enabled = False
 
     def activate(self):
         # print(f"Activated {self.__class__.__name__}")
@@ -157,6 +175,9 @@ class Scene:
 
         score_text = self.game.font.render(f"Score: {self.game.score:08}", True, pygame.Color("lime"))
         screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
+
+        trauma_text = self.game.font.render(f"{self.game.trauma:.2f}", True, pygame.Color("lime"))
+        screen.blit(trauma_text, (8, self.game.screen_size[1] - trauma_text.get_height() - 8))
 
         # objects_text = self.game.font.render(f'Objects: {len(self.objects):04}', True, pygame.Color("lime"))
         # screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
@@ -200,6 +221,7 @@ class Scene:
 class GameScene(Scene):
     def __init__(self, game: GameManager):
         super().__init__(game)
+        self.is_input_enabled = True
         self.total_time = 0
 
     def update(self, dt):
@@ -401,11 +423,13 @@ class GameObject:
 class Character(GameObject):
     SPEED = 300
     ANIMATION_FPS = 6
+    SHOOT_DELAY = 200
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene)
         self.pos = pos
         self.sprite = sprite
+        self.prev_shot_time = 0
 
     def draw(self, camera):
         camera.screen.blit(
@@ -414,11 +438,21 @@ class Character(GameObject):
         )
 
     def update(self, dt):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.pos.x -= self.SPEED * self.scene.game.dt / 1000
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.pos.x += self.SPEED * self.scene.game.dt / 1000
+
+        if self.scene.is_input_enabled:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.pos.x -= self.SPEED * self.scene.game.dt / 1000
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.pos.x += self.SPEED * self.scene.game.dt / 1000
+            if keys[pygame.K_SPACE]:
+                if self.scene.game.total_time - self.prev_shot_time > self.SHOOT_DELAY:
+                    self.prev_shot_time = self.scene.game.total_time
+                    HeroShot(
+                        scene=self.scene,
+                        pos=self.pos + Position(self.sprite.width / 2, self.sprite.height / 2),
+                        velocity=Position(0, -300),
+                    )
 
         # Hero will appear from another side of the screen if he goes out of bounds
         if self.pos.x < 0:
@@ -426,19 +460,9 @@ class Character(GameObject):
         elif self.pos.x > self.scene.game.screen_size[0] - self.sprite.width:
             self.pos.x = 0
 
-    def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                HeroShot(
-                    scene=self.scene,
-                    pos=self.pos + Position(self.sprite.width / 2, self.sprite.height / 2),
-                    velocity=Position(0, -300),
-                )
-                return False
-        return True
-
     def destroy(self):
         super().destroy()
+        self.scene.game.traumatize(1)
         raise SceneSwitchException(self.scene.game.scenes[1])
         # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
 
@@ -503,6 +527,7 @@ class Explosion(GameObject):
         self.frame = 0
         self.start_time = self.scene.game.total_time
 
+        self.scene.game.traumatize(0.5)
         # Plays a random explosion sound
         pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
 
@@ -545,6 +570,7 @@ class HeroShot(Shot):
         super().__init__(scene, pos, velocity, HeroShot.COLOR)
         self.scene.game.score -= HeroShot.SCORE_COST
         pygame.mixer.Sound("assets/audio/hero_shot.wav").play()
+        self.scene.game.traumatize(0.1)
 
     def update(self, dt):
         super().update(dt)
