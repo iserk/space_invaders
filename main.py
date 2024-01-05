@@ -34,6 +34,7 @@ class GameManager:
         self.scenes = []
         self.current_scene = None
         self.status = GameStatus.PLAYING
+        self.time_scale = 1
 
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF)
@@ -50,6 +51,7 @@ class GameManager:
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
         self.is_running = True
+        self.is_paused = False
 
     def switch_to_scene(self, scene):
         scene.will_activate(prev_scene=self.current_scene)
@@ -69,14 +71,26 @@ class GameManager:
         for event in pygame.event.get():
             # Handle events for the current scene
             # If the scene returns False, it means that the event was handled and we can skip the rest of the loop
-            result = self.current_scene.handle_event(event)
-            if not result:
-                continue
+            if not self.is_paused:
+                result = self.current_scene.handle_event(event)
+                if not result:
+                    continue
+
             if event.type == pygame.QUIT:
                 game.is_running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    game.is_running = False
+                match event.key:
+                    case pygame.K_ESCAPE:
+                        game.is_running = False
+                    case pygame.K_p:
+                        game.is_paused = not game.is_paused
+                    case pygame.K_q:
+                        game.time_scale = 0.25
+                    case pygame.K_w:
+                        game.time_scale = 1
+                    case pygame.K_e:
+                        game.time_scale = 2
+
 
     def draw(self, surface):
         self.current_scene.draw(surface)
@@ -89,6 +103,12 @@ class Scene:
     def __init__(self, game: GameManager):
         self.game = game
         self.objects = []
+        self.total_time = 0
+        self.bonus_time_left = 0
+
+    def activate(self):
+        # print(f"Activated {self.__class__.__name__}")
+        pass
 
     def add(self, obj):
         self.objects.append(obj)
@@ -99,16 +119,23 @@ class Scene:
         fps_text = self.game.font.render(f'FPS: {fps}', True, pygame.Color("lime"))
         screen.blit(fps_text, (8, 8))
 
+        time_scale_text = self.game.font.render(f'Time: {self.game.time_scale:.2f}x', True, pygame.Color("lime"))
+        screen.blit(time_scale_text, (200, 8))
+
         score_text = self.game.font.render(f"Score: {self.game.score:08}", True, pygame.Color("lime"))
         screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
 
         # objects_text = self.game.font.render(f'Objects: {len(self.objects):04}', True, pygame.Color("lime"))
         # screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
 
-        time_remaining = max(0, self.game.BONUS_TIME_LIMIT - pygame.time.get_ticks() - self.game.start_time) / 1000
+        time_remaining = max(0, self.bonus_time_left) / 1000
 
         time_text = self.game.font.render(f'Bonus time: {time_remaining:.1f} s', True, pygame.Color("lime"))
         screen.blit(time_text, (self.game.screen_size[0] - time_text.get_width() - 8, 8))
+
+        if self.game.is_paused:
+            pause_text = self.game.font.render('Paused', True, pygame.Color("aqua"))
+            screen.blit(pause_text, (self.game.screen_center[0] - pause_text.get_width(), self.game.screen_center[1]))
 
     def draw(self, surface):
         for obj in self.objects:
@@ -126,9 +153,6 @@ class Scene:
     def will_activate(self, prev_scene=None):
         pass
 
-    def activate(self):
-        pass
-
     def deactivate(self):
         self.objects = []
 
@@ -143,10 +167,13 @@ class Scene:
 class GameScene(Scene):
     def __init__(self, game: GameManager):
         super().__init__(game)
-        self.start_time = None
+        self.total_time = 0
 
     def update(self, dt):
         super().update(dt)
+
+        self.bonus_time_left -= dt
+
         if len([obj for obj in self.objects if isinstance(obj, Enemy)]) == 0:
             self.game.switch_to_scene(self.game.scenes[2])
 
@@ -161,9 +188,10 @@ class GameScene(Scene):
         return True
 
     def activate(self):
+        super().activate()
         self.game.score = 0
-        self.game.start_time = pygame.time.get_ticks()
-        
+        self.bonus_time_left = self.game.BONUS_TIME_LIMIT
+
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
         self.hero = Character(
             scene=self,
@@ -173,15 +201,13 @@ class GameScene(Scene):
 
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40,
                         height=40)
-        for row in range(4):
+        for row in range(3):
             for col in range(10):
                 Enemy(
                     scene=self,
                     pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
                 )
-
-        self.start_time = pygame.time.get_ticks()
 
         self.game.status = GameStatus.PLAYING
         pygame.mixer.init()
@@ -220,6 +246,7 @@ class DefeatScene(Scene):
             self.transfer_objects_from(prev_scene)
 
     def activate(self):
+        super().activate()
         self.game.status = GameStatus.DEFEAT
         pygame.mixer.music.load("assets/audio/defeat.wav")
         pygame.mixer.music.play()
@@ -228,8 +255,13 @@ class DefeatScene(Scene):
 class VictoryScene(Scene):
     def __init__(self, game: GameManager):
         super().__init__(game)
-        self.time_elapsed = 0
         self.time_bonus = 0
+
+    def activate(self):
+        super().activate()
+        self.game.status = GameStatus.VICTORY
+        pygame.mixer.music.load("assets/audio/victory.wav")
+        pygame.mixer.music.play()
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -272,16 +304,11 @@ class VictoryScene(Scene):
         super().will_activate(prev_scene)
 
         if prev_scene is not None:
-            self.time_elapsed = pygame.time.get_ticks() - prev_scene.start_time
-            self.time_bonus = max(0, round(self.game.BONUS_TIME_LIMIT - self.time_elapsed))
+            self.bonus_time_left = prev_scene.bonus_time_left
+            self.time_bonus = max(0, self.bonus_time_left)
 
         if prev_scene is not None:
             self.transfer_objects_from(prev_scene)
-
-    def activate(self):
-        self.game.status = GameStatus.VICTORY
-        pygame.mixer.music.load("assets/audio/victory.wav")
-        pygame.mixer.music.play()
 
 
 class Position:
@@ -438,7 +465,7 @@ class Explosion(GameObject):
         self.pos = pos
         self.sprite = explosion_sprite
         self.frame = 0
-        self.start_time = pygame.time.get_ticks()
+        self.start_time = self.scene.game.total_time
 
         # Plays a random explosion sound
         pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
@@ -448,7 +475,7 @@ class Explosion(GameObject):
             surface.blit(self.sprite.frames[self.frame], tuple(self.pos))
 
     def update(self, dt):
-        self.frame = round(Explosion.ANIMATION_FPS * (pygame.time.get_ticks() - self.start_time) / 1000)
+        self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / 1000)
         if self.frame >= len(self.sprite.frames):
             self.destroy()
 
@@ -531,12 +558,18 @@ if __name__ == '__main__':
     game.switch_to_scene(game.scenes[0])
 
     while game.is_running:
-        game.dt = game.clock.tick(FPS_CAP)
-        game.total_time = pygame.time.get_ticks() - game.start_time
+        game.dt = round(game.clock.tick(FPS_CAP) * game.time_scale)
+
+        if not game.is_paused:
+            # game.total_time = pygame.time.get_ticks() - game.start_time
+            game.total_time += game.dt
+            game.current_scene.total_time += game.dt
 
         game.screen.fill(BG_COLOR)
         game.handle_events()
-        game.update(game.dt)
+
+        if not game.is_paused:
+            game.update(game.dt)
         game.draw(game.screen)
 
         pygame.display.flip()

@@ -5,7 +5,7 @@ This is a remake of the classic arcade game Space Invaders. It was made using Py
 ## 🚀 Introduction
 The player controls a spaceship that can move horizontally and shoot projectiles. 
 
-## 🏁 The Objective
+## 🏁 Objective
 The objective is to destroy all the aliens before they reach the bottom of the screen.
 The aliens can also shoot bullets and the player loses if the spaceship is hit by an alien bullet or if an alien reaches the bottom of the screen.
 
@@ -22,7 +22,13 @@ The player earns points by destroying alien invaders.
 `←` or `a` — Move the spaceship left  
 `→` or `d` — Move the spaceship right  
 
-`Space` — Shoot a projectile  
+`Space` — Shoot a projectile
+
+`q` — Slow down the game (time factor 0.25x)
+`e` — Speed up the game (time factor 2x)
+`w` — Reset the game speed (time factor 1x)
+
+`p` — Pause the game
 `Esc` — Quit the game  
 
 ## 📦 Requirements
