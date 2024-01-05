@@ -554,7 +554,7 @@ class Explosion(GameObject):
         super().__init__(scene)
 
         # sleep for 20 ms to emphasize the effect
-        # pygame.time.wait(20)
+        pygame.time.wait(20)
 
         explosion_sprite = Sprite(
             frames=get_frames(pygame.image.load("assets/images/explosion.png"), 40, 40, 6),
