@@ -73,10 +73,10 @@ class GameManager:
         if self.trauma > 0:
             self.trauma -= (dt / 1000)
 
-            amplitude = self.trauma ** 3 * 10
+            amplitude = self.trauma ** 2 * 10
 
             if self.use_perlin_noise:
-                amplitude *= 2
+                amplitude *= 3
                 self.current_scene.camera.x = fractal_noise(self.total_time / 1000, 10, 1) * amplitude
                 self.current_scene.camera.y = fractal_noise(self.total_time / 1000 + 1000, 10, 1) * amplitude
                 self.current_scene.camera.roll = fractal_noise(self.total_time / 1000 + 2000, 10, 1) * amplitude / 20
@@ -115,6 +115,28 @@ class GameManager:
                         self.time_scale = 1
                     case pygame.K_e:
                         self.time_scale = 2
+
+                    case pygame.K_1:
+                        self.time_scale = 0.1
+                    case pygame.K_2:
+                        self.time_scale = 0.2
+                    case pygame.K_3:
+                        self.time_scale = 0.3
+                    case pygame.K_4:
+                        self.time_scale = 0.4
+                    case pygame.K_5:
+                        self.time_scale = 0.5
+                    case pygame.K_6:
+                        self.time_scale = 0.6
+                    case pygame.K_7:
+                        self.time_scale = 0.7
+                    case pygame.K_8:
+                        self.time_scale = 0.8
+                    case pygame.K_9:
+                        self.time_scale = 0.9
+                    case pygame.K_0:
+                        self.time_scale = 1.0
+
                     case pygame.K_t:
                         self.traumatize(1)
                     case pygame.K_r:
@@ -143,7 +165,7 @@ class GameManager:
 
             camera = self.current_scene.camera
 
-            factor = self.trauma ** 3
+            factor = self.trauma ** 2
             camera.screen.fill((64 * factor, 32 * factor, 32 * factor))
             # camera.screen.fill(BG_COLOR)
             self.handle_events()
