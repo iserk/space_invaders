@@ -1,4 +1,5 @@
 import math
+import random
 
 
 def perlin_noise(x):
@@ -6,7 +7,7 @@ def perlin_noise(x):
     return math.sin(x)
 
 
-def fractal_noise(x, octaves=5, persistence=0.8):
+def fractal_noise(x, octaves=10, persistence=0.8):
     total = 0
     frequency = 1
     amplitude = 1
@@ -24,12 +25,12 @@ def fractal_noise(x, octaves=5, persistence=0.8):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    print(fractal_noise(0.5))
+    # print(fractal_noise(0.5))
     # plot fractal noise
 
     x = [i for i in range(1000)]
     y = [fractal_noise(i / 100) for i in x]
-
+    # y = [random.uniform(-1, 1) for i in x]
     plt.plot(x, y)
     plt.show()
 #

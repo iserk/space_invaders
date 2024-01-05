@@ -40,6 +40,7 @@ class GameManager:
         self.current_scene = None
         self.status = GameStatus.PLAYING
         self.time_scale = 1
+        self.use_perlin_noise = True
 
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF, vsync=True)
@@ -72,13 +73,17 @@ class GameManager:
         if self.trauma > 0:
             self.trauma -= (dt / 1000)
 
-            amplitude = self.trauma ** 3 * 20
-            # self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
-            # self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
-            # self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
-            self.current_scene.camera.x = fractal_noise(self.total_time / 100, 5, 1) * amplitude
-            self.current_scene.camera.y = fractal_noise(self.total_time / 100, 5, 1) * amplitude
-            self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
+            amplitude = self.trauma ** 3 * 10
+
+            if self.use_perlin_noise:
+                amplitude *= 2
+                self.current_scene.camera.x = fractal_noise(self.total_time / 1000, 10, 1) * amplitude
+                self.current_scene.camera.y = fractal_noise(self.total_time / 1000 + 1000, 10, 1) * amplitude
+                self.current_scene.camera.roll = fractal_noise(self.total_time / 1000 + 2000, 10, 1) * amplitude / 20
+            else:
+                self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
+                self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
+                self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
         else:
             self.trauma = 0
 
@@ -114,6 +119,8 @@ class GameManager:
                         self.traumatize(1)
                     case pygame.K_r:
                         self.switch_to_scene(self.scenes[0])
+                    case pygame.K_f:
+                        self.use_perlin_noise = not self.use_perlin_noise
 
     def draw(self):
         self.current_scene.draw()
@@ -192,8 +199,11 @@ class Scene:
 
         time_remaining = max(0, self.bonus_time_left) / 1000
 
-        time_text = self.game.font.render(f'Bonus time: {time_remaining:.1f} s', True, pygame.Color("lime"))
+        time_text = self.game.font.render(f'Bonus time: {time_remaining:.1f} s', True, pygame.Color("aqua"))
         screen.blit(time_text, (self.game.screen_size[0] - time_text.get_width() - 8, 8))
+
+        noise_text = self.game.font.render('perlin' if self.game.use_perlin_noise else 'random', True, pygame.Color("aqua"))
+        screen.blit(noise_text, (self.game.screen_size[0] - noise_text.get_width() - 8, self.game.screen_size[1] - noise_text.get_height() - 8))
 
         if self.game.is_paused:
             pause_text = self.game.font.render('Paused', True, pygame.Color("aqua"))
@@ -535,7 +545,7 @@ class Explosion(GameObject):
         self.frame = 0
         self.start_time = self.scene.game.total_time
 
-        self.scene.game.traumatize(0.5)
+        self.scene.game.traumatize(0.8)
         # Plays a random explosion sound
         pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
 
