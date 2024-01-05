@@ -40,6 +40,8 @@ class GameManager:
 
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.DOUBLEBUF)
+        self.camera_screen = pygame.Surface(SCREEN_SIZE, pygame.SRCALPHA)
+
         # Set window title and icon
         pygame.display.set_caption("Space Invaders")
         pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
@@ -108,13 +110,30 @@ class GameManager:
                 self.total_time += self.dt
                 self.current_scene.total_time += self.dt
 
-            self.screen.fill(BG_COLOR)
+            # factor = random.randint(0, 1)
+            # self.camera_screen.fill((255 * factor, 64 * factor, 64 * factor))
+            self.camera_screen.fill(BG_COLOR)
             self.handle_events()
 
             if not self.is_paused:
                 self.update(game.dt)
             self.draw()
 
+            camera = self.current_scene.camera
+
+            # camera.x = random.randint(-10, 10)
+            # camera.y = random.randint(-10, 10)
+            # camera.roll = random.randint(-100, 100) / 100
+
+            temp_screen = self.camera_screen
+
+            if camera.roll != 0:
+                temp_screen = pygame.transform.rotate(self.camera_screen, camera.roll)
+
+            if camera.scale_x != 1 or camera.scale_y != 1:
+                temp_screen = pygame.transform.scale(temp_screen, (self.screen_size[0] * camera.scale_x, self.screen_size[1] * camera.scale_y))
+
+            self.screen.blit(temp_screen, (-camera.x, -camera.y))
             pygame.display.flip()
 
         pygame.quit()
@@ -126,7 +145,7 @@ class Scene:
         self.objects = []
         self.total_time = 0
         self.bonus_time_left = 0
-        self.camera = Camera(self.game.screen, 0, 0)
+        self.camera = Camera(self.game.camera_screen, 0, 0)
 
     def activate(self):
         # print(f"Activated {self.__class__.__name__}")
@@ -313,7 +332,7 @@ class VictoryScene(Scene):
                                self.game.screen_size[1] / 2))
 
         total_score = self.game.font.render(f"TOTAL SCORE: {self.game.score + self.time_bonus}", True, pygame.Color("lime"))
-        self.camera.screen.screen.blit(total_score,
+        self.camera.screen.blit(total_score,
                               (self.game.screen_size[0] / 2 - total_score.get_width() / 2,
                                self.game.screen_size[1] / 2 + 40))
 
