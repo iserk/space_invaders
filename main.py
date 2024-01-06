@@ -11,7 +11,7 @@ from noise import fractal_noise
 
 SCREEN_SIZE = (1000, 800)
 BG_COLOR = (0, 0, 0)
-FPS_CAP = 120
+FPS_CAP = 0
 
 
 Sprite = namedtuple("Sprite", ["frames", "width", "height"])
@@ -491,7 +491,7 @@ class Character(GameObject):
                     HeroShot(
                         scene=self.scene,
                         pos=self.pos + Position(self.sprite.width / 2, self.sprite.height / 2),
-                        velocity=Position(0, -300),
+                        velocity=Position(0, -HeroShot.SPEED),
                     )
 
         # Hero will appear from another side of the screen if he goes out of bounds
@@ -543,7 +543,7 @@ class Enemy(GameObject):
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
-                velocity=Position(0, 200),
+                velocity=Position(0, InvaderShot.SPEED),
             )
 
 
@@ -583,6 +583,7 @@ class Explosion(GameObject):
 
 class Shot(GameObject):
     SHOT_LENGTH = 10
+    SPEED = 300
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, color: tuple):
         super().__init__(scene)
