@@ -59,7 +59,6 @@ class GameScene(Scene):
                 )
 
         self.game.status = GameStatus.PLAYING
-        pygame.mixer.init()
         pygame.mixer.music.load("assets/audio/combat_music.wav")
         pygame.mixer.music.play(loops=-1)
 

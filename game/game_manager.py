@@ -47,6 +47,10 @@ class GameManager:
         pygame.font.init()
         self.font = pygame.font.Font("assets/fonts/Revamped.otf", 18)
 
+        pygame.mixer.init()
+        num_channels = 16  # Example for 16 channels
+        pygame.mixer.set_num_channels(num_channels)
+
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
         self.is_running = True
