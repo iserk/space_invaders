@@ -269,7 +269,7 @@ class GameScene(Scene):
 
         self.bonus_time_left -= dt
 
-        if len([obj for obj in self.objects if isinstance(obj, Enemy)]) == 0:
+        if len([obj for obj in self.objects if isinstance(obj, Invader)]) == 0:
             self.game.switch_to_scene(self.game.scenes[2])
 
     def draw(self):
@@ -288,7 +288,7 @@ class GameScene(Scene):
         self.bonus_time_left = self.game.BONUS_TIME_LIMIT
 
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
-        self.hero = Character(
+        self.hero = Hero(
             scene=self,
             pos=Position(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
             sprite=sprite
@@ -298,7 +298,7 @@ class GameScene(Scene):
                         height=40)
         for row in range(3):
             for col in range(10):
-                Enemy(
+                Invader(
                     scene=self,
                     pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
@@ -460,7 +460,7 @@ class GameObject:
         return f"{self.__class__.__name__}(scene={self.scene})"
 
 
-class Character(GameObject):
+class Hero(GameObject):
     SPEED = 300
     ANIMATION_FPS = 6
     SHOOT_DELAY = 200
@@ -473,7 +473,7 @@ class Character(GameObject):
 
     def draw(self, camera):
         camera.screen.blit(
-            self.sprite.frames[round(Character.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Hero.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
@@ -507,7 +507,7 @@ class Character(GameObject):
         # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
 
 
-class Enemy(GameObject):
+class Invader(GameObject):
     SPEED = 20
     ANIMATION_FPS = 2
     SCORE = 100
@@ -521,12 +521,12 @@ class Enemy(GameObject):
 
     def draw(self, camera):
         camera.screen.blit(
-            self.sprite.frames[round(Enemy.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
+            self.sprite.frames[round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
             tuple(self.pos)
         )
 
     def update(self, dt):
-        self.pos.y += Enemy.SPEED * dt / 1000
+        self.pos.y += Invader.SPEED * dt / 1000
         self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
@@ -617,9 +617,9 @@ class HeroShot(Shot):
         super().update(dt)
 
         for enemy in self.scene.objects:
-            if (isinstance(enemy, Enemy) and enemy.pos.x <= self.pos.x <= enemy.pos.x + enemy.sprite.width
+            if (isinstance(enemy, Invader) and enemy.pos.x <= self.pos.x <= enemy.pos.x + enemy.sprite.width
                     and enemy.pos.y <= self.pos.y <= enemy.pos.y + enemy.sprite.height):
-                self.scene.game.score += Enemy.SCORE
+                self.scene.game.score += Invader.SCORE
                 Explosion(scene=self.scene, pos=enemy.pos)
                 enemy.destroy()
                 self.destroy()
