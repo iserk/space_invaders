@@ -229,7 +229,7 @@ class Scene:
 
         if self.game.is_paused:
             pause_text = self.game.font.render('Paused', True, pygame.Color("aqua"))
-            screen.blit(pause_text, (self.game.screen_center[0] - pause_text.get_width(), self.game.screen_center[1]))
+            screen.blit(pause_text, (self.game.screen_center[0] - pause_text.get_width() / 2, self.game.screen_center[1]))
 
     def draw(self):
         for obj in self.objects:
@@ -287,7 +287,10 @@ class GameScene(Scene):
         self.game.score = 0
         self.bonus_time_left = self.game.BONUS_TIME_LIMIT
 
-        sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/hero.png"), 32, 32, 6), width=32, height=32)
+        image = pygame.image.load("assets/images/hero.png")
+        scale = 2
+        image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
+        sprite = Sprite(frames=get_frames(image, 32 * scale, 32 * scale, 6), width=32 * scale, height=32 * scale)
         self.hero = Hero(
             scene=self,
             pos=Position(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
@@ -421,6 +424,9 @@ class Position:
     def __add__(self, other):
         return Position(self.x + other.x, self.y + other.y)
 
+    def __sub__(self, other):
+        return Position(self.x - other.x, self.y - other.y)
+
     def __mul__(self, other: float):
         return Position(self.x * other, self.y * other)
 
@@ -474,7 +480,7 @@ class Hero(GameObject):
     def draw(self, camera):
         camera.screen.blit(
             self.sprite.frames[round(Hero.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
-            tuple(self.pos)
+            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
         )
 
     def update(self, dt):
@@ -490,7 +496,7 @@ class Hero(GameObject):
                     self.prev_shot_time = self.scene.game.total_time
                     HeroShot(
                         scene=self.scene,
-                        pos=self.pos + Position(self.sprite.width / 2, self.sprite.height / 2),
+                        pos=self.pos + Position(0, -self.sprite.height / 2),
                         velocity=Position(0, -HeroShot.SPEED),
                     )
 
@@ -522,7 +528,7 @@ class Invader(GameObject):
     def draw(self, camera):
         camera.screen.blit(
             self.sprite.frames[round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
-            tuple(self.pos)
+            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
         )
 
     def update(self, dt):
@@ -539,7 +545,7 @@ class Invader(GameObject):
         if self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
 
-        if random.randint(0, 10000) < 5:
+        if fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5 and self.scene.game.total_time % 1000 < 10:
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
@@ -549,17 +555,24 @@ class Invader(GameObject):
 
 class Explosion(GameObject):
     ANIMATION_FPS = 6
+    ALPHA = 64
 
-    def __init__(self, scene: Scene, pos: Position):
+    def __init__(self, scene: Scene, pos: Position, scale=2):
         super().__init__(scene)
+
+        self.scale = scale
 
         # sleep for 20 ms to emphasize the effect
         pygame.time.wait(20)
 
+        image = pygame.image.load("assets/images/explosion.png").convert_alpha()
+        image.set_alpha(round(255 / scale))
+        image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
         explosion_sprite = Sprite(
-            frames=get_frames(pygame.image.load("assets/images/explosion.png"), 40, 40, 6),
-            width=40,
-            height=40
+            frames=get_frames(
+                image, 40 * scale, 40 * scale, 6),
+            width=40 * scale,
+            height=40 * scale
         )
 
         self.pos = pos
@@ -569,11 +582,19 @@ class Explosion(GameObject):
 
         self.scene.game.traumatize(0.8)
         # Plays a random explosion sound
-        pygame.mixer.Sound(f"assets/audio/explosions/exp{random.randint(0, 8)}.wav").play()
+
+        variants = range(0, 9)
+        scales = range(2, 9)
+        if self.scale == scales[0]:
+            variant = random.choice(variants[0:3])
+        else:
+            variant = self.scale
+
+        pygame.mixer.Sound(f"assets/audio/explosions/exp{variant}.wav").play()
 
     def draw(self, camera):
         if self.frame < len(self.sprite.frames):
-            camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos))
+            camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2)))
 
     def update(self, dt):
         self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / 1000)
@@ -582,7 +603,7 @@ class Explosion(GameObject):
 
 
 class Shot(GameObject):
-    SHOT_LENGTH = 10
+    SHOT_LENGTH = 16
     SPEED = 300
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, color: tuple):
@@ -594,7 +615,7 @@ class Shot(GameObject):
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
     def draw(self, camera):
-        pygame.draw.line(camera.screen, self.color, tuple(self.pos), tuple(self.pos + self.direction), 2)
+        pygame.draw.line(camera.screen, self.color, tuple(self.pos), tuple(self.pos + self.direction), 3)
 
     def update(self, dt):
         self.pos += self.velocity * dt / 1000
@@ -617,10 +638,11 @@ class HeroShot(Shot):
         super().update(dt)
 
         for enemy in self.scene.objects:
-            if (isinstance(enemy, Invader) and enemy.pos.x <= self.pos.x <= enemy.pos.x + enemy.sprite.width
-                    and enemy.pos.y <= self.pos.y <= enemy.pos.y + enemy.sprite.height):
+            if (isinstance(enemy, Invader)
+                    and enemy.pos.x - enemy.sprite.width / 2 <= self.pos.x <= enemy.pos.x + enemy.sprite.width / 2
+                    and enemy.pos.y - enemy.sprite.height / 2 <= self.pos.y <= enemy.pos.y + enemy.sprite.height / 2):
                 self.scene.game.score += Invader.SCORE
-                Explosion(scene=self.scene, pos=enemy.pos)
+                Explosion(scene=self.scene, pos=enemy.pos, scale=random.randint(2, 8))
                 enemy.destroy()
                 self.destroy()
 
@@ -637,9 +659,9 @@ class InvaderShot(Shot):
 
         if hasattr(self.scene, "hero"):
             hero = self.scene.hero
-            if (hero.pos.x <= self.pos.x <= hero.pos.x + hero.sprite.width
-                    and hero.pos.y <= self.pos.y <= hero.pos.y + hero.sprite.height):
-                Explosion(scene=self.scene, pos=hero.pos)
+            if (hero.pos.x - hero.sprite.width / 2 <= self.pos.x <= hero.pos.x + hero.sprite.width / 2
+                    and hero.pos.y - hero.sprite.width / 2 <= self.pos.y <= hero.pos.y + hero.sprite.height / 2):
+                Explosion(scene=self.scene, pos=hero.pos, scale=8)
                 hero.destroy()
                 self.destroy()
 
