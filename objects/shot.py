@@ -6,6 +6,7 @@ from scenes.scene import Scene
 
 
 class Shot(GameObject):
+    DAMAGE = 1
     SHOT_LENGTH = 16
     SPEED = 300
 

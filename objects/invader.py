@@ -3,6 +3,9 @@ import math
 
 import pygame
 
+from utils.noise import fractal_noise
+from objects.invader_shot import InvaderShot
+
 from objects.position import Position
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
@@ -12,32 +15,67 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    # SPEED = 20
-    SPEED = 0
+    SPEED = 20
+    # SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
+    MAX_HIT_POINTS = 1
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
 
+        self.hit_points = self.MAX_HIT_POINTS
         self.initial_pos = pos.copy()
         self.velocity = Position(0, Invader.SPEED)
 
     def draw(self, camera):
-        pygame.draw.circle(camera.screen, (255, 0, 0), tuple(self.initial_pos), 5)
-        camera.screen.blit(
-            self.sprite.frames[round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
-            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
-        )
+        super().draw(camera)
+        # pygame.draw.circle(camera.screen, (255, 0, 0), tuple(self.initial_pos), 5)
+
+        # Draw a green bar above the invader to indicate its health
+
+        if self.MAX_HIT_POINTS > 10:
+            pygame.draw.rect(
+                camera.screen,
+                (0, 255, 0),
+                (
+                    self.pos.x - self.sprite.width / 2,
+                    self.pos.y - self.sprite.height / 2 - 10,
+                    self.sprite.width * self.hit_points / self.MAX_HIT_POINTS,
+                    2,
+                )
+            )
+        elif self.MAX_HIT_POINTS > 1:
+            for i in range(self.hit_points):
+                pygame.draw.rect(
+                    camera.screen,
+                    (0, 255, 0),
+                    (
+                        self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
+                        self.pos.y - self.sprite.height / 2 - 10,
+                        self.sprite.width / self.MAX_HIT_POINTS - 2,
+                        2,
+                    )
+                )
+
+        # # Draw a blue circle around the invader to indicate its health (as shields)
+        # for i in range(self.hit_points - 1):
+        #     pygame.draw.circle(
+        #         camera.screen,
+        #         (64, 80, 255),
+        #         (round(self.pos.x), round(self.pos.y)),
+        #         self.sprite.width / 2 + 8 + 4 * i,
+        #         2
+        #     )
 
     def update(self, dt):
-        if not self.is_active:
-            print("Inactive invader")
+        super().update(dt)
 
-        self.pos += self.velocity * dt / 1000
+        self.frame = round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
 
         if self.is_active:
-            self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
+            # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
+            self.velocity.x = round(math.sin(self.pos.y / 8) * 40)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
                 and self.scene.game.status == GameStatus.PLAYING):
@@ -49,12 +87,12 @@ class Invader(Vehicle):
         if self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
 
-        # if fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5 and self.scene.game.total_time % 1000 < 10:
-        #     InvaderShot(
-        #         scene=self.scene,
-        #         pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
-        #         velocity=Position(0, InvaderShot.SPEED),
-        #     )
+        if fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5 and self.scene.game.total_time % 1000 < 10:
+            InvaderShot(
+                scene=self.scene,
+                pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),
+                velocity=Position(0, InvaderShot.SPEED),
+            )
 
     def destroy(self, explode=False):
         super().destroy(explode=False)

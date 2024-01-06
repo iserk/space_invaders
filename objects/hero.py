@@ -17,13 +17,10 @@ class Hero(Vehicle):
         super().__init__(scene, pos, sprite)
         self.prev_shot_time = 0
 
-    def draw(self, camera):
-        camera.screen.blit(
-            self.sprite.frames[round(Hero.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)],
-            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
-        )
-
     def update(self, dt):
+        super().update(dt)
+
+        self.frame = round(Hero.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
 
         if self.scene.is_input_enabled:
             keys = pygame.key.get_pressed()

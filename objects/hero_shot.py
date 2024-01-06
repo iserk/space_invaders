@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 import pygame
 
@@ -15,9 +16,10 @@ class HeroShot(Shot):
     SCORE_COST = 10
     SPEED = 500
     COLOR = (0, 255, 255)
+    DAMAGE = 1
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
-        # velocity += Position((np.random.default_rng().normal() - 0.5 ) * self.SPEED / 10, 0)
+        velocity += Position((np.random.default_rng().normal() - 0.5 ) * self.SPEED / 10, 0)
 
         super().__init__(scene, pos, velocity, HeroShot.COLOR)
 
@@ -43,25 +45,17 @@ class HeroShot(Shot):
 
         if self.frame == 2:
             self.destroy()
+            return
 
         for enemy in self.scene.objects:
             if (isinstance(enemy, Invader)
                     and enemy.pos.x - enemy.sprite.width / 2 <= self.pos.x <= enemy.pos.x + enemy.sprite.width / 2
                     and enemy.pos.y - enemy.sprite.height / 2 <= self.pos.y <= enemy.pos.y + enemy.sprite.height / 2):
-                self.scene.game.score += Invader.SCORE
-                self.frame = 2
-                print(enemy.pos)
-                # enemy.initial_pos = enemy.pos.copy()
-                # enemy.pos.y -= 10
-                enemy.pos = Position(enemy.pos.x, enemy.pos.y - 10)
-                # enemy.velocity = Position(0, random.randint(-50, -10))
-                # enemy.velocity = Position(0, -10)
-                sound = pygame.mixer.Sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3")
-                sound.set_volume(0.3)
-                sound.play()
 
-                print("Setting timer to destroy", enemy)
-                self.scene.add_timer(200, lambda e=enemy: e.destroy(explode=True))
+                enemy.hit(damage=self.DAMAGE, obj=self)
+                if enemy.hit_points <= 0:
+                    self.scene.game.score += Invader.SCORE
+                self.frame = 2
 
     def draw(self, camera):
         camera.screen.blit(
