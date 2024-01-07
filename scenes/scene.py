@@ -16,7 +16,6 @@ class Scene:
         self.timers = []
 
     def activate(self):
-        # print(f"Activated {self.__class__.__name__}")
         pass
 
     def add_object(self, obj):
@@ -24,7 +23,6 @@ class Scene:
         obj.scene = self
 
     def add_timer(self, interval, callback):
-        print("Added timer with interval", interval, "and callback", callback)
         self.timers.append(Timer(interval, callback))
 
     def show_stats(self, screen, clock):

@@ -49,7 +49,7 @@ class Vehicle(GameObject):
         self.pos.y -= 10 * (1 - torque)
 
         if self.hit_points <= 0:
-            self.scene.add_timer(random.randint(10, 300), lambda o=self: o.destroy(explode=True))
+            self.scene.add_timer(random.randint(20, 300), lambda o=self: o.destroy(explode=True))
             self.roll = torque * 60
             self.roll_speed = torque * 360
             self.velocity = obj.velocity.get_normalized() * 10

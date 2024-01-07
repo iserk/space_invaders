@@ -87,7 +87,8 @@ class Invader(Vehicle):
         if self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
 
-        if fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5 and self.scene.game.total_time % 1000 < 10:
+        if (fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
+                and self.scene.game.total_time % 1000 < 10):
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Position(self.sprite.width / 2, self.sprite.height),

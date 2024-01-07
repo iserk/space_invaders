@@ -14,7 +14,6 @@ class Timer:
 
         self.start_time += dt
         if self.start_time >= self.interval:
-            print('timer done: ', self)
             self.start_time = 0
             self.callback()
             self.is_running = False
