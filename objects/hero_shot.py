@@ -15,15 +15,12 @@ from utils.sprites import get_frames
 class HeroShot(Shot):
     SCORE_COST = 10
     SPEED = 500
-    COLOR = (0, 255, 255)
     DAMAGE = 1
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
         velocity += Position((np.random.default_rng().normal() - 0.5 ) * self.SPEED / 10, 0)
 
-        super().__init__(scene, pos, velocity, HeroShot.COLOR)
-
-        self.scene.game.traumatize(0.1)
+        super().__init__(scene, pos, velocity)
 
         self.scale = scale
         image = pygame.image.load("assets/images/hero_shot.png").convert_alpha()
@@ -35,6 +32,9 @@ class HeroShot(Shot):
             width=32 * scale,
             height=32 * scale,
         )
+
+        self.scene.game.traumatize(0.1)
+
 
         self.frame = 0
         self.scene.game.score -= HeroShot.SCORE_COST
@@ -56,12 +56,4 @@ class HeroShot(Shot):
                 if enemy.hit_points <= 0:
                     self.scene.game.score += Invader.SCORE
                 self.frame = 2
-
-    def draw(self, camera):
-        camera.screen.blit(
-            self.sprite.frames[self.frame],
-            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
-        )
-        if self.frame == 0:
-            self.frame = 1
 

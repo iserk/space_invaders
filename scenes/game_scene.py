@@ -14,6 +14,7 @@ class GameScene(Scene):
         super().__init__(game)
         self.is_input_enabled = True
         self.total_time = 0
+        self.hero = None
 
     def update(self, dt):
         super().update(dt)
@@ -35,6 +36,8 @@ class GameScene(Scene):
 
     def activate(self):
         super().activate()
+        self.objects = []
+        self.timers = []
         self.game.score = 0
         self.bonus_time_left = self.game.BONUS_TIME_LIMIT
 
