@@ -1,6 +1,9 @@
+import random
+
 import pygame
 
 from game.game_manager import SceneSwitchException
+from objects.explosion import Explosion
 from objects.position import Position
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
@@ -49,3 +52,5 @@ class Hero(Vehicle):
         raise SceneSwitchException(self.scene.game.scenes[1])
         # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
 
+    def explode(self):
+        Explosion(scene=self.scene, pos=self.pos, scale=12)

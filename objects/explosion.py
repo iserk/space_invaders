@@ -17,9 +17,6 @@ class Explosion(GameObject):
 
         self.scale = scale
 
-        # sleep for 20 ms to emphasize the effect
-        # pygame.time.wait(20)
-
         image = pygame.image.load("assets/images/explosion.png").convert_alpha()
         image.set_alpha(round(255 / scale))
         image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
@@ -36,14 +33,13 @@ class Explosion(GameObject):
         self.start_time = self.scene.game.total_time
 
         self.scene.game.traumatize(0.8)
-        # Plays a random explosion sound
 
         variants = range(0, 9)
         scales = range(2, 9)
         if self.scale == scales[0]:
             variant = random.choice(variants[0:3])
         else:
-            variant = self.scale
+            variant = min(self.scale, scales[-1])
 
         pygame.mixer.Sound(f"assets/audio/explosions/exp{variant}.wav").play()
 

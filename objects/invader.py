@@ -30,10 +30,8 @@ class Invader(Vehicle):
 
     def draw(self, camera):
         super().draw(camera)
-        # pygame.draw.circle(camera.screen, (255, 0, 0), tuple(self.initial_pos), 5)
 
         # Draw a green bar above the invader to indicate its health
-
         if self.MAX_HIT_POINTS > 10:
             pygame.draw.rect(
                 camera.screen,
@@ -89,16 +87,12 @@ class Invader(Vehicle):
 
         if (self.is_active
                 and fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
-                and self.scene.total_time % 1000 < 10):
+                and self.scene.total_time % 1000 < 20):
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Position(0, self.sprite.height / 2),
                 velocity=Position(0, InvaderShot.SPEED),
             )
 
-    def destroy(self, explode=False):
-        super().destroy(explode=False)
-        self.scene.game.score += Invader.SCORE
-        if explode:
-            Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))
-
+    def explode(self):
+        Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))

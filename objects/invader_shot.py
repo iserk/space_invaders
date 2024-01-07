@@ -2,15 +2,15 @@ import random
 
 import pygame
 
+from utils.sprites import get_frames
 from objects.position import Position
 from objects.game_object import Sprite
 from objects.shot import Shot
-from objects.explosion import Explosion
 from scenes.scene import Scene
-from utils.sprites import get_frames
 
 
 class InvaderShot(Shot):
+    SCORE = 50
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         super().__init__(scene, pos, velocity)
@@ -33,10 +33,11 @@ class InvaderShot(Shot):
             self.destroy()
             return
 
-        if hasattr(self.scene, "hero"):
-            hero = self.scene.hero
-            if (hero.pos.x - hero.sprite.width / 2 <= self.pos.x <= hero.pos.x + hero.sprite.width / 2
-                    and hero.pos.y - hero.sprite.width / 2 <= self.pos.y <= hero.pos.y + hero.sprite.height / 2):
+    def collide(self, obj=None):
+        # Importing here to avoid circular imports
+        from objects.hero import Hero
 
-                hero.hit(damage=self.DAMAGE, obj=self)
-                self.frame = 2
+        self.scene.game.traumatize(0.1)
+        if isinstance(obj, Hero):
+            obj.hit(damage=self.DAMAGE, obj=self)
+            self.frame = 2

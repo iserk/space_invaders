@@ -3,6 +3,7 @@ import numpy as np
 
 import pygame
 
+from objects.invader_shot import InvaderShot
 from objects.shot import Shot
 from objects.invader import Invader
 from objects.position import Position
@@ -14,7 +15,7 @@ from utils.sprites import get_frames
 
 class HeroShot(Shot):
     SCORE_COST = 10
-    SPEED = 500
+    SPEED = 800
     DAMAGE = 1
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
@@ -47,13 +48,11 @@ class HeroShot(Shot):
             self.destroy()
             return
 
-        for enemy in self.scene.objects:
-            if (isinstance(enemy, Invader)
-                    and enemy.pos.x - enemy.sprite.width / 2 <= self.pos.x <= enemy.pos.x + enemy.sprite.width / 2
-                    and enemy.pos.y - enemy.sprite.height / 2 <= self.pos.y <= enemy.pos.y + enemy.sprite.height / 2):
+    def collide(self, obj=None):
+        self.scene.game.traumatize(0.2)
 
-                enemy.hit(damage=self.DAMAGE, obj=self)
-                if enemy.hit_points <= 0:
-                    self.scene.game.score += Invader.SCORE
-                self.frame = 2
-
+        if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
+            obj.hit(damage=self.DAMAGE, obj=self)
+            if obj.hit_points <= 0:
+                self.scene.game.score += obj.SCORE
+            self.frame = 2
