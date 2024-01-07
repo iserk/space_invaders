@@ -1,9 +1,9 @@
 import pygame
 from game.game_manager import GameManager, GameStatus
-from scenes.scene import Scene
+from scenes.star_scene import StarScene
 
 
-class DefeatScene(Scene):
+class DefeatScene(StarScene):
     def __init__(self, game: GameManager):
         super().__init__(game)
 

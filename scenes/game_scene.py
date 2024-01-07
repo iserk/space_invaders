@@ -1,3 +1,6 @@
+import random
+from collections import namedtuple
+
 import pygame
 
 from scenes.scene import Scene
@@ -6,10 +9,13 @@ from objects.hero import Hero
 from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
+from scenes.star_scene import StarScene
 from utils.sprites import get_frames
 
 
-class GameScene(Scene):
+class GameScene(StarScene):
+    STAR_SPEED = 100
+
     def __init__(self, game: GameManager):
         super().__init__(game)
         self.is_input_enabled = True
@@ -18,14 +24,10 @@ class GameScene(Scene):
 
     def update(self, dt):
         super().update(dt)
-
         self.bonus_time_left -= dt
 
         if len([obj for obj in self.objects if isinstance(obj, Invader)]) == 0:
             self.game.switch_to_scene(self.game.scenes[2])
-
-    def draw(self):
-        super().draw()
 
     def handle_event(self, event):
         for obj in self.objects:

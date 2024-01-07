@@ -1,10 +1,10 @@
 import pygame
 
-from scenes.scene import Scene
 from game.game_manager import GameManager, GameStatus
+from scenes.star_scene import StarScene
 
 
-class VictoryScene(Scene):
+class VictoryScene(StarScene):
     def __init__(self, game: GameManager):
         super().__init__(game)
         self.time_bonus = 0
