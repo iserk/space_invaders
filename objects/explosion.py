@@ -32,7 +32,7 @@ class Explosion(GameObject):
         self.frame = 0
         self.start_time = self.scene.game.total_time
 
-        self.scene.game.traumatize(0.8)
+        self.scene.game.traumatize(0.1 * scale)
 
         variants = range(0, 9)
         scales = range(2, 9)

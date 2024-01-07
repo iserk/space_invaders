@@ -37,7 +37,7 @@ class InvaderShot(Shot):
         # Importing here to avoid circular imports
         from objects.hero import Hero
 
-        self.scene.game.traumatize(0.1)
+        self.scene.game.traumatize(0.05)
         if isinstance(obj, Hero):
             obj.hit(damage=self.DAMAGE, obj=self)
             self.frame = 2
