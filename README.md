@@ -16,7 +16,8 @@ The player earns points by destroying alien invaders.
 `+1000 points` — bonus for each second left on the timer
 
 ## 📷 Screenshot
-![Space Invaders Redux](docs/screenshot.png "Screenshot")
+![Space Invaders Redux](docs/screenshot1.png "Screenshot")
+![Space Invaders Redux](docs/screenshot2.png "Screenshot")
 
 ## 🎮 Controls
 `←` or `a` — Move the spaceship left  
@@ -32,10 +33,12 @@ The player earns points by destroying alien invaders.
 `Esc` — Quit the game  
 
 ## 📦 Requirements
-`Python` 3.x +  
-`Pygame` 2.x +  
+`Python` 3.12 +  
+`Pygame` 2.5.x +
+`numpy` 1.26.x +
+`pyinstaller` 6.3.x +
 
-## 🔧 Cloning the Repository
+## 🐑 Cloning the Repository
 ```
 git clone git@github.com:iserk/space_invaders.git
 cd space_invaders 
@@ -46,3 +49,11 @@ cd space_invaders
 pip install -r requirements.txt
 python main.py
 ```
+
+## 🔧 Building a Standalone Executable (Optional)
+To build a standalone executable, run the following command:
+```
+pyinstaller --icon=assets/images/icon.png main.py
+```
+After it finishes, then copy the `assets` folder to the `dist/main` folder.
+
