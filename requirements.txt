@@ -2,3 +2,4 @@ pygame~=2.5.2
 
 numpy~=1.26.2
 matplotlib~=3.8.2
+pyinstaller~=6.3.0
