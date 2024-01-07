@@ -21,8 +21,6 @@ class Shot(Vehicle):
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
     def draw(self, camera):
-        if self.frame == 2:
-            print("InvaderShot.frame == 2")
         super().draw(camera)
         if self.frame == 0:
             self.frame = 1

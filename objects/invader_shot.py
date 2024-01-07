@@ -40,4 +40,3 @@ class InvaderShot(Shot):
 
                 hero.hit(damage=self.DAMAGE, obj=self)
                 self.frame = 2
-                print("hit hero", self.frame)

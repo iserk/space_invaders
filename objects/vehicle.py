@@ -45,8 +45,10 @@ class Vehicle(GameObject):
     def hit(self, damage=1, obj=None):
         self.hit_points -= damage
 
-        torque = (obj.pos.x - self.pos.x) / self.sprite.width / 2
-        self.pos.y -= 10 * (1 - torque)
+        velocity_y_sign = 1 if obj.velocity.y >= 0 else -1
+
+        torque = (self.pos.x - obj.pos.x) / self.sprite.width / 2 * velocity_y_sign
+        self.pos.y += 10 * (1 - torque) * velocity_y_sign
 
         if self.hit_points <= 0:
             self.scene.add_timer(random.randint(20, 300), lambda o=self: o.destroy(explode=True))
