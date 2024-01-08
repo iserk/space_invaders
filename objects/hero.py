@@ -1,6 +1,7 @@
 import random
 
 import pygame
+from pygame.math import lerp
 
 from game.game_manager import SceneSwitchException
 from objects.explosion import Explosion
@@ -15,10 +16,12 @@ class Hero(Vehicle):
     SPEED = 300
     ANIMATION_FPS = 6
     SHOOT_DELAY = 200
+    MAX_HIT_POINTS = 1
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
         self.prev_shot_time = 0
+        self.hit_points = self.MAX_HIT_POINTS
 
     def update(self, dt):
         super().update(dt)
@@ -54,3 +57,19 @@ class Hero(Vehicle):
 
     def explode(self):
         Explosion(scene=self.scene, pos=self.pos, scale=12)
+
+    def draw(self, camera):
+        super().draw(camera)
+        # Draw a blue circle around the invader to indicate its health (as shields)
+
+        for i in range(self.hit_points - 1):
+            q = (i + 1) / self.MAX_HIT_POINTS
+            c = (lerp(16, 64, q), lerp(32, 128, q), lerp(64, 255, q))
+            color = tuple(map(round, c))
+            pygame.draw.circle(
+                camera.screen,
+                color,
+                (round(self.pos.x), round(self.pos.y)),
+                self.sprite.width / 2 + 8 + 4 * i,
+                2
+            )

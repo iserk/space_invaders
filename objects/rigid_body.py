@@ -44,16 +44,11 @@ class RigidBody(GameObject):
 
         self.detect_collisions()
 
-    def hit(self, damage=1, obj=None):
+    def hit(self, damage=1, by=None):
         self.hit_points -= damage
 
-        velocity_y_sign = 1 if obj.velocity.y >= 0 else -1
-
-        torque = (self.pos.x - obj.pos.x) / self.sprite.width / 2 * velocity_y_sign
-        self.pos.y += (1 - torque) * velocity_y_sign * 10
-
         if self.hit_points <= 0:
-            self.will_destroy(obj, torque)
+            self.will_destroy(by=by)
 
         # else:
         #     sound = pygame.mixer.Sound(f"assets/audio/shield_hit{random.randint(1, 2)}.wav")
@@ -74,5 +69,5 @@ class RigidBody(GameObject):
                     and obj.pos.y - obj.sprite.height / 2 <= self.pos.y <= obj.pos.y + obj.sprite.height / 2):
                 self.collide(obj)
 
-    def will_destroy(self, other_obj=None, torque=0):
+    def will_destroy(self, by=None):
         self.destroy()

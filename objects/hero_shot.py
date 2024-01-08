@@ -19,7 +19,7 @@ class HeroShot(Shot):
     DAMAGE = 1
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
-        velocity += Position((np.random.default_rng().normal() - 0.5 ) * self.SPEED / 10, 0)
+        velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED / 10, 0)
 
         super().__init__(scene, pos, velocity)
 
@@ -36,7 +36,6 @@ class HeroShot(Shot):
 
         self.scene.game.traumatize(0.1)
 
-
         self.frame = 0
         self.scene.game.score -= HeroShot.SCORE_COST
         pygame.mixer.Sound("assets/audio/hero_shot.wav").play()
@@ -52,7 +51,7 @@ class HeroShot(Shot):
         self.scene.game.traumatize(0.2)
 
         if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
-            obj.hit(damage=self.DAMAGE, obj=self)
+            obj.hit(damage=self.DAMAGE, by=self)
             if obj.hit_points <= 0:
                 self.scene.game.score += obj.SCORE
             self.frame = 2
