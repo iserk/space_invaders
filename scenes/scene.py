@@ -16,6 +16,7 @@ class Scene:
         self.timers = []
 
     def activate(self):
+        print(f"Activating {self}")
         pass
 
     def add_object(self, obj):

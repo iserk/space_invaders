@@ -15,11 +15,12 @@ from utils.sprites import get_frames
 
 class HeroShot(Shot):
     SCORE_COST = 10
-    SPEED = 800
+    SPEED = 2000
     DAMAGE = 1
+    SHOOT_DELAY = 200
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
-        velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED / 10, 0)
+        # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED / 10, 0)
 
         super().__init__(scene, pos, velocity)
 
@@ -34,23 +35,43 @@ class HeroShot(Shot):
             height=32 * scale,
         )
 
-        self.scene.game.traumatize(0.1)
+        # self.scene.game.traumatize(0.1)
 
         self.frame = 0
         self.scene.game.score -= HeroShot.SCORE_COST
         pygame.mixer.Sound("assets/audio/hero_shot.wav").play()
 
-    def update(self, dt):
-        super().update(dt)
+    # def draw(self, camera):
+    #     super().draw(camera)
+    #
+    #     pygame.draw.line(
+    #         camera.screen,
+    #         (128, 128, 64),
+    #         tuple(self.prev_pos),
+    #         tuple(self.pos),
+    #         1
+    #     )
+    #
+    #     # print(self.get_collider())
+    #     r = (
+    #             min(self.get_collider()[0].x, self.get_collider()[1].x),
+    #             min(self.get_collider()[0].y, self.get_collider()[1].y),
+    #             abs(self.get_collider()[1].x - self.get_collider()[0].x),
+    #             abs(self.get_collider()[1].y - self.get_collider()[0].y) + 2,
+    #         )
+    #     print(__class__.__name__, r)
+    #
+    #     # Draw red box around the collider
+    #     pygame.draw.rect(
+    #         camera.screen,
+    #         (255, 0, 0),
+    #         r,
+    #         1
+    #     )
 
-        if self.frame == 2:
-            self.destroy()
-            return
-
-    def collide(self, obj=None):
-        self.scene.game.traumatize(0.2)
-
+    def on_collision(self, obj=None):
         if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
+            self.scene.game.traumatize(0.2)
             obj.hit(damage=self.DAMAGE, by=self)
             if obj.hit_points <= 0:
                 self.scene.game.score += obj.SCORE

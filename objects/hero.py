@@ -7,6 +7,7 @@ from game.game_manager import SceneSwitchException
 from objects.explosion import Explosion
 from objects.position import Position
 from objects.game_object import Sprite
+from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
 from objects.hero_shot import HeroShot
 from scenes.scene import Scene
@@ -15,13 +16,13 @@ from scenes.scene import Scene
 class Hero(Vehicle):
     SPEED = 300
     ANIMATION_FPS = 6
-    SHOOT_DELAY = 200
     MAX_HIT_POINTS = 1
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
         self.prev_shot_time = 0
         self.hit_points = self.MAX_HIT_POINTS
+        self.weapon = HeroShot
 
     def update(self, dt):
         super().update(dt)
@@ -35,7 +36,7 @@ class Hero(Vehicle):
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.pos.x += self.SPEED * self.scene.game.dt / 1000
             if keys[pygame.K_SPACE]:
-                if self.scene.game.total_time - self.prev_shot_time > self.SHOOT_DELAY:
+                if self.scene.game.total_time - self.prev_shot_time > self.weapon.SHOOT_DELAY:
                     self.prev_shot_time = self.scene.game.total_time
                     HeroShot(
                         scene=self.scene,
@@ -51,6 +52,7 @@ class Hero(Vehicle):
 
     def destroy(self, explode=False):
         super().destroy(explode)
+        # self.scene.game.time_scale = 1
         self.scene.game.traumatize(1)
         raise SceneSwitchException(self.scene.game.scenes[1])
         # self.scene.game.switch_to_scene(self.scene.game.scenes[1])

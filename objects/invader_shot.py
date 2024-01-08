@@ -26,6 +26,8 @@ class InvaderShot(Shot):
             height=32 * scale,
         )
 
+        print("New InvaderShot created", id(self))
+
     def update(self, dt):
         super().update(dt)
 
@@ -33,7 +35,7 @@ class InvaderShot(Shot):
             self.destroy()
             return
 
-    def collide(self, obj=None):
+    def on_collision(self, obj=None):
         # Importing here to avoid circular imports
         from objects.hero import Hero
 
@@ -41,4 +43,3 @@ class InvaderShot(Shot):
         if isinstance(obj, Hero):
             obj.hit(damage=self.DAMAGE, by=self)
             self.frame = 2
-            print("Hero hit by invader shot", self.frame)

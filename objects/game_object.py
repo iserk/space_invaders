@@ -24,4 +24,4 @@ class GameObject:
         self.destroyed = True
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(scene={self.scene})"
+        return f"{self.__class__.__name__}<{id(self)}>)"

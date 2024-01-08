@@ -1,6 +1,7 @@
 import random
 
 import pygame
+from pygame import Vector2
 
 from objects.game_object import GameObject
 from objects.position import Position
@@ -8,6 +9,7 @@ from objects.game_object import Sprite
 from objects.explosion import Explosion
 
 from scenes.scene import Scene
+from utils import collision
 
 
 class RigidBody(GameObject):
@@ -16,7 +18,9 @@ class RigidBody(GameObject):
 
         self.hit_points = 1
 
-        self.pos = pos
+        self.pos = pos.copy()
+        self.prev_pos = pos.copy()
+
         self.velocity = Position(0, 0)
 
         self.roll = 0  # Roll angle in degrees
@@ -37,12 +41,22 @@ class RigidBody(GameObject):
         )
 
     def update(self, dt):
+        self.prev_pos = self.pos.copy()
+
         super().update(dt)
 
         self.pos += self.velocity * dt / 1000
         self.roll += self.roll_speed * dt / 1000
 
         self.detect_collisions()
+
+    def get_collider(self):
+        return [
+            Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
+            Vector2(self.pos.x + self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
+            Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
+            Vector2(self.pos.x - self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
+        ]
 
     def hit(self, damage=1, by=None):
         self.hit_points -= damage
@@ -59,15 +73,20 @@ class RigidBody(GameObject):
         sound.set_volume(0.2)
         sound.play()
 
-    def collide(self, obj=None):
+    def on_collision(self, obj=None):
         pass
 
     def detect_collisions(self):
+        # This version detects collisions between the hero and other objects
         for obj in self.scene.objects:
-            if (obj != self
-                    and obj.pos.x - obj.sprite.width / 2 <= self.pos.x <= obj.pos.x + obj.sprite.width / 2
-                    and obj.pos.y - obj.sprite.height / 2 <= self.pos.y <= obj.pos.y + obj.sprite.height / 2):
-                self.collide(obj)
+            if obj != self and isinstance(obj, RigidBody):
+                # if (obj.pos.x - obj.sprite.width / 2 < self.pos.x < obj.pos.x + obj.sprite.width / 2
+                #         and obj.pos.y - obj.sprite.height / 2 < self.pos.y < obj.pos.y + obj.sprite.height / 2):
+                if collision.sat_collision_check(self.get_collider(), obj.get_collider()):
+                    # print(f'Collision between {self} and {obj}')
+                    self.on_collision(obj)
+                    obj.on_collision(obj)
+                pass
 
     def will_destroy(self, by=None):
         self.destroy()

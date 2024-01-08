@@ -6,7 +6,7 @@ from scenes.victory_scene import VictoryScene
 
 
 SCREEN_SIZE = (1000, 800)
-FPS_CAP = 60
+FPS_CAP = 0
 
 if __name__ == '__main__':
     game = GameManager(SCREEN_SIZE, FPS_CAP)
