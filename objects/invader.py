@@ -107,7 +107,7 @@ class Invader(Vehicle):
                 pos=self.pos + Position(0, self.sprite.height / 2),
                 velocity=Position(0, InvaderShot.SPEED),
             )
-                    # pass
+            # pass
 
     def explode(self):
         Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))

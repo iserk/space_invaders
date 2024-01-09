@@ -12,7 +12,7 @@ class Cannon(Weapon):
     PELLETS = 1
     ACCURACY = 0.8
 
-    CLIP_SIZE = 10
+    CLIP_SIZE = 3
     RELOAD_TIME = 1000
     MAX_AMMO = 100
 

@@ -66,6 +66,8 @@ class Weapon:
 
         self.prev_shot_time += self.RELOAD_TIME
 
+        pygame.mixer.Sound(f"assets/audio/reload.wav").play()
+
     def update(self, dt):
         if self.clip <= 0:
             self.reload(dt)
