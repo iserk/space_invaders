@@ -50,6 +50,12 @@ class RigidBody(GameObject):
 
         self.detect_collisions()
 
+    def get_rect(self):
+        return [
+            Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
+            Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
+        ]
+
     def get_collider(self):
         return [
             Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
@@ -78,11 +84,29 @@ class RigidBody(GameObject):
 
     def detect_collisions(self):
         # This version detects collisions between the hero and other objects
+        r = self.get_rect()
+        sminx = min(r[0].x, r[1].x)
+        smaxx = max(r[0].x, r[1].x)
+        sminy = min(r[0].y, r[1].y)
+        smaxy = max(r[0].y, r[1].y)
+
         for obj in self.scene.objects:
             if obj != self and isinstance(obj, RigidBody):
+                r = obj.get_rect()
+                ominx = min(r[0].x, r[1].x)
+                omaxx = max(r[0].x, r[1].x)
+                ominy = min(r[0].y, r[1].y)
+                omaxy = max(r[0].y, r[1].y)
+
                 # if (obj.pos.x - obj.sprite.width / 2 < self.pos.x < obj.pos.x + obj.sprite.width / 2
                 #         and obj.pos.y - obj.sprite.height / 2 < self.pos.y < obj.pos.y + obj.sprite.height / 2):
-                if collision.sat_collision_check(self.get_collider(), obj.get_collider()):
+
+                # Detect if two rectangles overlap
+                if (sminx <= omaxx and smaxx >= ominx
+                        and sminy <= omaxy and smaxy >= ominy):
+
+                # if collision.sat_collision_check(self.get_collider(), obj.get_collider()):
+
                     # print(f'Collision between {self} and {obj}')
                     self.on_collision(obj)
                     obj.on_collision(obj)

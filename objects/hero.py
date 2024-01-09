@@ -9,8 +9,11 @@ from objects.position import Position
 from objects.game_object import Sprite
 from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
-from objects.hero_shot import HeroShot
 from scenes.scene import Scene
+from weapons.cannon import Cannon
+from weapons.shotgun import Shotgun
+from weapons.laser import Laser
+from weapons.gatling import Gatling
 
 
 class Hero(Vehicle):
@@ -20,9 +23,27 @@ class Hero(Vehicle):
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
-        self.prev_shot_time = 0
         self.hit_points = self.MAX_HIT_POINTS
-        self.weapon = HeroShot
+        self.weapons = [
+            Cannon(vehicle=self),
+            Shotgun(vehicle=self),
+            Gatling(vehicle=self),
+            Laser(vehicle=self),
+        ]
+        self.weapon = Laser(vehicle=self)
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                self.weapon = self.weapons[0]
+            elif event.key == pygame.K_2:
+                self.weapon = self.weapons[1]
+            elif event.key == pygame.K_3:
+                self.weapon = self.weapons[2]
+            elif event.key == pygame.K_4:
+                self.weapon = self.weapons[3]
+            else:
+                return True
 
     def update(self, dt):
         super().update(dt)
@@ -36,13 +57,7 @@ class Hero(Vehicle):
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.pos.x += self.SPEED * self.scene.game.dt / 1000
             if keys[pygame.K_SPACE]:
-                if self.scene.game.total_time - self.prev_shot_time > self.weapon.SHOOT_DELAY:
-                    self.prev_shot_time = self.scene.game.total_time
-                    HeroShot(
-                        scene=self.scene,
-                        pos=self.pos + Position(0, -self.sprite.height / 2),
-                        velocity=Position(0, -HeroShot.SPEED),
-                    )
+                self.shoot()
 
         # Hero will appear from another side of the screen if he goes out of bounds
         if self.pos.x < 0:
@@ -60,6 +75,31 @@ class Hero(Vehicle):
     def explode(self):
         Explosion(scene=self.scene, pos=self.pos, scale=12)
 
+    def draw_hud(self, camera):
+        # Prints the weapon name
+        weapon_name = self.scene.game.font.render(
+            f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%",
+            True,
+            pygame.Color("lime")
+        )
+        # Draw the weapon charge
+        pygame.draw.rect(
+            camera.screen,
+            (32, 64, 32),
+            (
+                camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
+                camera.screen_size[1] - weapon_name.get_height() - 16,
+                self.weapon.get_charge() * weapon_name.get_width() + 16,
+                weapon_name.get_height() + 16
+            )
+        )
+
+        camera.screen.blit(weapon_name, (
+            camera.screen_size[0] / 2 - weapon_name.get_width() / 2,
+            camera.screen_size[1] - weapon_name.get_height() - 8)
+        )
+
+
     def draw(self, camera):
         super().draw(camera)
         # Draw a blue circle around the invader to indicate its health (as shields)
@@ -75,3 +115,5 @@ class Hero(Vehicle):
                 self.sprite.width / 2 + 8 + 4 * i,
                 2
             )
+
+        self.draw_hud(camera)

@@ -61,4 +61,4 @@ class VictoryScene(StarScene):
 
         if prev_scene is not None:
             self.transfer_objects_from(prev_scene)
-
+            self.timers = prev_scene.timers

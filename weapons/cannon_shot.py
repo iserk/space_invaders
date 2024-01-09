@@ -13,14 +13,12 @@ from scenes.scene import Scene
 from utils.sprites import get_frames
 
 
-class HeroShot(Shot):
-    SCORE_COST = 10
-    SPEED = 2000
-    DAMAGE = 1
-    SHOOT_DELAY = 200
+class CannonShot(Shot):
+    SCORE_COST = 2
+    DAMAGE = 4
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
-        # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED / 10, 0)
+    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=3):
+        # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)
 
@@ -38,8 +36,7 @@ class HeroShot(Shot):
         # self.scene.game.traumatize(0.1)
 
         self.frame = 0
-        self.scene.game.score -= HeroShot.SCORE_COST
-        pygame.mixer.Sound("assets/audio/hero_shot.wav").play()
+        self.scene.game.score -= self.SCORE_COST
 
     # def draw(self, camera):
     #     super().draw(camera)

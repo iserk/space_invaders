@@ -14,6 +14,7 @@ class Scene:
         self.camera = Camera(self.game.screen_size, 0, 0)
         self.is_input_enabled = False
         self.timers = []
+        self.hero = None
 
     def activate(self):
         print(f"Activating {self}")
@@ -74,7 +75,8 @@ class Scene:
         return True
 
     def will_activate(self, prev_scene=None):
-        pass
+        if hasattr(prev_scene, "hero"):
+            self.hero = prev_scene.hero
 
     def deactivate(self):
         self.objects = []

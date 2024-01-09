@@ -15,11 +15,11 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    # SPEED = 20
-    SPEED = 0
+    SPEED = 20
+    # SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
-    MAX_HIT_POINTS = 1
+    MAX_HIT_POINTS = 4
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
@@ -31,19 +31,19 @@ class Invader(Vehicle):
     def draw(self, camera):
         super().draw(camera)
 
-        # Draw rectangle around the invader
-
-        pygame.draw.rect(
-            camera.screen,
-            (255, 0, 0),
-            (
-                self.pos.x - self.sprite.width / 2,
-                self.pos.y - self.sprite.height / 2,
-                self.sprite.width,
-                self.sprite.height,
-            ),
-            1
-        )
+        # # Draw rectangle around the invader
+        #
+        # pygame.draw.rect(
+        #     camera.screen,
+        #     (255, 0, 0),
+        #     (
+        #         self.pos.x - self.sprite.width / 2,
+        #         self.pos.y - self.sprite.height / 2,
+        #         self.sprite.width,
+        #         self.sprite.height,
+        #     ),
+        #     1
+        # )
 
         # Draw a green bar above the invader to indicate its health
         if self.MAX_HIT_POINTS > 10:
@@ -85,9 +85,9 @@ class Invader(Vehicle):
 
         self.frame = round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
 
-        # if self.is_active:
-        #     # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
-        #     self.velocity.x = round(math.sin(self.pos.y / 8) * 40)
+        if self.is_active:
+            # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
+            self.velocity.x = round(math.sin(self.pos.y / 8) * 40)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
                 and self.scene.game.status == GameStatus.PLAYING):
@@ -102,11 +102,12 @@ class Invader(Vehicle):
         if (self.is_active
                 and fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
                 and self.scene.total_time % 1000 < 20):
-            InvaderShot(
-                scene=self.scene,
-                pos=self.pos + Position(0, self.sprite.height / 2),
-                velocity=Position(0, InvaderShot.SPEED),
-            )
+            # InvaderShot(
+            #     scene=self.scene,
+            #     pos=self.pos + Position(0, self.sprite.height / 2),
+            #     velocity=Position(0, InvaderShot.SPEED),
+            # )
+                    pass
 
     def explode(self):
         Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))

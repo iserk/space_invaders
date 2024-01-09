@@ -23,16 +23,18 @@ class Shot(ExplodableRigidBody):
 
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
+        print(f"Shot: {self.pos} {self.velocity} {self.direction}")
+
     def draw(self, camera):
         super().draw(camera)
-
-        pygame.draw.line(
-            camera.screen,
-            (128, 128, 128),
-            tuple(self.prev_pos),
-            tuple(self.pos),
-            1
-        )
+        #
+        # pygame.draw.line(
+        #     camera.screen,
+        #     (128, 128, 128),
+        #     tuple(self.prev_pos),
+        #     tuple(self.pos),
+        #     1
+        # )
 
         # pygame.draw.rect(
         #     camera.screen,
@@ -45,20 +47,20 @@ class Shot(ExplodableRigidBody):
         #     ),
         #     1
         # )
-        r = (
-            min(self.get_collider()[0].x, self.get_collider()[2].x),
-            min(self.get_collider()[0].y, self.get_collider()[2].y),
-            abs(self.get_collider()[2].x - self.get_collider()[0].x),
-            abs(self.get_collider()[2].y - self.get_collider()[0].y) + 2,
-        )
-
-        # Draw red box around the collider
-        pygame.draw.rect(
-            camera.screen,
-            (255, 0, 0),
-            r,
-            1
-        )
+        # r = (
+        #     min(self.get_collider()[0].x, self.get_collider()[2].x),
+        #     min(self.get_collider()[0].y, self.get_collider()[2].y),
+        #     abs(self.get_collider()[2].x - self.get_collider()[0].x),
+        #     abs(self.get_collider()[2].y - self.get_collider()[0].y) + 2,
+        # )
+        #
+        # # Draw red box around the collider
+        # pygame.draw.rect(
+        #     camera.screen,
+        #     (255, 0, 0),
+        #     r,
+        #     1
+        # )
 
         if self.frame == 0:
             self.frame = 1
