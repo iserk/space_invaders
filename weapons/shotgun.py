@@ -9,8 +9,12 @@ from weapons.cannon_shot import CannonShot
 
 class Shotgun(Weapon):
     SPEED = 1000
-    SHOOT_DELAY = 2000
     PELLETS = 20
+
+    CLIP_SIZE = 5
+    RELOAD_TIME = 2500
+    SHOOT_DELAY = 800
+    MAX_AMMO = 100
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)

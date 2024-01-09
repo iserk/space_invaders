@@ -15,7 +15,9 @@ from utils.sprites import get_frames
 
 class CannonShot(Shot):
     SCORE_COST = 2
-    DAMAGE = 4
+    DAMAGE = 7
+
+    # SHOT_SIZE = (48, 48)
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
@@ -67,9 +69,21 @@ class CannonShot(Shot):
     #     )
 
     def on_collision(self, obj=None):
-        if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
+        if self.damage <= 0:
+            self.frame = 2
+            return
+
+        if isinstance(obj, Invader) or isinstance(obj, InvaderShot) and obj.is_active and obj.hit_points > 0:
             self.scene.game.traumatize(0.2)
-            obj.hit(damage=self.DAMAGE, by=self)
+
+            remaining_damage = self.damage - max(0, obj.hit_points)
+
+            print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
+            obj.hit(damage=self.damage, by=self)
             if obj.hit_points <= 0:
                 self.scene.game.score += obj.SCORE
-            self.frame = 2
+
+            self.damage = remaining_damage
+            print(self.damage)
+            if self.damage <= 0:
+                self.frame = 2

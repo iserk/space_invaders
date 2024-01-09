@@ -12,6 +12,10 @@ class Cannon(Weapon):
     PELLETS = 1
     ACCURACY = 0.8
 
+    CLIP_SIZE = 10
+    RELOAD_TIME = 1000
+    MAX_AMMO = 100
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = CannonShot

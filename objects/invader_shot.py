@@ -26,8 +26,6 @@ class InvaderShot(Shot):
             height=32 * scale,
         )
 
-        print("New InvaderShot created", id(self))
-
     def update(self, dt):
         super().update(dt)
 

@@ -12,6 +12,12 @@ class Vehicle(ExplodableRigidBody):
         super().__init__(scene, pos, sprite)
         self.weapon = None
 
+    def update(self, dt):
+        super().update(dt)
+
+        if self.weapon:
+            self.weapon.update(dt)
+
     def shoot(self):
         if self.weapon:
             # self.weapon.shoot(

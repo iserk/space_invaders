@@ -102,12 +102,12 @@ class Invader(Vehicle):
         if (self.is_active
                 and fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
                 and self.scene.total_time % 1000 < 20):
-            # InvaderShot(
-            #     scene=self.scene,
-            #     pos=self.pos + Position(0, self.sprite.height / 2),
-            #     velocity=Position(0, InvaderShot.SPEED),
-            # )
-                    pass
+            InvaderShot(
+                scene=self.scene,
+                pos=self.pos + Position(0, self.sprite.height / 2),
+                velocity=Position(0, InvaderShot.SPEED),
+            )
+                    # pass
 
     def explode(self):
         Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))

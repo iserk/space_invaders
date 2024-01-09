@@ -17,7 +17,6 @@ class Scene:
         self.hero = None
 
     def activate(self):
-        print(f"Activating {self}")
         pass
 
     def add_object(self, obj):

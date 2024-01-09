@@ -19,7 +19,7 @@ from weapons.gatling import Gatling
 class Hero(Vehicle):
     SPEED = 300
     ANIMATION_FPS = 6
-    MAX_HIT_POINTS = 1
+    MAX_HIT_POINTS = 4
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
@@ -76,23 +76,45 @@ class Hero(Vehicle):
         Explosion(scene=self.scene, pos=self.pos, scale=12)
 
     def draw_hud(self, camera):
-        # Prints the weapon name
-        weapon_name = self.scene.game.font.render(
-            f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%",
-            True,
-            pygame.Color("lime")
-        )
-        # Draw the weapon charge
-        pygame.draw.rect(
-            camera.screen,
-            (32, 64, 32),
-            (
-                camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
-                camera.screen_size[1] - weapon_name.get_height() - 16,
-                self.weapon.get_charge() * weapon_name.get_width() + 16,
-                weapon_name.get_height() + 16
+
+        charge = self.weapon.get_charge()
+
+        if charge >= 0:
+            # Prints the weapon name
+            weapon_name = self.scene.game.font.render(
+                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}% {self.weapon.clip} / {self.weapon.ammo}",
+                True,
+                pygame.Color("lime")
             )
-        )
+            # Draw the weapon charge
+            pygame.draw.rect(
+                camera.screen,
+                (32, 64, 32),
+                (
+                    camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
+                    camera.screen_size[1] - weapon_name.get_height() - 16,
+                    self.weapon.get_charge() * weapon_name.get_width() + 16,
+                    weapon_name.get_height() + 16
+                )
+            )
+        else:
+            # Prints the weapon name
+            weapon_name = self.scene.game.font.render(
+                f"{self.weapon.name}: RELOADING {self.weapon.clip} / {self.weapon.ammo}",
+                True,
+                pygame.Color("lime")
+            )
+            # Draw the weapon charge
+            pygame.draw.rect(
+                camera.screen,
+                (32, 64, 32),
+                (
+                    camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
+                    camera.screen_size[1] - weapon_name.get_height() - 16,
+                    (1 - self.weapon.get_reload_time_left() / self.weapon.RELOAD_TIME) * weapon_name.get_width() + 16,
+                    weapon_name.get_height() + 16
+                )
+            )
 
         camera.screen.blit(weapon_name, (
             camera.screen_size[0] / 2 - weapon_name.get_width() / 2,

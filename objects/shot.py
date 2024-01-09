@@ -23,7 +23,7 @@ class Shot(ExplodableRigidBody):
 
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
-        print(f"Shot: {self.pos} {self.velocity} {self.direction}")
+        self.damage = self.DAMAGE
 
     def draw(self, camera):
         super().draw(camera)

@@ -12,6 +12,10 @@ class Gatling(Weapon):
     PELLETS = 1
     ACCURACY = 0.7
 
+    CLIP_SIZE = 50
+    RELOAD_TIME = 1500
+    MAX_AMMO = 1000
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = GatlingShot
