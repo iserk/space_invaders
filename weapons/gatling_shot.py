@@ -15,12 +15,13 @@ from utils.sprites import get_frames
 
 class GatlingShot(Shot):
     SCORE_COST = 1
-    DAMAGE = 2
+    DAMAGE = 1
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
+    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)
+        self.roll = velocity.x / velocity.y
 
         self.scale = scale
         image = pygame.image.load("assets/images/gatling_shot.png").convert_alpha()

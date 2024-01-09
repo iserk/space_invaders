@@ -10,6 +10,7 @@ from objects.game_object import Sprite
 from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
+from utils import audio
 from weapons.cannon import Cannon
 from weapons.shotgun import Shotgun
 from weapons.laser import Laser
@@ -34,22 +35,26 @@ class Hero(Vehicle):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_1:
-                self.switch_weapon(self.weapons[0])
-            elif event.key == pygame.K_2:
-                self.switch_weapon(self.weapons[1])
-            elif event.key == pygame.K_3:
-                self.switch_weapon(self.weapons[2])
-            elif event.key == pygame.K_4:
-                self.switch_weapon(self.weapons[3])
-            else:
-                return True
+            match event.key:
+                case pygame.K_1:
+                    self.switch_weapon(self.weapons[0])
+                case pygame.K_2:
+                    self.switch_weapon(self.weapons[1])
+                case pygame.K_3:
+                    self.switch_weapon(self.weapons[2])
+                case pygame.K_4:
+                    self.switch_weapon(self.weapons[3])
+                case _:
+                    return True
+            return False
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE:
+                self.weapon.stop_shooting()
+                return False
 
     def switch_weapon(self, weapon):
         self.weapon = weapon
         self.weapon.start_reloading()
-        # Play sound effect assets/audio/weapon_switch.wav
-        pygame.mixer.Sound("assets/audio/weapon_switch.wav").play()
 
     def update(self, dt):
         super().update(dt)
@@ -124,7 +129,7 @@ class Hero(Vehicle):
         camera.screen.blit(weapon_name, (
             camera.screen_size[0] / 2 - weapon_name.get_width() / 2,
             camera.screen_size[1] - weapon_name.get_height() - 8)
-        )
+                           )
 
     def draw(self, camera):
         super().draw(camera)

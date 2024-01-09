@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from utils import audio
 from utils.sprites import get_frames
 from objects.position import Position
 from objects.game_object import Sprite
@@ -14,7 +15,7 @@ class InvaderShot(Shot):
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         super().__init__(scene, pos, velocity)
-        pygame.mixer.Sound(f"assets/audio/invader_shot{random.randint(1, 2)}.wav").play()
+        audio.sound(f"assets/audio/invader_shot{random.randint(1, 2)}.wav", volume=0.4).play()
 
         self.scale = scale
         image = pygame.image.load("assets/images/invader_shot.png").convert_alpha()

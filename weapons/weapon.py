@@ -1,10 +1,7 @@
-import random
-
 import numpy as np
-import pygame
-from pygame import Vector2
 
 from objects.position import Position
+from utils import audio
 
 
 class Weapon:
@@ -25,6 +22,7 @@ class Weapon:
         self.prev_shot_time = 0
         self.reloading_start_time = 0
         self.is_reloading = False
+        self.empty_clip_sound_played = False
 
         self.clip = self.CLIP_SIZE
         self.ammo = self.MAX_AMMO
@@ -58,8 +56,9 @@ class Weapon:
 
     def shoot(self, scene, pos, velocity):
         if not self.can_shoot():
-            # if self.clip <= 0:
-            #     pygame.mixer.Sound(f"assets/audio/empty_clip.wav").play()
+            if self.clip <= 0 and not self.empty_clip_sound_played:
+                audio.sound(f"assets/audio/empty_clip.wav").play()
+                self.empty_clip_sound_played = True
             return
 
         self._perform_shot(scene, pos, velocity)
@@ -68,19 +67,25 @@ class Weapon:
         self.clip -= 1
         self.prev_shot_time = scene.game.total_time
 
+    def stop_shooting(self):
+        self.empty_clip_sound_played = False
+
     def start_reloading(self):
         self.is_reloading = True
         self.reloading_start_time = self.vehicle.scene.game.total_time
+        # Play sound effect assets/audio/weapon_switch.wav
+        audio.sound("assets/audio/weapon_switch.wav").play()
 
     def _reload(self):
-        self.clip = self.CLIP_SIZE
         self.ammo -= self.CLIP_SIZE - self.clip
+        self.clip = self.CLIP_SIZE
         if self.ammo < 0:
             self.clip += self.ammo
             self.ammo = 0
 
         self.is_reloading = False
-        pygame.mixer.Sound(f"assets/audio/reload.wav").play()
+        audio.sound(f"assets/audio/reload.wav").play()
+        self.empty_clip_sound_played = True
 
     def update(self, dt):
         if self.clip <= 0 and not self.is_reloading:

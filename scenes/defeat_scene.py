@@ -1,6 +1,7 @@
 import pygame
 from game.game_manager import GameManager, GameStatus
 from scenes.star_scene import StarScene
+from utils import audio
 
 
 class DefeatScene(StarScene):
@@ -36,6 +37,6 @@ class DefeatScene(StarScene):
     def activate(self):
         super().activate()
         self.game.status = GameStatus.DEFEAT
-        pygame.mixer.music.load("assets/audio/defeat.wav")
-        pygame.mixer.music.play()
+        audio.music("assets/audio/defeat.wav").play()
+
 

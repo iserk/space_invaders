@@ -17,7 +17,7 @@ class SceneSwitchException(Exception):
 
 
 class GameManager:
-    BONUS_TIME_LIMIT = 15000  # 15 seconds
+    BONUS_TIME_LIMIT = 20000  # In milliseconds
     MAX_TRAUMA = 1
     MIN_TRAUMA = 0
 
@@ -48,7 +48,7 @@ class GameManager:
         self.font = pygame.font.Font("assets/fonts/Revamped.otf", 18)
 
         pygame.mixer.init()
-        num_channels = 16  # Example for 16 channels
+        num_channels = 64
         pygame.mixer.set_num_channels(num_channels)
 
         self.clock = pygame.time.Clock()

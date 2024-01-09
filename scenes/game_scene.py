@@ -3,6 +3,7 @@ from collections import namedtuple
 
 import pygame
 
+import settings
 from scenes.scene import Scene
 from game.game_manager import GameManager, GameStatus
 from objects.hero import Hero
@@ -10,6 +11,7 @@ from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
 from scenes.star_scene import StarScene
+from utils import audio
 from utils.sprites import get_frames
 
 
@@ -64,6 +66,5 @@ class GameScene(StarScene):
                 )
 
         self.game.status = GameStatus.PLAYING
-        pygame.mixer.music.load("assets/audio/combat_music.wav")
-        pygame.mixer.music.play(loops=-1)
+        audio.music("assets/audio/combat_music.wav").play(loops=-1)
 

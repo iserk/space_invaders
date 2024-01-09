@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from utils import audio
 from weapons.shotgun_shot import ShotgunShot
 from weapons.weapon import Weapon
 from weapons.cannon_shot import CannonShot
@@ -9,12 +10,13 @@ from weapons.cannon_shot import CannonShot
 
 class Shotgun(Weapon):
     SPEED = 1000
-    PELLETS = 20
+    PELLETS = 30
+    ACCURACY = 0.6
 
-    CLIP_SIZE = 5
+    CLIP_SIZE = 4
     RELOAD_TIME = 2500
     SHOOT_DELAY = 800
-    MAX_AMMO = 100
+    MAX_AMMO = 20
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
@@ -24,4 +26,4 @@ class Shotgun(Weapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        pygame.mixer.Sound(f"assets/audio/gatling/shot{random.randint(1,3):02}.wav").play()
+        audio.sound(f"assets/audio/gatling/shot{random.randint(1,3):02}.wav").play()

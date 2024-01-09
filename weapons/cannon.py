@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from utils import audio
 from weapons.weapon import Weapon
 from weapons.cannon_shot import CannonShot
 
@@ -14,7 +15,7 @@ class Cannon(Weapon):
 
     CLIP_SIZE = 3
     RELOAD_TIME = 2000
-    MAX_AMMO = 100
+    MAX_AMMO = 20
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
@@ -24,4 +25,4 @@ class Cannon(Weapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        pygame.mixer.Sound(f"assets/audio/cannon/shot{random.randint(1, 2):02}.wav").play()
+        audio.sound(f"assets/audio/cannon/shot{random.randint(1, 2):02}.wav", volume=3).play()

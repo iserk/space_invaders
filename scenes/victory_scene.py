@@ -2,6 +2,7 @@ import pygame
 
 from game.game_manager import GameManager, GameStatus
 from scenes.star_scene import StarScene
+from utils import audio
 
 
 class VictoryScene(StarScene):
@@ -12,8 +13,7 @@ class VictoryScene(StarScene):
     def activate(self):
         super().activate()
         self.game.status = GameStatus.VICTORY
-        pygame.mixer.music.load("assets/audio/victory.wav")
-        pygame.mixer.music.play()
+        audio.music("assets/audio/victory.wav").play()
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

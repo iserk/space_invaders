@@ -15,7 +15,7 @@ from utils.sprites import get_frames
 
 class CannonShot(Shot):
     SCORE_COST = 2
-    DAMAGE = 7
+    DAMAGE = 12
 
     # SHOT_SIZE = (48, 48)
 

@@ -9,7 +9,7 @@ from objects.game_object import Sprite
 from objects.explosion import Explosion
 
 from scenes.scene import Scene
-from utils import collision
+from utils import collision, audio
 
 
 class RigidBody(GameObject):
@@ -72,13 +72,9 @@ class RigidBody(GameObject):
             self.will_destroy(by=by)
 
         # else:
-        #     sound = pygame.mixer.Sound(f"assets/audio/shield_hit{random.randint(1, 2)}.wav")
-        #     sound.set_volume(0.5)
-        #     sound.play()
+        #     audio.sound(f"assets/audio/shield_hit{random.randint(1, 2)}.wav", volume=0.5).play()
 
-        sound = pygame.mixer.Sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3")
-        sound.set_volume(0.2)
-        sound.play()
+        audio.sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3", volume=0.2).play()
 
     def on_collision(self, obj=None):
         pass

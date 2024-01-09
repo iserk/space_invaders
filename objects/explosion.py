@@ -4,6 +4,7 @@ import pygame
 
 from objects.position import Position
 from objects.game_object import GameObject, Sprite
+from utils import audio
 from utils.sprites import get_frames
 from scenes.scene import Scene
 
@@ -41,7 +42,7 @@ class Explosion(GameObject):
         else:
             variant = min(self.scale, scales[-1])
 
-        pygame.mixer.Sound(f"assets/audio/explosions/exp{variant}.wav").play()
+        audio.sound(f"assets/audio/explosions/exp{variant}.wav").play()
 
     def draw(self, camera):
         if self.frame < len(self.sprite.frames):

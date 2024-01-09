@@ -1,20 +1,19 @@
 import random
 
-import pygame
-
+from utils import audio
 from weapons.weapon import Weapon
 from weapons.gatling_shot import GatlingShot
 
 
 class Gatling(Weapon):
     SPEED = 3000
-    SHOOT_DELAY = 100
+    SHOOT_DELAY = 50
     PELLETS = 1
     ACCURACY = 0.7
 
     CLIP_SIZE = 50
     RELOAD_TIME = 1500
-    MAX_AMMO = 1000
+    MAX_AMMO = 200
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
@@ -24,4 +23,4 @@ class Gatling(Weapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        pygame.mixer.Sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()
+        audio.sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()

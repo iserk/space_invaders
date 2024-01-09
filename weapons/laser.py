@@ -2,6 +2,7 @@ import random
 
 from pygame import Vector2
 
+from utils import audio
 from weapons.weapon import Weapon
 from weapons.cannon_shot import CannonShot
 
@@ -124,6 +125,11 @@ class Laser(Weapon):
     PELLETS = 1
     ACCURACY = 1
 
+    CLIP_SIZE = 3
+    RELOAD_TIME = 2500
+    MAX_AMMO = 20
+
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = LaserShot
@@ -133,7 +139,7 @@ class Laser(Weapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity)
 
-        sound = pygame.mixer.Sound(f"assets/audio/beam_shot.wav").play()
+        sound = audio.sound(f"assets/audio/beam_shot.wav").play()
         self.vehicle.scene.add_timer(500, lambda: sound.fadeout(500) if sound is not None else None)
 
 
