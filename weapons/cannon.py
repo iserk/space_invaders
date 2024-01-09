@@ -20,4 +20,4 @@ class Cannon(Weapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        pygame.mixer.Sound(f"assets/audio/hero_shot.wav").play()
+        pygame.mixer.Sound(f"assets/audio/cannon/shot{random.randint(1, 2):02}.wav").play()

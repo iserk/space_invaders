@@ -30,7 +30,7 @@ class Hero(Vehicle):
             Gatling(vehicle=self),
             Laser(vehicle=self),
         ]
-        self.weapon = Laser(vehicle=self)
+        self.weapon = Cannon(vehicle=self)
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
