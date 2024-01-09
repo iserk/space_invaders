@@ -17,13 +17,13 @@ class CannonShot(Shot):
     SCORE_COST = 2
     DAMAGE = 4
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=3):
+    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)
 
         self.scale = scale
-        image = pygame.image.load("assets/images/hero_shot.png").convert_alpha()
+        image = pygame.image.load("assets/images/cannon_shot.png").convert_alpha()
         image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
         self.sprite = Sprite(

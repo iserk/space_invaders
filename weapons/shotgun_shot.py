@@ -23,7 +23,7 @@ class ShotgunShot(Shot):
         super().__init__(scene, pos, velocity)
 
         self.scale = scale
-        image = pygame.image.load("assets/images/hero_shot.png").convert_alpha()
+        image = pygame.image.load("assets/images/shotgun_shot.png").convert_alpha()
         image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
         self.sprite = Sprite(
