@@ -26,3 +26,7 @@ class Camera:
 
         screen.blit(temp_screen, (-self.x, -self.y))
 
+    def shake(self, vector):
+        print("Shaking camera", vector)
+        self.x += vector.x
+        self.y += vector.y

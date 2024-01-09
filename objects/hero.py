@@ -35,15 +35,21 @@ class Hero(Vehicle):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
-                self.weapon = self.weapons[0]
+                self.switch_weapon(self.weapons[0])
             elif event.key == pygame.K_2:
-                self.weapon = self.weapons[1]
+                self.switch_weapon(self.weapons[1])
             elif event.key == pygame.K_3:
-                self.weapon = self.weapons[2]
+                self.switch_weapon(self.weapons[2])
             elif event.key == pygame.K_4:
-                self.weapon = self.weapons[3]
+                self.switch_weapon(self.weapons[3])
             else:
                 return True
+
+    def switch_weapon(self, weapon):
+        self.weapon = weapon
+        self.weapon.start_reloading()
+        # Play sound effect assets/audio/weapon_switch.wav
+        pygame.mixer.Sound("assets/audio/weapon_switch.wav").play()
 
     def update(self, dt):
         super().update(dt)
@@ -77,12 +83,10 @@ class Hero(Vehicle):
 
     def draw_hud(self, camera):
 
-        charge = self.weapon.get_charge()
-
-        if charge >= 0:
+        if not self.weapon.is_reloading:
             # Prints the weapon name
             weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}% {self.weapon.clip} / {self.weapon.ammo}",
+                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 pygame.Color("lime")
             )
@@ -100,14 +104,15 @@ class Hero(Vehicle):
         else:
             # Prints the weapon name
             weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name}: RELOADING {self.weapon.clip} / {self.weapon.ammo}",
+                f"{self.weapon.name} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
-                pygame.Color("lime")
+                (255, 170, 100)
+                # pygame.Color("lime")
             )
             # Draw the weapon charge
             pygame.draw.rect(
                 camera.screen,
-                (32, 64, 32),
+                (128, 64, 32),
                 (
                     camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
                     camera.screen_size[1] - weapon_name.get_height() - 16,
@@ -120,7 +125,6 @@ class Hero(Vehicle):
             camera.screen_size[0] / 2 - weapon_name.get_width() / 2,
             camera.screen_size[1] - weapon_name.get_height() - 8)
         )
-
 
     def draw(self, camera):
         super().draw(camera)

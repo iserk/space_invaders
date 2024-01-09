@@ -13,7 +13,7 @@ class Cannon(Weapon):
     ACCURACY = 0.8
 
     CLIP_SIZE = 3
-    RELOAD_TIME = 1000
+    RELOAD_TIME = 2000
     MAX_AMMO = 100
 
     def __init__(self, vehicle=None):

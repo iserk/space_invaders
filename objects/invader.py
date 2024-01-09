@@ -15,11 +15,14 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    SPEED = 20
-    # SPEED = 0
+    # SPEED = 20
+    SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
     MAX_HIT_POINTS = 4
+
+    is_shooting = True
+    is_wobbling = False
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
@@ -85,7 +88,7 @@ class Invader(Vehicle):
 
         self.frame = round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
 
-        if self.is_active:
+        if self.is_active and self.is_wobbling:
             # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
             self.velocity.x = round(math.sin(self.pos.y / 8) * 40)
 
@@ -99,7 +102,7 @@ class Invader(Vehicle):
         if self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
 
-        if (self.is_active
+        if (self.is_active and self.is_shooting
                 and fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
                 and self.scene.total_time % 1000 < 20):
             InvaderShot(

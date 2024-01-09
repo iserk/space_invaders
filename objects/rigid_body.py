@@ -68,6 +68,7 @@ class RigidBody(GameObject):
         self.hit_points -= damage
 
         if self.hit_points <= 0:
+            self.is_active = False
             self.will_destroy(by=by)
 
         # else:
