@@ -14,11 +14,11 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    # SPEED = 20
+    # SPEED = 10
     SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
-    MAX_HIT_POINTS = 10
+    MAX_HIT_POINTS = 1
     MAX_ARMOR = 0
     MAX_SHIELD = 0
 
@@ -59,7 +59,9 @@ class Invader(Vehicle):
             self.sprite.width,
             2,
             (0, 255, 0),
-            self.hit_points, self.MAX_HIT_POINTS
+            value=self.hit_points,
+            max_value=self.MAX_HIT_POINTS,
+            value_threshold=1
         )
         draw_health_bar(
             camera.screen,
@@ -68,7 +70,8 @@ class Invader(Vehicle):
             self.sprite.width,
             2,
             (160, 160, 160),
-            self.armor, self.MAX_ARMOR
+            self.armor,
+            self.MAX_ARMOR
         )
         draw_health_bar(
             camera.screen,
@@ -79,7 +82,6 @@ class Invader(Vehicle):
             (0, 128, 255),
             self.shield, self.MAX_SHIELD
         )
-
 
         # # Drawing armor
         # if self.MAX_ARMOR > 10:
@@ -123,11 +125,10 @@ class Invader(Vehicle):
 
         if self.is_active and self.is_wobbling:
             # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
-            self.velocity.x = round(math.sin(self.pos.y / 8) * 40)
+            self.velocity.x = round(math.sin(self.pos.y / 8) * self.SPEED * 2)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
                 and self.scene.game.status == GameStatus.PLAYING):
-
             raise SceneSwitchException(self.scene.game.scenes[1])
             # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
             # return

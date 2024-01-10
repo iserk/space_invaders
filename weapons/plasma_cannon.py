@@ -14,8 +14,8 @@ from scenes.scene import Scene
 
 
 class PlasmaCannonShot(HeroShot):
-    SCORE_COST = 2
-    DAMAGE = 3
+    DAMAGE = 16
+    SCORE_COST = DAMAGE
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
@@ -23,8 +23,8 @@ class PlasmaCannonShot(HeroShot):
     AGAINST_ARMOR = 0.25
     AGAINST_HULL = 0.5
 
-    SHIELD_PIERCING = 0.0  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0.00  # Percentage of initial damage that goes through to hull
+    SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.50  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
@@ -32,7 +32,7 @@ class PlasmaCannonShot(HeroShot):
         super().__init__(scene, pos, velocity)
 
         self.scale = scale
-        image = pygame.image.load("assets/images/invader_shot.png").convert_alpha()
+        image = pygame.image.load("assets/images/plasma_shot.png").convert_alpha()
         image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
         self.sprite = Sprite(
@@ -49,14 +49,14 @@ class PlasmaCannonShot(HeroShot):
 
 
 class PlasmaCannon(HeroWeapon):
-    SPEED = 3000
-    SHOOT_DELAY = 150
+    SPEED = 1000
+    SHOOT_DELAY = 500
     PELLETS = 1
-    ACCURACY = 0.8
+    ACCURACY = 0.9
 
-    CLIP_SIZE = 25
+    CLIP_SIZE = 16
     RELOAD_TIME = 1500
-    MAX_AMMO = 100
+    MAX_AMMO = 64
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
@@ -73,4 +73,4 @@ class PlasmaCannon(HeroWeapon):
         for _ in range(self.PELLETS):
             super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        audio.sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()
+        audio.sound(f"assets/audio/plasma/shot{random.randint(1,1):02}.wav", volume=2).play()

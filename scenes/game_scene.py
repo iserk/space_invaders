@@ -64,9 +64,9 @@ class GameScene(StarScene):
                     pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
                 )
-                obj.shield = obj.MAX_SHIELD = max(0, 2 - row)
-                obj.armor = obj.MAX_ARMOR = max(0, 3 - row)
-                obj.hit_points = obj.MAX_HIT_POINTS = max(0, row + 1)
+                # obj.shield = obj.MAX_SHIELD = max(0, 2 - row)
+                # obj.armor = obj.MAX_ARMOR = max(0, 3 - row)
+                # obj.hit_points = obj.MAX_HIT_POINTS = max(0, row + 1)
 
         self.game.status = GameStatus.PLAYING
         audio.music("assets/audio/combat_music.wav").play(loops=-1)

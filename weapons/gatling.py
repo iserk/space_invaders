@@ -24,8 +24,8 @@ class GatlingShot(HeroShot):
     AGAINST_ARMOR = 0.5
     AGAINST_HULL = 1.5
 
-    SHIELD_PIERCING = 0  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0.1  # Percentage of initial damage that goes through to hull
+    SHIELD_PIERCING = 0.05  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.10  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1.25):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)

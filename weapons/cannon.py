@@ -20,6 +20,16 @@ class CannonShot(HeroShot):
     SCORE_COST = 2
     DAMAGE = 24
 
+    CRITICAL_HIT_CHANCE = 0.1
+
+    # Multipliers against armor, shields and hull
+    AGAINST_SHIELD = 0.1
+    AGAINST_ARMOR = 1.25
+    AGAINST_HULL = 0.75
+
+    SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.25  # Percentage of initial damage that goes through to hull
+
     # SHOT_SIZE = (48, 48)
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):

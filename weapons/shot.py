@@ -19,9 +19,8 @@ class Shot(ExplodableRigidBody):
     AGAINST_ARMOR = 0.5
     AGAINST_HULL = 1
 
-    SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0.25  # Percentage of initial damage that goes through to hull
-
+    SHIELD_PIERCING = 0.0  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.0  # Percentage of initial damage that goes through to hull
 
     SHOT_SIZE = (16, 16)
 

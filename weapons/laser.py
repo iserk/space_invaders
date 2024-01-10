@@ -11,18 +11,18 @@ from scenes.scene import Scene
 
 class LaserShot(HeroShot):
     SCORE_COST = 1
-    DAMAGE = 4
+    DAMAGE = 8
     PULSE_DURATION = 200
 
     CRITICAL_HIT_CHANCE = 0.05
 
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 1.5
-    AGAINST_ARMOR = 0.4
+    AGAINST_ARMOR = 0.5
     AGAINST_HULL = 0.75
 
-    SHIELD_PIERCING = 0  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0  # Percentage of initial damage that goes through to hull
+    SHIELD_PIERCING = 0.50  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.00  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, weapon=None):
         super().__init__(scene, pos, velocity)
@@ -119,7 +119,7 @@ class Laser(HeroWeapon):
     PELLETS = 1
     ACCURACY = 1
 
-    CLIP_SIZE = 1
+    CLIP_SIZE = 10
     RELOAD_TIME = 1000
     MAX_AMMO = 20
 
