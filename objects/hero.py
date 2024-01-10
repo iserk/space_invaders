@@ -11,6 +11,7 @@ from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
 from utils import audio
+from weapons.autocannon import Autocannon
 from weapons.cannon import Cannon
 from weapons.shotgun import Shotgun
 from weapons.laser import Laser
@@ -29,24 +30,18 @@ class Hero(Vehicle):
             Cannon(vehicle=self),
             Shotgun(vehicle=self),
             Gatling(vehicle=self),
+            Autocannon(vehicle=self),
             Laser(vehicle=self),
         ]
         self.switch_weapon(self.weapons[0])
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            match event.key:
-                case pygame.K_1:
-                    self.switch_weapon(self.weapons[0])
-                case pygame.K_2:
-                    self.switch_weapon(self.weapons[1])
-                case pygame.K_3:
-                    self.switch_weapon(self.weapons[2])
-                case pygame.K_4:
-                    self.switch_weapon(self.weapons[3])
-                case _:
-                    return True
-            return False
+            if [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5].__contains__(event.key):
+                self.switch_weapon(self.weapons[event.key - pygame.K_1])
+                return False
+            else:
+                return True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 self.weapon.stop_shooting()

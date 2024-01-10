@@ -4,10 +4,6 @@ from pygame import Vector2
 
 from utils import audio
 from weapons.weapon import Weapon
-from weapons.cannon_shot import CannonShot
-
-import random
-import numpy as np
 
 import pygame
 

@@ -20,6 +20,7 @@ class Invader(Vehicle):
     ANIMATION_FPS = 2
     SCORE = 100
     MAX_HIT_POINTS = 4
+    MAX_ARMOR = 4
 
     is_shooting = False
     is_wobbling = False
@@ -68,6 +69,32 @@ class Invader(Vehicle):
                     (
                         self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
                         self.pos.y - self.sprite.height / 2 - 10,
+                        self.sprite.width / self.MAX_HIT_POINTS - 2,
+                        2,
+                    )
+                )
+
+
+        # Drawing armor
+        if self.MAX_ARMOR > 10:
+            pygame.draw.rect(
+                camera.screen,
+                (0, 128, 255),
+                (
+                    self.pos.x - self.sprite.width / 2,
+                    self.pos.y - self.sprite.height / 2 - 14,
+                    self.sprite.width * self.armor / self.MAX_HIT_POINTS,
+                    2,
+                )
+            )
+        elif self.MAX_ARMOR > 1:
+            for i in range(self.armor):
+                pygame.draw.rect(
+                    camera.screen,
+                    (0, 128, 255),
+                    (
+                        self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
+                        self.pos.y - self.sprite.height / 2 - 14,
                         self.sprite.width / self.MAX_HIT_POINTS - 2,
                         2,
                     )

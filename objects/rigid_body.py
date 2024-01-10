@@ -13,10 +13,14 @@ from utils import collision, audio
 
 
 class RigidBody(GameObject):
+    MAX_HIT_POINTS = 1
+    MAX_ARMOR = 0
+
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene)
 
-        self.hit_points = 1
+        self.hit_points = self.MAX_HIT_POINTS
+        self.armor = self.MAX_ARMOR
 
         self.pos = pos.copy()
         self.prev_pos = pos.copy()
@@ -65,7 +69,8 @@ class RigidBody(GameObject):
         ]
 
     def hit(self, damage=1, by=None):
-        self.hit_points -= damage
+        self.hit_points -= max(0, damage - self.armor)
+        self.armor -= random.randint(0, round(damage / 2) + 1)
 
         if self.hit_points <= 0:
             self.is_active = False

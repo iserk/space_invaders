@@ -1,7 +1,9 @@
 import random
-import numpy as np
 
 import pygame
+
+from utils import audio
+from weapons.weapon import Weapon
 
 from objects.invader_shot import InvaderShot
 from objects.shot import Shot
@@ -13,9 +15,9 @@ from scenes.scene import Scene
 from utils.sprites import get_frames
 
 
-class CannonShot(Shot):
+class AutocannonShot(Shot):
     SCORE_COST = 2
-    DAMAGE = 12
+    DAMAGE = 3
 
     # SHOT_SIZE = (48, 48)
 
@@ -25,7 +27,7 @@ class CannonShot(Shot):
         super().__init__(scene, pos, velocity)
 
         self.scale = scale
-        image = pygame.image.load("assets/images/cannon_shot.png").convert_alpha()
+        image = pygame.image.load("assets/images/gatling_shot.png").convert_alpha()
         image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
         self.sprite = Sprite(
@@ -87,3 +89,24 @@ class CannonShot(Shot):
             # print(self.damage)
             if self.damage <= 0:
                 self.frame = 2
+
+
+class Autocannon(Weapon):
+    SPEED = 3000
+    SHOOT_DELAY = 150
+    PELLETS = 1
+    ACCURACY = 0.8
+
+    CLIP_SIZE = 25
+    RELOAD_TIME = 1500
+    MAX_AMMO = 100
+
+    def __init__(self, vehicle=None):
+        super().__init__(vehicle)
+        self.shot = AutocannonShot
+
+    def _perform_shot(self, scene, pos, velocity):
+        for _ in range(self.PELLETS):
+            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
+
+        audio.sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()
