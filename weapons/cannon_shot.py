@@ -78,12 +78,12 @@ class CannonShot(Shot):
 
             remaining_damage = self.damage - max(0, obj.hit_points)
 
-            print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
+            # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
             obj.hit(damage=self.damage, by=self)
             if obj.hit_points <= 0:
                 self.scene.game.score += obj.SCORE
 
             self.damage = remaining_damage
-            print(self.damage)
+            # print(self.damage)
             if self.damage <= 0:
                 self.frame = 2

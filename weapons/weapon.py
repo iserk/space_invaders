@@ -71,6 +71,8 @@ class Weapon:
         self.empty_clip_sound_played = False
 
     def start_reloading(self):
+        if self.is_reloading:
+            return
         self.is_reloading = True
         self.reloading_start_time = self.vehicle.scene.game.total_time
         # Play sound effect assets/audio/weapon_switch.wav
@@ -88,8 +90,9 @@ class Weapon:
         self.empty_clip_sound_played = True
 
     def update(self, dt):
-        if self.clip <= 0 and not self.is_reloading:
+        # print(self.name, self.clip, self.ammo, self.is_reloading, self.reloading_start_time)
+        if self.clip <= 0 < self.ammo and not self.is_reloading:
             self.start_reloading()
 
-        if self.is_reloading and self.get_reload_time_left() <= 0:
+        if self.is_reloading and self.ammo > 0 >= self.get_reload_time_left():
             self._reload()

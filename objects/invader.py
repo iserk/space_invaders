@@ -15,13 +15,13 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    SPEED = 20
-    # SPEED = 0
+    # SPEED = 20
+    SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
     MAX_HIT_POINTS = 4
 
-    is_shooting = True
+    is_shooting = False
     is_wobbling = False
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):

@@ -31,7 +31,7 @@ class Hero(Vehicle):
             Gatling(vehicle=self),
             Laser(vehicle=self),
         ]
-        self.weapon = Cannon(vehicle=self)
+        self.switch_weapon(self.weapons[0])
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -87,27 +87,7 @@ class Hero(Vehicle):
         Explosion(scene=self.scene, pos=self.pos, scale=12)
 
     def draw_hud(self, camera):
-
-        if not self.weapon.is_reloading:
-            # Prints the weapon name
-            weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
-                True,
-                pygame.Color("lime")
-            )
-            # Draw the weapon charge
-            pygame.draw.rect(
-                camera.screen,
-                (32, 64, 32),
-                (
-                    camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
-                    camera.screen_size[1] - weapon_name.get_height() - 16,
-                    self.weapon.get_charge() * weapon_name.get_width() + 16,
-                    weapon_name.get_height() + 16
-                )
-            )
-        else:
-            # Prints the weapon name
+        if self.weapon.is_reloading and self.weapon.ammo > 0:
             weapon_name = self.scene.game.font.render(
                 f"{self.weapon.name} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
@@ -122,6 +102,41 @@ class Hero(Vehicle):
                     camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
                     camera.screen_size[1] - weapon_name.get_height() - 16,
                     (1 - self.weapon.get_reload_time_left() / self.weapon.RELOAD_TIME) * weapon_name.get_width() + 16,
+                    weapon_name.get_height() + 16
+                )
+            )
+
+        elif self.weapon.ammo == 0 and self.weapon.clip == 0:
+            weapon_name = self.scene.game.font.render(
+                f"{self.weapon.name}: Out of ammo   {self.weapon.clip} / {self.weapon.ammo}",
+                True,
+                (255, 64, 64),
+            )
+            # Draw the weapon charge
+            pygame.draw.rect(
+                camera.screen,
+                (64, 16, 16),
+                (
+                    camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
+                    camera.screen_size[1] - weapon_name.get_height() - 16,
+                    weapon_name.get_width() + 16,
+                    weapon_name.get_height() + 16
+                )
+            )
+        else:
+            weapon_name = self.scene.game.font.render(
+                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
+                True,
+                pygame.Color("lime")
+            )
+            # Draw the weapon charge
+            pygame.draw.rect(
+                camera.screen,
+                (32, 64, 32),
+                (
+                    camera.screen_size[0] / 2 - weapon_name.get_width() / 2 - 8,
+                    camera.screen_size[1] - weapon_name.get_height() - 16,
+                    self.weapon.get_charge() * weapon_name.get_width() + 16,
                     weapon_name.get_height() + 16
                 )
             )
