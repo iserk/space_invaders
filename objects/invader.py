@@ -1,8 +1,7 @@
 import random
 import math
 
-import pygame
-
+from utils.draw import draw_health_bar
 from utils.noise import fractal_noise
 from objects.invader_shot import InvaderShot
 
@@ -19,8 +18,9 @@ class Invader(Vehicle):
     SPEED = 0
     ANIMATION_FPS = 2
     SCORE = 100
-    MAX_HIT_POINTS = 4
-    MAX_ARMOR = 4
+    MAX_HIT_POINTS = 10
+    MAX_ARMOR = 0
+    MAX_SHIELD = 0
 
     is_shooting = False
     is_wobbling = False
@@ -29,6 +29,8 @@ class Invader(Vehicle):
         super().__init__(scene, pos, sprite)
 
         self.hit_points = self.MAX_HIT_POINTS
+        self.armor = self.MAX_ARMOR
+        self.shield = self.MAX_SHIELD
         self.initial_pos = pos.copy()
         self.velocity = Position(0, Invader.SPEED)
 
@@ -49,56 +51,60 @@ class Invader(Vehicle):
         #     1
         # )
 
-        # Draw a green bar above the invader to indicate its health
-        if self.MAX_HIT_POINTS > 10:
-            pygame.draw.rect(
-                camera.screen,
-                (0, 255, 0),
-                (
-                    self.pos.x - self.sprite.width / 2,
-                    self.pos.y - self.sprite.height / 2 - 10,
-                    self.sprite.width * self.hit_points / self.MAX_HIT_POINTS,
-                    2,
-                )
-            )
-        elif self.MAX_HIT_POINTS > 1:
-            for i in range(self.hit_points):
-                pygame.draw.rect(
-                    camera.screen,
-                    (0, 255, 0),
-                    (
-                        self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
-                        self.pos.y - self.sprite.height / 2 - 10,
-                        self.sprite.width / self.MAX_HIT_POINTS - 2,
-                        2,
-                    )
-                )
+        # draw_health_bar(surface, x, y, width, height, color, value, max_value, value_threshold=0)
+        draw_health_bar(
+            camera.screen,
+            self.pos.x - self.sprite.width / 2,
+            self.pos.y - self.sprite.height / 2,
+            self.sprite.width,
+            2,
+            (0, 255, 0),
+            self.hit_points, self.MAX_HIT_POINTS
+        )
+        draw_health_bar(
+            camera.screen,
+            self.pos.x - self.sprite.width / 2,
+            self.pos.y - self.sprite.height / 2 - 4,
+            self.sprite.width,
+            2,
+            (160, 160, 160),
+            self.armor, self.MAX_ARMOR
+        )
+        draw_health_bar(
+            camera.screen,
+            self.pos.x - self.sprite.width / 2,
+            self.pos.y - self.sprite.height / 2 - 8,
+            self.sprite.width,
+            2,
+            (0, 128, 255),
+            self.shield, self.MAX_SHIELD
+        )
 
 
-        # Drawing armor
-        if self.MAX_ARMOR > 10:
-            pygame.draw.rect(
-                camera.screen,
-                (0, 128, 255),
-                (
-                    self.pos.x - self.sprite.width / 2,
-                    self.pos.y - self.sprite.height / 2 - 14,
-                    self.sprite.width * self.armor / self.MAX_HIT_POINTS,
-                    2,
-                )
-            )
-        elif self.MAX_ARMOR > 1:
-            for i in range(self.armor):
-                pygame.draw.rect(
-                    camera.screen,
-                    (0, 128, 255),
-                    (
-                        self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
-                        self.pos.y - self.sprite.height / 2 - 14,
-                        self.sprite.width / self.MAX_HIT_POINTS - 2,
-                        2,
-                    )
-                )
+        # # Drawing armor
+        # if self.MAX_ARMOR > 10:
+        #     pygame.draw.rect(
+        #         camera.screen,
+        #         (0, 128, 255),
+        #         (
+        #             self.pos.x - self.sprite.width / 2,
+        #             self.pos.y - self.sprite.height / 2 - 14,
+        #             self.sprite.width * self.armor / self.MAX_HIT_POINTS,
+        #             2,
+        #         )
+        #     )
+        # elif self.MAX_ARMOR > 1:
+        #     for i in range(self.armor):
+        #         pygame.draw.rect(
+        #             camera.screen,
+        #             (0, 128, 255),
+        #             (
+        #                 self.pos.x - self.sprite.width / 2 + i * self.sprite.width / self.MAX_HIT_POINTS + 2,
+        #                 self.pos.y - self.sprite.height / 2 - 14,
+        #                 self.sprite.width / self.MAX_HIT_POINTS - 2,
+        #                 2,
+        #             )
+        #         )
 
         # # Draw a blue circle around the invader to indicate its health (as shields)
         # for i in range(self.hit_points - 1):

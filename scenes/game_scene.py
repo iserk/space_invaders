@@ -57,13 +57,16 @@ class GameScene(StarScene):
 
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40,
                         height=40)
-        for row in range(3):
+        for row in range(4):
             for col in range(10):
-                Invader(
+                obj = Invader(
                     scene=self,
                     pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
                 )
+                obj.shield = obj.MAX_SHIELD = max(0, 2 - row)
+                obj.armor = obj.MAX_ARMOR = max(0, 3 - row)
+                obj.hit_points = obj.MAX_HIT_POINTS = max(0, row + 1)
 
         self.game.status = GameStatus.PLAYING
         audio.music("assets/audio/combat_music.wav").play(loops=-1)

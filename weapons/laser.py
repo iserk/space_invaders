@@ -1,26 +1,28 @@
 import random
-
+import pygame
 from pygame import Vector2
 
 from utils import audio
-from weapons.weapon import Weapon
 
-import pygame
-
-from objects.invader_shot import InvaderShot
-from objects.shot import Shot
-from objects.invader import Invader
 from objects.position import Position
-from objects.game_object import Sprite
+from weapons.hero_shot import HeroWeapon, HeroShot
 from scenes.scene import Scene
 
-from utils.sprites import get_frames
 
-
-class LaserShot(Shot):
+class LaserShot(HeroShot):
     SCORE_COST = 1
-    DAMAGE = 2
-    PULSE_DURATION = 500
+    DAMAGE = 4
+    PULSE_DURATION = 200
+
+    CRITICAL_HIT_CHANCE = 0.05
+
+    # Multipliers against armor, shields and hull
+    AGAINST_SHIELD = 1.5
+    AGAINST_ARMOR = 0.4
+    AGAINST_HULL = 0.75
+
+    SHIELD_PIERCING = 0  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, weapon=None):
         super().__init__(scene, pos, velocity)
@@ -40,9 +42,6 @@ class LaserShot(Shot):
         # )
 
         # self.scene.game.traumatize(0.1)
-
-        self.frame = 0
-        self.scene.game.score -= self.SCORE_COST
 
     def draw(self, camera):
         # super().draw(camera)
@@ -82,18 +81,17 @@ class LaserShot(Shot):
         self.pos = self.scene.hero.pos.copy()
 
         if self.frame == 2:
-            self.destroy()
+            if self.scene.game.total_time - self.start_time > self.PULSE_DURATION:
+                self.destroy()
             return
 
         if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
             return
 
-        if self.scene.game.total_time - self.start_time > self.PULSE_DURATION:
-            self.destroy()
-            return
-
         self.detect_collisions()
+
+        self.frame = 2
 
     def get_rect(self):
         return [
@@ -101,13 +99,13 @@ class LaserShot(Shot):
             Vector2(self.pos.x + 8, self.pos.y - 1000),
         ]
 
-    def on_collision(self, obj=None):
-        if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
-            self.scene.game.traumatize(0.2)
-            obj.hit(damage=self.DAMAGE, by=self)
-            if obj.hit_points <= 0:
-                self.scene.game.score += obj.SCORE
-            # self.frame = 2
+    # def on_collision(self, obj=None):
+    #     if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
+    #         self.scene.game.traumatize(0.2)
+    #         obj.hit(damage=self.DAMAGE, by=self)
+    #         if obj.hit_points <= 0:
+    #             self.scene.game.score += obj.SCORE
+    #         # self.frame = 2
 
     # def destroy(self):
     #     if self.weapon is not None and self.weapon.sound is not None:
@@ -115,16 +113,15 @@ class LaserShot(Shot):
     #     super().destroy()
 
 
-class Laser(Weapon):
+class Laser(HeroWeapon):
     SPEED = 1
-    SHOOT_DELAY = 1800
+    SHOOT_DELAY = 500
     PELLETS = 1
     ACCURACY = 1
 
-    CLIP_SIZE = 3
-    RELOAD_TIME = 2500
+    CLIP_SIZE = 1
+    RELOAD_TIME = 1000
     MAX_AMMO = 20
-
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)

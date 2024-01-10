@@ -3,21 +3,33 @@ import random
 import pygame
 
 from utils import audio
-from weapons.weapon import Weapon
 
 from objects.invader_shot import InvaderShot
-from objects.shot import Shot
 from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
+
+from weapons.hero_shot import HeroWeapon, HeroShot
+
 from scenes.scene import Scene
 
 from utils.sprites import get_frames
 
 
-class ShotgunShot(Shot):
+class ShotgunShot(HeroShot):
     SCORE_COST = 2
     DAMAGE = 1
+    SHOT_LENGTH = 16
+    SPEED = 500
+    CRITICAL_HIT_CHANCE = 0.1
+
+    # Multipliers against armor, shields and hull
+    AGAINST_SHIELD = 0.1
+    AGAINST_ARMOR = 0.5
+    AGAINST_HULL = 1.75
+
+    SHIELD_PIERCING = 0  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.1  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
@@ -35,49 +47,8 @@ class ShotgunShot(Shot):
             height=32 * scale,
         )
 
-        # self.scene.game.traumatize(0.1)
 
-        self.frame = 0
-        self.scene.game.score -= self.SCORE_COST
-
-    # def draw(self, camera):
-    #     super().draw(camera)
-    #
-    #     pygame.draw.line(
-    #         camera.screen,
-    #         (128, 128, 64),
-    #         tuple(self.prev_pos),
-    #         tuple(self.pos),
-    #         1
-    #     )
-    #
-    #     # print(self.get_collider())
-    #     r = (
-    #             min(self.get_collider()[0].x, self.get_collider()[1].x),
-    #             min(self.get_collider()[0].y, self.get_collider()[1].y),
-    #             abs(self.get_collider()[1].x - self.get_collider()[0].x),
-    #             abs(self.get_collider()[1].y - self.get_collider()[0].y) + 2,
-    #         )
-    #     print(__class__.__name__, r)
-    #
-    #     # Draw red box around the collider
-    #     pygame.draw.rect(
-    #         camera.screen,
-    #         (255, 0, 0),
-    #         r,
-    #         1
-    #     )
-
-    def on_collision(self, obj=None):
-        if isinstance(obj, Invader) or isinstance(obj, InvaderShot):
-            self.scene.game.traumatize(0.2)
-            obj.hit(damage=self.DAMAGE, by=self)
-            if obj.hit_points <= 0:
-                self.scene.game.score += obj.SCORE
-            self.frame = 2
-
-
-class Shotgun(Weapon):
+class Shotgun(HeroWeapon):
     SPEED = 1000
     PELLETS = 30
     ACCURACY = 0.6

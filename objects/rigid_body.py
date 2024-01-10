@@ -15,12 +15,14 @@ from utils import collision, audio
 class RigidBody(GameObject):
     MAX_HIT_POINTS = 1
     MAX_ARMOR = 0
+    MAX_SHIELD = 0
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene)
 
         self.hit_points = self.MAX_HIT_POINTS
         self.armor = self.MAX_ARMOR
+        self.shield = self.MAX_SHIELD
 
         self.pos = pos.copy()
         self.prev_pos = pos.copy()
@@ -69,8 +71,32 @@ class RigidBody(GameObject):
         ]
 
     def hit(self, damage=1, by=None):
-        self.hit_points -= max(0, damage - self.armor)
-        self.armor -= random.randint(0, round(damage / 2) + 1)
+        from weapons.shot import Shot
+
+        if isinstance(by, Shot):
+            against_shields = by.AGAINST_SHIELD
+            against_armor = by.AGAINST_ARMOR
+            against_hull = by.AGAINST_HULL
+            shield_piercing = by.SHIELD_PIERCING
+            armor_piercing = by.ARMOR_PIERCING
+        else:
+            against_shields = 0.5
+            against_armor = 0.5
+            against_hull = 1
+            shield_piercing = armor_piercing = 0
+
+        shield_damage = damage * against_shields
+        damage_after_shield = damage - self.shield * (1 - shield_piercing)
+        armor_damage = damage_after_shield * against_armor
+
+        damage_after_armor = damage_after_shield - self.armor * (1 - armor_piercing)
+        hull_damage = damage_after_armor * against_hull
+
+        # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage})')
+
+        self.hit_points -= round(max(0, hull_damage))
+        self.armor -= round(max(0, armor_damage))
+        self.shield -= round(max(0, shield_damage))
 
         if self.hit_points <= 0:
             self.is_active = False

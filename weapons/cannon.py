@@ -6,19 +6,19 @@ import pygame
 from utils import audio
 from utils.sprites import get_frames
 
-from weapons.weapon import Weapon
-
 from objects.invader_shot import InvaderShot
-from objects.shot import Shot
 from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
+
+from weapons.hero_shot import HeroWeapon, HeroShot
+
 from scenes.scene import Scene
 
 
-class CannonShot(Shot):
+class CannonShot(HeroShot):
     SCORE_COST = 2
-    DAMAGE = 12
+    DAMAGE = 24
 
     # SHOT_SIZE = (48, 48)
 
@@ -43,34 +43,6 @@ class CannonShot(Shot):
         self.frame = 0
         self.scene.game.score -= self.SCORE_COST
 
-    # def draw(self, camera):
-    #     super().draw(camera)
-    #
-    #     pygame.draw.line(
-    #         camera.screen,
-    #         (128, 128, 64),
-    #         tuple(self.prev_pos),
-    #         tuple(self.pos),
-    #         1
-    #     )
-    #
-    #     # print(self.get_collider())
-    #     r = (
-    #             min(self.get_collider()[0].x, self.get_collider()[1].x),
-    #             min(self.get_collider()[0].y, self.get_collider()[1].y),
-    #             abs(self.get_collider()[1].x - self.get_collider()[0].x),
-    #             abs(self.get_collider()[1].y - self.get_collider()[0].y) + 2,
-    #         )
-    #     print(__class__.__name__, r)
-    #
-    #     # Draw red box around the collider
-    #     pygame.draw.rect(
-    #         camera.screen,
-    #         (255, 0, 0),
-    #         r,
-    #         1
-    #     )
-
     def on_collision(self, obj=None):
         if self.damage <= 0:
             self.frame = 2
@@ -92,14 +64,14 @@ class CannonShot(Shot):
                 self.frame = 2
 
 
-class Cannon(Weapon):
+class Cannon(HeroWeapon):
     SPEED = 3000
-    SHOOT_DELAY = 600
+    SHOOT_DELAY = 800
     PELLETS = 1
     ACCURACY = 0.8
 
-    CLIP_SIZE = 3
-    RELOAD_TIME = 2000
+    CLIP_SIZE = 1
+    RELOAD_TIME = 1200
     MAX_AMMO = 20
 
     def __init__(self, vehicle=None):

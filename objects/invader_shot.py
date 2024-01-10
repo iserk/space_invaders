@@ -6,7 +6,7 @@ from utils import audio
 from utils.sprites import get_frames
 from objects.position import Position
 from objects.game_object import Sprite
-from objects.shot import Shot
+from weapons.shot import Shot
 from scenes.scene import Scene
 
 

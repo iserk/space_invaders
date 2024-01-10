@@ -11,6 +11,7 @@ from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
 from utils import audio
+from weapons.plasma_cannon import PlasmaCannon
 from weapons.autocannon import Autocannon
 from weapons.cannon import Cannon
 from weapons.shotgun import Shotgun
@@ -32,12 +33,13 @@ class Hero(Vehicle):
             Gatling(vehicle=self),
             Autocannon(vehicle=self),
             Laser(vehicle=self),
+            PlasmaCannon(vehicle=self),
         ]
         self.switch_weapon(self.weapons[0])
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5].__contains__(event.key):
+            if [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6].__contains__(event.key):
                 self.switch_weapon(self.weapons[event.key - pygame.K_1])
                 return False
             else:
@@ -84,7 +86,7 @@ class Hero(Vehicle):
     def draw_hud(self, camera):
         if self.weapon.is_reloading and self.weapon.ammo > 0:
             weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon.name)} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 (255, 170, 100)
                 # pygame.Color("lime")
@@ -103,7 +105,7 @@ class Hero(Vehicle):
 
         elif self.weapon.ammo == 0 and self.weapon.clip == 0:
             weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name}: Out of ammo   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon.name)}: Out of ammo   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 (255, 64, 64),
             )
@@ -120,7 +122,7 @@ class Hero(Vehicle):
             )
         else:
             weapon_name = self.scene.game.font.render(
-                f"{self.weapon.name}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon.name)}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 pygame.Color("lime")
             )
