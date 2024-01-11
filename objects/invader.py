@@ -14,8 +14,8 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    # SPEED = 10
-    SPEED = 0
+    SPEED = 10
+    # SPEED = 0
     ANIMATION_FPS = 2
     MAX_HIT_POINTS = 100
     SCORE = 10 * MAX_HIT_POINTS
@@ -23,7 +23,7 @@ class Invader(Vehicle):
     MAX_SHIELD = 32
 
     is_shooting = True
-    is_wobbling = False
+    is_wobbling = True
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)

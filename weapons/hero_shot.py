@@ -43,7 +43,12 @@ class HeroShot(Shot):
 
         # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
 
+        old_velocity = self.velocity.copy()
         self.damage = remaining_damage
+        # self.velocity = self.velocity.get_normalized() * self.SPEED * self.damage2speed(self.damage)
+        print(self.damage / self.DAMAGE)
+        # self.velocity = self.velocity.get_normalized() * self.SPEED * self.damage / self.DAMAGE
+        # print(f"DMG: {self.damage}, V: {old_velocity} -> {self.velocity}")
 
         if not self.DESTROY_ON_HIT and self.damage > 0:
             self.state = ShotState.HITTING

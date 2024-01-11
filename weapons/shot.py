@@ -21,6 +21,7 @@ class Shot(ExplodableRigidBody):
     DESTROY_ON_HIT = True
     SPEED = 500
     CRITICAL_HIT_CHANCE = 0.1
+    ACCELERATION = -0.5  # Acceleration in pixels per second squared
 
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 0.1
@@ -97,8 +98,17 @@ class Shot(ExplodableRigidBody):
     def update(self, dt):
         # Forces the shoot to display the 0 frame from the start position
         # by avoiding movement on the first frame
+        if self.state == ShotState.HITTING and not self.DESTROY_ON_HIT:
+            self.state = ShotState.FLYING
+            self.frame = self.state2frame()
+
         if self.state != ShotState.STARTING:
             super().update(dt)
+
+        # if self.state == ShotState.FLYING:
+        #     # self.velocity *= 1 + self.ACCELERATION * dt / 1000 * self.velocity.get_length() / self.SPEED
+        #     # self.damage = self.speed2damage(self.velocity.get_length())
+        #     # print(f"{self}.update() ", self.velocity.get_length(), self.damage)
 
         if self.state == ShotState.DESTROYED:
             self.destroy()
@@ -124,3 +134,9 @@ class Shot(ExplodableRigidBody):
     @staticmethod
     def get_detonation_delay():
         return random.randint(20, 100)
+
+    def speed2damage(self, speed):
+        return self.DAMAGE * speed / self.SPEED
+
+    def damage2speed(self, damage):
+        return self.SPEED * damage / self.DAMAGE

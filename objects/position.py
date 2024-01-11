@@ -23,7 +23,10 @@ class Position:
         return Position(self.x / other, self.y / other)
 
     def get_normalized(self):
-        return Position(self.x / self.get_length(), self.y / self.get_length())
+        if self.x == 0 and self.y == 0:
+            return Position(0, 0)
+        else:
+            return Position(self.x / self.get_length(), self.y / self.get_length())
 
     def get_length(self):
         return (self.x ** 2 + self.y ** 2) ** 0.5

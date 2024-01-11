@@ -149,18 +149,21 @@ class Hero(Vehicle):
         # Draw a blue circle around the invader to indicate its health (as shields)
 
         # Draw the health bar
-        draw_stats(self, camera)
+        # draw_stats(self, camera)
 
-        # for i in range(self.hit_points - 1):
-        #     q = (i + 1) / self.MAX_HIT_POINTS
-        #     c = (lerp(16, 64, q), lerp(32, 128, q), lerp(64, 255, q))
-        #     color = tuple(map(round, c))
-        #     pygame.draw.circle(
-        #         camera.screen,
-        #         color,
-        #         (round(self.pos.x), round(self.pos.y)),
-        #         self.sprite.width / 2 + 8 + 4 * i,
-        #         2
-        #     )
+        max_shield = 4
+        shield = round(self.shield / self.MAX_SHIELD * max_shield)
+
+        for i in range(shield - 1):
+            q = (i + 1) / max_shield
+            c = (lerp(16, 64, q), lerp(32, 128, q), lerp(64, 255, q))
+            color = tuple(map(round, c))
+            pygame.draw.circle(
+                camera.screen,
+                color,
+                (round(self.pos.x), round(self.pos.y)),
+                self.sprite.width / 2 + 8 + 4 * i,
+                2
+            )
 
         self.draw_hud(camera)

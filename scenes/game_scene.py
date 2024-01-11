@@ -57,7 +57,7 @@ class GameScene(StarScene):
 
         sprite = Sprite(frames=get_frames(pygame.image.load("assets/images/invader.png"), 40, 40, 2), width=40,
                         height=40)
-        for row in range(4):
+        for row in range(3):
             for col in range(10):
                 obj = Invader(
                     scene=self,
