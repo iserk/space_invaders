@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 
 import pygame.draw
 from pygame import Vector2
@@ -8,9 +9,17 @@ from objects.position import Position
 from scenes.scene import Scene
 
 
+class ShotState(Enum):
+    STARTING = 0
+    FLYING = 1
+    HITTING = 2
+    DESTROYED = 3
+
+
 class Shot(ExplodableRigidBody):
     DAMAGE = 1
     SHOT_LENGTH = 16
+    DESTROY_ON_HIT = True
     SPEED = 500
     CRITICAL_HIT_CHANCE = 0.1
 
@@ -29,11 +38,23 @@ class Shot(ExplodableRigidBody):
         self.pos = pos
         self.velocity = velocity
 
-        self.frame = 0
-
         self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
         self.damage = self.DAMAGE
+
+        self.state = ShotState.STARTING
+        self.frame = self.state2frame()
+
+    def state2frame(self):
+        match self.state:
+            case ShotState.STARTING:
+                return 0
+            case ShotState.FLYING:
+                return 1
+            case ShotState.HITTING:
+                return 2
+            case ShotState.DESTROYED:
+                return 2
 
     def draw(self, camera):
         super().draw(camera)
@@ -72,15 +93,17 @@ class Shot(ExplodableRigidBody):
         #     1
         # )
 
-        if self.frame == 0:
-            self.frame = 1
+        if self.state == ShotState.STARTING:
+            self.state = ShotState.FLYING
+            self.frame = self.state2frame()
 
     def update(self, dt):
         # Forces the shoot to display the 0 frame from the start position
-        if self.frame == 1:
+        # by avoiding movement on the first frame
+        if self.state != ShotState.STARTING:
             super().update(dt)
 
-        if self.frame == 2:
+        if self.state == ShotState.DESTROYED:
             self.destroy()
             return
 

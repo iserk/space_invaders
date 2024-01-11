@@ -7,12 +7,14 @@ from utils import audio
 from objects.position import Position
 from weapons.hero_shot import HeroWeapon, HeroShot
 from scenes.scene import Scene
+from weapons.shot import ShotState
 
 
 class LaserShot(HeroShot):
+    DESTROY_ON_HIT = False
     SCORE_COST = 1
-    DAMAGE = 8
-    PULSE_DURATION = 200
+    DAMAGE = 50
+    PULSE_DURATION = 190
 
     CRITICAL_HIT_CHANCE = 0.05
 
@@ -29,6 +31,7 @@ class LaserShot(HeroShot):
 
         self.weapon = weapon
         self.start_time = self.scene.game.total_time
+        self.affected_targets = []
 
         # self.scale = scale
         # image = pygame.image.load("assets/images/hero_shot.png").convert_alpha()
@@ -43,13 +46,20 @@ class LaserShot(HeroShot):
 
         # self.scene.game.traumatize(0.1)
 
+    def on_collision(self, obj=None):
+        if not obj.is_active or not any([isinstance(obj, cls) for cls in self.VALID_TARGETS_CLASSES]):
+            return
+
+        self.affected_targets.append(obj)
+        self.state = ShotState.HITTING
+
     def draw(self, camera):
         # super().draw(camera)
 
         pygame.draw.line(
             camera.screen,
             (128, 128, 64),
-            tuple(self.pos),
+            tuple(self.pos + Position(-2, -32)),
             tuple(self.pos + Position(0, -1000)),
             4
         )
@@ -71,27 +81,41 @@ class LaserShot(HeroShot):
         #     1
         # )
 
-        if self.frame == 0:
-            self.frame = 1
+        if self.state == ShotState.STARTING:
+            self.state = ShotState.FLYING
 
     def update(self, dt):
-        # Forces the shoot to display the 0 frame from the start position
         super().update(dt)
 
-        self.pos = self.scene.hero.pos.copy()
-
-        if self.frame == 2:
-            if self.scene.game.total_time - self.start_time > self.PULSE_DURATION:
-                self.destroy()
-            return
-
-        if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
+        if (self.state == ShotState.DESTROYED
+                or self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]
+                or self.state == ShotState.HITTING
+                and self.scene.game.total_time - self.start_time > self.PULSE_DURATION
+        ):
             self.destroy()
             return
 
-        self.detect_collisions()
+        self.pos = self.scene.hero.pos.copy()
 
-        self.frame = 2
+        if self.state == ShotState.HITTING:
+            for obj in self.affected_targets:
+                if not obj.is_active:
+                    continue
+
+                # Calculate damage based on critical hit chance
+                damage = self.DAMAGE
+                self.scene.game.traumatize(0.1 * damage)
+
+                if random.random() <= self.CRITICAL_HIT_CHANCE:
+                    damage *= 2
+                    print(self, ": critical hit!")
+
+                obj.hit(damage=self.damage * dt / 1000, by=self)
+
+                if obj.hit_points <= 0:
+                    self.scene.game.score += obj.SCORE
+
+        self.affected_targets = []
 
     def get_rect(self):
         return [
@@ -115,13 +139,13 @@ class LaserShot(HeroShot):
 
 class Laser(HeroWeapon):
     SPEED = 1
-    SHOOT_DELAY = 500
+    SHOOT_DELAY = 200
     PELLETS = 1
     ACCURACY = 1
 
-    CLIP_SIZE = 10
+    CLIP_SIZE = 1000
     RELOAD_TIME = 1000
-    MAX_AMMO = 20
+    MAX_AMMO = 10000
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
@@ -134,5 +158,3 @@ class Laser(HeroWeapon):
 
         sound = audio.sound(f"assets/audio/beam_shot.wav").play()
         self.vehicle.scene.add_timer(500, lambda: sound.fadeout(500) if sound is not None else None)
-
-

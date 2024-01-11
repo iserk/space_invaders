@@ -14,11 +14,13 @@ from objects.game_object import Sprite
 from weapons.hero_shot import HeroWeapon, HeroShot
 
 from scenes.scene import Scene
+from weapons.shot import ShotState
 
 
 class CannonShot(HeroShot):
-    SCORE_COST = 2
     DAMAGE = 24
+    SCORE_COST = DAMAGE
+    DESTROY_ON_HIT = False
 
     CRITICAL_HIT_CHANCE = 0.1
 
@@ -47,31 +49,6 @@ class CannonShot(HeroShot):
             width=32 * scale,
             height=32 * scale,
         )
-
-        # self.scene.game.traumatize(0.1)
-
-        self.frame = 0
-        self.scene.game.score -= self.SCORE_COST
-
-    def on_collision(self, obj=None):
-        if self.damage <= 0:
-            self.frame = 2
-            return
-
-        if isinstance(obj, Invader) or isinstance(obj, InvaderShot) and obj.is_active and obj.hit_points > 0:
-            self.scene.game.traumatize(0.2)
-
-            remaining_damage = self.damage - max(0, obj.hit_points)
-
-            # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
-            obj.hit(damage=self.damage, by=self)
-            if obj.hit_points <= 0:
-                self.scene.game.score += obj.SCORE
-
-            self.damage = remaining_damage
-            # print(self.damage)
-            if self.damage <= 0:
-                self.frame = 2
 
 
 class Cannon(HeroWeapon):

@@ -70,8 +70,18 @@ class RigidBody(GameObject):
             Vector2(self.pos.x - self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
         ]
 
-    def hit(self, damage=1, by=None):
+    def hit(self, damage=1, by=None) -> int:
+        """
+        Processes a hit by a weapon.
+        Returns the amount of damage that was not absorbed by the shields, armor and hull.
+        :param damage: Damage from the weapon
+        :param by: Projectile that hit this object
+        :return: Damage that was not absorbed
+        """
         from weapons.shot import Shot
+
+        if not self.is_active:
+            return damage
 
         if isinstance(by, Shot):
             against_shields = by.AGAINST_SHIELD
@@ -92,6 +102,9 @@ class RigidBody(GameObject):
         damage_after_armor = damage_after_shield - self.armor * (1 - armor_piercing)
         hull_damage = damage_after_armor * against_hull
 
+        excess_damage = max(0, damage_after_armor - max(0, self.hit_points))
+        print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
+
         # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage})')
 
         self.hit_points -= round(max(0, hull_damage))
@@ -101,11 +114,14 @@ class RigidBody(GameObject):
         if self.hit_points <= 0:
             self.is_active = False
             self.will_destroy(by=by)
+            print(f'{self} marked inactive')
 
         # else:
         #     audio.sound(f"assets/audio/shield_hit{random.randint(1, 2)}.wav", volume=0.5).play()
 
-        audio.sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3", volume=0.2).play()
+        # audio.sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3", volume=0.2).play()
+
+        return excess_damage
 
     def on_collision(self, obj=None):
         pass
