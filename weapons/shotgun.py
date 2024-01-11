@@ -4,8 +4,6 @@ import pygame
 
 from utils import audio
 
-from objects.invader_shot import InvaderShot
-from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
 

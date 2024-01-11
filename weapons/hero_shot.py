@@ -1,19 +1,12 @@
-import random
 import numpy as np
 
-import pygame
-
-from utils import audio
 from weapons.weapon import Weapon
 
-from objects.invader_shot import InvaderShot
+from weapons.invader_shot import InvaderShot
 from weapons.shot import Shot, ShotState
 from objects.invader import Invader
 from objects.position import Position
-from objects.game_object import Sprite
 from scenes.scene import Scene
-
-from utils.sprites import get_frames
 
 
 class HeroShot(Shot):

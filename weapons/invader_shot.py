@@ -6,12 +6,22 @@ from utils import audio
 from utils.sprites import get_frames
 from objects.position import Position
 from objects.game_object import Sprite
-from weapons.shot import Shot
+from weapons.shot import Shot, ShotState
 from scenes.scene import Scene
 
 
 class InvaderShot(Shot):
     SCORE = 50
+    DAMAGE = 64
+    CRITICAL_HIT_CHANCE = 0.1
+
+    # Multipliers against armor, shields and hull
+    AGAINST_SHIELD = 0.25
+    AGAINST_ARMOR = 0.5
+    AGAINST_HULL = 0.5
+
+    SHIELD_PIERCING = 0.0  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.0  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
         super().__init__(scene, pos, velocity)
@@ -41,4 +51,5 @@ class InvaderShot(Shot):
         # self.scene.game.traumatize(0.05)
         if isinstance(obj, Hero):
             obj.hit(damage=self.DAMAGE, by=self)
-            self.frame = 2
+            self.state = ShotState.DESTROYED
+            self.frame = self.state2frame()

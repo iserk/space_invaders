@@ -15,6 +15,11 @@ class Vehicle(ExplodableRigidBody):
     def update(self, dt):
         super().update(dt)
 
+        if self.shield < self.MAX_SHIELD:
+            self.shield += dt / 1000 * self.MAX_SHIELD / 10
+            if self.shield > self.MAX_SHIELD:
+                self.shield = self.MAX_SHIELD
+
         if self.weapon:
             self.weapon.update(dt)
 

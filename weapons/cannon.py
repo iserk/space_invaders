@@ -1,20 +1,16 @@
 import random
-import numpy as np
 
 import pygame
 
 from utils import audio
 from utils.sprites import get_frames
 
-from objects.invader_shot import InvaderShot
-from objects.invader import Invader
 from objects.position import Position
 from objects.game_object import Sprite
 
 from weapons.hero_shot import HeroWeapon, HeroShot
 
 from scenes.scene import Scene
-from weapons.shot import ShotState
 
 
 class CannonShot(HeroShot):

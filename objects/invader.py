@@ -1,9 +1,9 @@
 import random
 import math
 
-from utils.draw import draw_health_bar
+from utils.draw import draw_stats
 from utils.noise import fractal_noise
-from objects.invader_shot import InvaderShot
+from weapons.invader_shot import InvaderShot
 
 from objects.position import Position
 from objects.game_object import Sprite
@@ -22,7 +22,7 @@ class Invader(Vehicle):
     MAX_ARMOR = 100
     MAX_SHIELD = 100
 
-    is_shooting = False
+    is_shooting = True
     is_wobbling = False
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
@@ -37,6 +37,8 @@ class Invader(Vehicle):
     def draw(self, camera):
         super().draw(camera)
 
+        draw_stats(self, camera)
+
         # # Draw rectangle around the invader
         #
         # pygame.draw.rect(
@@ -50,38 +52,6 @@ class Invader(Vehicle):
         #     ),
         #     1
         # )
-
-        # draw_health_bar(surface, x, y, width, height, color, value, max_value, value_threshold=0)
-        draw_health_bar(
-            camera.screen,
-            self.pos.x - self.sprite.width / 2,
-            self.pos.y - self.sprite.height / 2,
-            self.sprite.width,
-            2,
-            (0, 255, 0),
-            value=self.hit_points,
-            max_value=self.MAX_HIT_POINTS,
-            value_threshold=1
-        )
-        draw_health_bar(
-            camera.screen,
-            self.pos.x - self.sprite.width / 2,
-            self.pos.y - self.sprite.height / 2 - 4,
-            self.sprite.width,
-            2,
-            (160, 160, 160),
-            self.armor,
-            self.MAX_ARMOR
-        )
-        draw_health_bar(
-            camera.screen,
-            self.pos.x - self.sprite.width / 2,
-            self.pos.y - self.sprite.height / 2 - 8,
-            self.sprite.width,
-            2,
-            (0, 128, 255),
-            self.shield, self.MAX_SHIELD
-        )
 
         # # Drawing armor
         # if self.MAX_ARMOR > 10:

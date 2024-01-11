@@ -26,3 +26,37 @@ def draw_health_bar(surface, x, y, width, height, color, value, max_value, value
                     2,
                 )
             )
+
+
+def draw_stats(vehicle, camera):
+    # draw_health_bar(surface, x, y, width, height, color, value, max_value, value_threshold=0)
+    draw_health_bar(
+        camera.screen,
+        vehicle.pos.x - vehicle.sprite.width / 2,
+        vehicle.pos.y - vehicle.sprite.height / 2,
+        vehicle.sprite.width,
+        2,
+        (0, 255, 0),
+        value=vehicle.hit_points,
+        max_value=vehicle.MAX_HIT_POINTS,
+        value_threshold=1
+    )
+    draw_health_bar(
+        camera.screen,
+        vehicle.pos.x - vehicle.sprite.width / 2,
+        vehicle.pos.y - vehicle.sprite.height / 2 - 4,
+        vehicle.sprite.width,
+        2,
+        (160, 160, 160),
+        vehicle.armor,
+        vehicle.MAX_ARMOR
+    )
+    draw_health_bar(
+        camera.screen,
+        vehicle.pos.x - vehicle.sprite.width / 2,
+        vehicle.pos.y - vehicle.sprite.height / 2 - 8,
+        vehicle.sprite.width,
+        2,
+        (0, 128, 255),
+        vehicle.shield, vehicle.MAX_SHIELD
+    )

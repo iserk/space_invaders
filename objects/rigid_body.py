@@ -13,7 +13,7 @@ from utils import collision, audio
 
 
 class RigidBody(GameObject):
-    MAX_HIT_POINTS = 100
+    MAX_HIT_POINTS = 1
     MAX_ARMOR = 0
     MAX_SHIELD = 0
 
@@ -103,7 +103,7 @@ class RigidBody(GameObject):
         hull_damage = damage_after_armor * against_hull
 
         excess_damage = max(0, damage_after_armor - max(0, self.hit_points))
-        # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
+        print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
 
         self.hit_points -= round(max(0, hull_damage))
         self.armor -= round(max(0, armor_damage))

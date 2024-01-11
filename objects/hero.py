@@ -7,10 +7,9 @@ from game.game_manager import SceneSwitchException
 from objects.explosion import Explosion
 from objects.position import Position
 from objects.game_object import Sprite
-from objects.rigid_body import RigidBody
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
-from utils import audio
+from utils.draw import draw_health_bar, draw_stats
 from weapons.plasma_cannon import PlasmaCannon
 from weapons.autocannon import Autocannon
 from weapons.cannon import Cannon
@@ -22,7 +21,9 @@ from weapons.gatling import Gatling
 class Hero(Vehicle):
     SPEED = 300
     ANIMATION_FPS = 6
-    MAX_HIT_POINTS = 4
+    MAX_HIT_POINTS = 100
+    MAX_SHIELD = 100
+    MAX_ARMOR = 100
 
     def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
         super().__init__(scene, pos, sprite)
@@ -147,16 +148,19 @@ class Hero(Vehicle):
         super().draw(camera)
         # Draw a blue circle around the invader to indicate its health (as shields)
 
-        for i in range(self.hit_points - 1):
-            q = (i + 1) / self.MAX_HIT_POINTS
-            c = (lerp(16, 64, q), lerp(32, 128, q), lerp(64, 255, q))
-            color = tuple(map(round, c))
-            pygame.draw.circle(
-                camera.screen,
-                color,
-                (round(self.pos.x), round(self.pos.y)),
-                self.sprite.width / 2 + 8 + 4 * i,
-                2
-            )
+        # Draw the health bar
+        draw_stats(self, camera)
+
+        # for i in range(self.hit_points - 1):
+        #     q = (i + 1) / self.MAX_HIT_POINTS
+        #     c = (lerp(16, 64, q), lerp(32, 128, q), lerp(64, 255, q))
+        #     color = tuple(map(round, c))
+        #     pygame.draw.circle(
+        #         camera.screen,
+        #         color,
+        #         (round(self.pos.x), round(self.pos.y)),
+        #         self.sprite.width / 2 + 8 + 4 * i,
+        #         2
+        #     )
 
         self.draw_hud(camera)
