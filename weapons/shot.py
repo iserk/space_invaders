@@ -76,12 +76,6 @@ class Shot(ExplodableRigidBody):
         #     ),
         #     1
         # )
-        # r = (
-        #     min(self.get_collider()[0].x, self.get_collider()[2].x),
-        #     min(self.get_collider()[0].y, self.get_collider()[2].y),
-        #     abs(self.get_collider()[2].x - self.get_collider()[0].x),
-        #     abs(self.get_collider()[2].y - self.get_collider()[0].y) + 2,
-        # )
         #
         # # Draw red box around the collider
         # pygame.draw.rect(
@@ -116,20 +110,6 @@ class Shot(ExplodableRigidBody):
 
         if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
-
-    def get_collider(self):
-        return [
-            Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y - self.SHOT_SIZE[1] / 2),
-            Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y - self.SHOT_SIZE[1] / 2),
-            Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y + self.SHOT_SIZE[1] / 2),
-            Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y + self.SHOT_SIZE[1] / 2),
-        ]
-        # return [
-        #     Vector2(self.prev_pos.x - self.SHOT_SIZE[0] / 2, self.prev_pos.y),
-        #     Vector2(self.prev_pos.x + self.SHOT_SIZE[0] / 2, self.prev_pos.y),
-        #     Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y),
-        #     Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y),
-        # ]
 
     @staticmethod
     def get_detonation_delay():

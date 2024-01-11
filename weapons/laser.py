@@ -64,7 +64,6 @@ class LaserShot(HeroShot):
             4
         )
 
-        # # print(self.get_collider())
         # r = (
         #         min(self.get_rect()[0].x, self.get_rect()[1].x),
         #         min(self.get_rect()[0].y, self.get_rect()[1].y),

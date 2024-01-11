@@ -14,7 +14,7 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
-    SPEED = 10
+    SPEED = 5
     # SPEED = 0
     ANIMATION_FPS = 2
     MAX_HIT_POINTS = 100

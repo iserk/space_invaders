@@ -62,14 +62,6 @@ class RigidBody(GameObject):
             Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
         ]
 
-    def get_collider(self):
-        return [
-            Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
-            Vector2(self.pos.x + self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
-            Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
-            Vector2(self.pos.x - self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
-        ]
-
     def hit(self, damage=1, by=None) -> int:
         """
         Processes a hit by a weapon.
