@@ -23,7 +23,7 @@ class Invader(Vehicle):
     MAX_ARMOR = 32
     MAX_SHIELD = 32
 
-    is_shooting = True
+    is_shooting = False
     is_wobbling = True
 
     def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):

@@ -15,6 +15,7 @@ class Scene:
         self.is_input_enabled = False
         self.timers = []
         self.hero = None
+        self.fps_list = []
 
     def activate(self):
         pass
@@ -28,11 +29,20 @@ class Scene:
 
     def show_stats(self, screen, clock):
         fps = str(int(clock.get_fps()))
+        self.fps_list.append(int(fps))
+        if len(self.fps_list) > 300:
+            self.fps_list.pop(0)
+
+        avg_fps = sum(self.fps_list) / len(self.fps_list)
+
         fps_text = self.game.font.render(f'FPS: {fps}', True, pygame.Color("lime"))
         screen.blit(fps_text, (8, 8))
 
+        fps_text = self.game.font.render(f'AVG:  {round(avg_fps)}', True, pygame.Color("lime"))
+        screen.blit(fps_text, (8, 32))
+
         time_scale_text = self.game.font.render(f'Time: {self.game.time_scale:.2f}x', True, pygame.Color("lime"))
-        screen.blit(time_scale_text, (200, 8))
+        screen.blit(time_scale_text, (220, 8))
 
         score_text = self.game.font.render(f"Score: {self.game.score:08}", True, pygame.Color("lime"))
         screen.blit(score_text, (self.game.screen_size[0] / 2 - score_text.get_width() / 2, 8))
