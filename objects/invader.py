@@ -19,8 +19,8 @@ class Invader(Vehicle):
     ANIMATION_FPS = 2
     MAX_HIT_POINTS = 100
     SCORE = 10 * MAX_HIT_POINTS
-    MAX_ARMOR = 100
-    MAX_SHIELD = 100
+    MAX_ARMOR = 32
+    MAX_SHIELD = 32
 
     is_shooting = True
     is_wobbling = False

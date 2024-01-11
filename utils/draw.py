@@ -15,7 +15,7 @@ def draw_health_bar(surface, x, y, width, height, color, value, max_value, value
             )
         )
     elif max_value > value_threshold:
-        for i in range(value):
+        for i in range(round(value)):
             pygame.draw.rect(
                 surface,
                 color,
