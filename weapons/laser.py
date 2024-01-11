@@ -13,7 +13,7 @@ from weapons.shot import ShotState
 class LaserShot(HeroShot):
     DESTROY_ON_HIT = False
     SCORE_COST = 1
-    DAMAGE = 50
+    DAMAGE = 50    # per second
     PULSE_DURATION = 190
 
     CRITICAL_HIT_CHANCE = 0.05
@@ -104,7 +104,7 @@ class LaserShot(HeroShot):
 
                 # Calculate damage based on critical hit chance
                 damage = self.DAMAGE
-                self.scene.game.traumatize(0.1 * damage)
+                # self.scene.game.traumatize(0.1 * damage)
 
                 if random.random() <= self.CRITICAL_HIT_CHANCE:
                     damage *= 2

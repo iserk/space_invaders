@@ -20,7 +20,7 @@ class HeroShot(Shot):
     """Base class for hero shots"""
 
     SCORE_COST = 1
-    DAMAGE = 1
+    DAMAGE = 100
     CRITICAL_HIT_CHANCE = 0.2
     VALID_TARGETS_CLASSES = [Invader, InvaderShot]
 
@@ -37,7 +37,7 @@ class HeroShot(Shot):
 
         # Calculate damage based on critical hit chance
         damage = self.DAMAGE
-        self.scene.game.traumatize(0.1 * damage)
+        # self.scene.game.traumatize(0.1 * damage)
 
         if np.random.default_rng().random() <= self.CRITICAL_HIT_CHANCE:
             damage *= 2

@@ -17,8 +17,7 @@ class ShotState(Enum):
 
 
 class Shot(ExplodableRigidBody):
-    DAMAGE = 1
-    SHOT_LENGTH = 16
+    DAMAGE = 100
     DESTROY_ON_HIT = True
     SPEED = 500
     CRITICAL_HIT_CHANCE = 0.1
@@ -37,8 +36,6 @@ class Shot(ExplodableRigidBody):
         super().__init__(scene, pos, None)
         self.pos = pos
         self.velocity = velocity
-
-        self.direction = self.velocity.get_normalized() * Shot.SHOT_LENGTH
 
         self.damage = self.DAMAGE
 

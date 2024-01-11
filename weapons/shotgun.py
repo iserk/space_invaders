@@ -18,9 +18,7 @@ from utils.sprites import get_frames
 
 class ShotgunShot(HeroShot):
     SCORE_COST = 2
-    DAMAGE = 1
-    SHOT_LENGTH = 16
-    SPEED = 500
+    DAMAGE = 8
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull

@@ -15,7 +15,7 @@ from scenes.scene import Scene
 
 class AutocannonShot(HeroShot):
     SCORE_COST = 2
-    DAMAGE = 3
+    DAMAGE = 48
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull

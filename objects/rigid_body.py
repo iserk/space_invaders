@@ -13,7 +13,7 @@ from utils import collision, audio
 
 
 class RigidBody(GameObject):
-    MAX_HIT_POINTS = 1
+    MAX_HIT_POINTS = 100
     MAX_ARMOR = 0
     MAX_SHIELD = 0
 

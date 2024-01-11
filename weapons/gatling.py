@@ -16,7 +16,7 @@ from scenes.scene import Scene
 
 class GatlingShot(HeroShot):
     SCORE_COST = 1
-    DAMAGE = 1
+    DAMAGE = 8
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
