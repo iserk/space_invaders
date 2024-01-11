@@ -16,7 +16,6 @@ class Weapon:
     RECOIL = 0.5
 
     def __init__(self, vehicle=None):
-        self.name = self.__class__.__name__
         self.shot = None
         self.vehicle = vehicle
         self.prev_shot_time = 0
@@ -26,6 +25,12 @@ class Weapon:
 
         self.clip = self.CLIP_SIZE
         self.ammo = self.MAX_AMMO
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self):
+        return self.__class__.__name__
 
     def get_charge(self):
         # return (self.vehicle.scene.game.total_time - self.prev_shot_time) / self.SHOOT_DELAY

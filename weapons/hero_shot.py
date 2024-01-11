@@ -48,7 +48,7 @@ class HeroShot(Shot):
         if obj.hit_points <= 0:
             self.scene.game.score += obj.SCORE
 
-        print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
+        # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
 
         self.damage = remaining_damage
 

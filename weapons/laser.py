@@ -13,15 +13,15 @@ from weapons.shot import ShotState
 class LaserShot(HeroShot):
     DESTROY_ON_HIT = False
     SCORE_COST = 1
-    DAMAGE = 50    # per second
+    DAMAGE = 80    # per second
     PULSE_DURATION = 190
 
     CRITICAL_HIT_CHANCE = 0.05
 
     # Multipliers against armor, shields and hull
-    AGAINST_SHIELD = 1.5
-    AGAINST_ARMOR = 0.5
-    AGAINST_HULL = 0.75
+    AGAINST_SHIELD = 3
+    AGAINST_ARMOR = 0.01
+    AGAINST_HULL = 0.01
 
     SHIELD_PIERCING = 0.50  # Percentage of initial damage that goes through to armor
     ARMOR_PIERCING = 0.00  # Percentage of initial damage that goes through to hull
@@ -89,8 +89,7 @@ class LaserShot(HeroShot):
 
         if (self.state == ShotState.DESTROYED
                 or self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]
-                or self.state == ShotState.HITTING
-                and self.scene.game.total_time - self.start_time > self.PULSE_DURATION
+                or self.scene.game.total_time - self.start_time > self.PULSE_DURATION
         ):
             self.destroy()
             return
@@ -143,9 +142,9 @@ class Laser(HeroWeapon):
     PELLETS = 1
     ACCURACY = 1
 
-    CLIP_SIZE = 1000
-    RELOAD_TIME = 1000
-    MAX_AMMO = 10000
+    CLIP_SIZE = 50
+    RELOAD_TIME = 2000
+    MAX_AMMO = 200
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)

@@ -103,9 +103,7 @@ class RigidBody(GameObject):
         hull_damage = damage_after_armor * against_hull
 
         excess_damage = max(0, damage_after_armor - max(0, self.hit_points))
-        print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
-
-        # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage})')
+        # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
 
         self.hit_points -= round(max(0, hull_damage))
         self.armor -= round(max(0, armor_damage))
@@ -114,7 +112,6 @@ class RigidBody(GameObject):
         if self.hit_points <= 0:
             self.is_active = False
             self.will_destroy(by=by)
-            print(f'{self} marked inactive')
 
         # else:
         #     audio.sound(f"assets/audio/shield_hit{random.randint(1, 2)}.wav", volume=0.5).play()

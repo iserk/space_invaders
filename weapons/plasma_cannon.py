@@ -49,7 +49,7 @@ class PlasmaCannonShot(HeroShot):
 
 
 class PlasmaCannon(HeroWeapon):
-    SPEED = 1000
+    SPEED = 1600
     SHOOT_DELAY = 500
     PELLETS = 1
     ACCURACY = 0.9
@@ -62,11 +62,7 @@ class PlasmaCannon(HeroWeapon):
         super().__init__(vehicle)
         self.shot = PlasmaCannonShot
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}()"
-
     def __str__(self):
-        print("__str__")
         return "Plasma Cannon"
 
     def _perform_shot(self, scene, pos, velocity):

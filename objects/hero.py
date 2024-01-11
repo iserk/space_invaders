@@ -86,7 +86,7 @@ class Hero(Vehicle):
     def draw_hud(self, camera):
         if self.weapon.is_reloading and self.weapon.ammo > 0:
             weapon_name = self.scene.game.font.render(
-                f"{str(self.weapon.name)} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon)} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 (255, 170, 100)
                 # pygame.Color("lime")
@@ -105,7 +105,7 @@ class Hero(Vehicle):
 
         elif self.weapon.ammo == 0 and self.weapon.clip == 0:
             weapon_name = self.scene.game.font.render(
-                f"{str(self.weapon.name)}: Out of ammo   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon)}: Out of ammo   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 (255, 64, 64),
             )
@@ -122,7 +122,7 @@ class Hero(Vehicle):
             )
         else:
             weapon_name = self.scene.game.font.render(
-                f"{str(self.weapon.name)}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
+                f"{str(self.weapon)}: {self.weapon.get_charge() * 100:.0f}%   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
                 pygame.Color("lime")
             )

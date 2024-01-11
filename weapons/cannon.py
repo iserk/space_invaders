@@ -18,7 +18,7 @@ from weapons.shot import ShotState
 
 
 class CannonShot(HeroShot):
-    DAMAGE = 300
+    DAMAGE = 400
     SCORE_COST = DAMAGE
     DESTROY_ON_HIT = False
 
