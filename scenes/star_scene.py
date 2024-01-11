@@ -2,9 +2,9 @@ import random
 from collections import namedtuple
 
 import pygame
+from pygame import Vector2
 
 from game.game_manager import GameManager
-from objects.position import Position
 from scenes.scene import Scene
 
 
@@ -19,7 +19,7 @@ class StarScene(Scene):
 
         self.stars = [
             Star(
-                pos=Position(x=random.randint(0, self.camera.screen_size[0]), y=random.randint(0, self.camera.screen_size[0])),
+                pos=Vector2(x=random.randint(0, self.camera.screen_size[0]), y=random.randint(0, self.camera.screen_size[0])),
                 color=(random.randint(32, 255), random.randint(32, 255), random.randint(32, 255)) if random.randint(1, 10) > 5 else (255, 255, 255),
                 # color=((255, 255, 255)),
                 size=random.randint(0, 2)

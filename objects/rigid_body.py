@@ -4,12 +4,10 @@ import pygame
 from pygame import Vector2
 
 from objects.game_object import GameObject
-from objects.position import Position
+
 from objects.game_object import Sprite
-from objects.explosion import Explosion
 
 from scenes.scene import Scene
-from utils import collision, audio
 
 
 class RigidBody(GameObject):
@@ -17,7 +15,7 @@ class RigidBody(GameObject):
     MAX_ARMOR = 0
     MAX_SHIELD = 0
 
-    def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
+    def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):
         super().__init__(scene)
 
         self.hit_points = self.MAX_HIT_POINTS
@@ -27,7 +25,7 @@ class RigidBody(GameObject):
         self.pos = pos.copy()
         self.prev_pos = pos.copy()
 
-        self.velocity = Position(0, 0)
+        self.velocity = Vector2(0, 0)
 
         self.roll = 0  # Roll angle in degrees
         self.roll_speed = 0  # Roll speed in degrees per second
@@ -43,7 +41,7 @@ class RigidBody(GameObject):
             image = pygame.transform.rotate(image, self.roll)
         camera.screen.blit(
             image,
-            tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2))
+            tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2))
         )
 
     def update(self, dt):

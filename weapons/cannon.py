@@ -1,11 +1,11 @@
 import random
 
 import pygame
+from pygame import Vector2
 
 from utils import audio
 from utils.sprites import get_frames
 
-from objects.position import Position
 from objects.game_object import Sprite
 
 from weapons.hero_shot import HeroWeapon, HeroShot
@@ -30,7 +30,7 @@ class CannonShot(HeroShot):
 
     # SHOT_SIZE = (48, 48)
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=2):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2, scale=2):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)

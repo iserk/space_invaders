@@ -1,10 +1,10 @@
 import random
+
 import pygame
 from pygame import Vector2
 
 from utils import audio
 
-from objects.position import Position
 from weapons.hero_shot import HeroWeapon, HeroShot
 from scenes.scene import Scene
 from weapons.shot import ShotState
@@ -26,7 +26,7 @@ class LaserShot(HeroShot):
     SHIELD_PIERCING = 0.50  # Percentage of initial damage that goes through to armor
     ARMOR_PIERCING = 0.00  # Percentage of initial damage that goes through to hull
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, weapon=None):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2, weapon=None):
         super().__init__(scene, pos, velocity)
 
         self.weapon = weapon
@@ -59,8 +59,8 @@ class LaserShot(HeroShot):
         pygame.draw.line(
             camera.screen,
             (128, 128, 64),
-            tuple(self.pos + Position(-2, -32)),
-            tuple(self.pos + Position(0, -1000)),
+            tuple(self.pos + Vector2(-2, -32)),
+            tuple(self.pos + Vector2(0, -1000)),
             4
         )
 

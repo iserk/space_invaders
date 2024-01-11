@@ -1,8 +1,8 @@
 import random
 
 import pygame
+from pygame import Vector2
 
-from objects.position import Position
 from objects.game_object import GameObject, Sprite
 from utils import audio
 from utils.sprites import get_frames
@@ -13,7 +13,7 @@ class Explosion(GameObject):
     ANIMATION_FPS = 6
     ALPHA = 64
 
-    def __init__(self, scene: Scene, pos: Position, scale=2):
+    def __init__(self, scene: Scene, pos: Vector2, scale=2):
         super().__init__(scene)
 
         self.scale = scale
@@ -46,7 +46,7 @@ class Explosion(GameObject):
 
     def draw(self, camera):
         if self.frame < len(self.sprite.frames):
-            camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos - Position(self.sprite.width / 2, self.sprite.height / 2)))
+            camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2)))
 
     def update(self, dt):
         self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / 1000)

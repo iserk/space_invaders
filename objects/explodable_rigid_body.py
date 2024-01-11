@@ -1,14 +1,7 @@
 import random
 
-import pygame
-
-from objects.game_object import GameObject
-from objects.position import Position
-from objects.game_object import Sprite
 from objects.explosion import Explosion
 from objects.rigid_body import RigidBody
-
-from scenes.scene import Scene
 
 
 class ExplodableRigidBody(RigidBody):
@@ -24,7 +17,7 @@ class ExplodableRigidBody(RigidBody):
         self.scene.add_timer(self.get_detonation_delay(), lambda o=self: o.destroy(explode=True))
         self.roll = torque * 60
         self.roll_speed = torque * 360
-        self.velocity = by.velocity.get_normalized() * 10
+        self.velocity = by.velocity.normalize() * 10
         self.pos.y += (1 - torque) * velocity_y_sign * 10
 
     def explode(self):

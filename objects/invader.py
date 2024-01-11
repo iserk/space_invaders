@@ -1,11 +1,12 @@
 import random
 import math
 
+from pygame import Vector2
+
 from utils.draw import draw_stats
 from utils.noise import fractal_noise
 from weapons.invader_shot import InvaderShot
 
-from objects.position import Position
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
 from objects.explosion import Explosion
@@ -25,14 +26,14 @@ class Invader(Vehicle):
     is_shooting = True
     is_wobbling = True
 
-    def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
+    def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):
         super().__init__(scene, pos, sprite)
 
         self.hit_points = self.MAX_HIT_POINTS
         self.armor = self.MAX_ARMOR
         self.shield = self.MAX_SHIELD
         self.initial_pos = pos.copy()
-        self.velocity = Position(0, Invader.SPEED)
+        self.velocity = Vector2(0, Invader.SPEED)
 
     def draw(self, camera):
         super().draw(camera)
@@ -111,8 +112,8 @@ class Invader(Vehicle):
                 and self.scene.total_time % 1000 < 20):
             InvaderShot(
                 scene=self.scene,
-                pos=self.pos + Position(0, self.sprite.height / 2),
-                velocity=Position(0, InvaderShot.SPEED),
+                pos=self.pos + Vector2(0, self.sprite.height / 2),
+                velocity=Vector2(0, InvaderShot.SPEED),
             )
             # pass
 

@@ -1,6 +1,7 @@
 import numpy as np
 
-from objects.position import Position
+from pygame import Vector2
+
 from utils import audio
 
 
@@ -49,7 +50,7 @@ class Weapon:
             scene, pos,
 
             # Normal distribution
-            velocity + Position((np.random.default_rng().normal() - 0.5) * self.shot.SPEED * (1 - self.ACCURACY), 0)
+            velocity + Vector2((np.random.default_rng().normal() - 0.5) * self.shot.SPEED * (1 - self.ACCURACY), 0)
 
             # Uniform distribution
             # velocity + Position(random.uniform(-1, 1) * self.shot.SPEED * (1 - self.ACCURACY), 0)

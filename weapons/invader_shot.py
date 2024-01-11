@@ -1,10 +1,10 @@
 import random
 
 import pygame
+from pygame import Vector2
 
 from utils import audio
 from utils.sprites import get_frames
-from objects.position import Position
 from objects.game_object import Sprite
 from weapons.shot import Shot, ShotState
 from scenes.scene import Scene
@@ -23,7 +23,7 @@ class InvaderShot(Shot):
     SHIELD_PIERCING = 0.0  # Percentage of initial damage that goes through to armor
     ARMOR_PIERCING = 0.0  # Percentage of initial damage that goes through to hull
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2, scale=1):
         super().__init__(scene, pos, velocity)
         audio.sound(f"assets/audio/invader_shot{random.randint(1, 2)}.wav", volume=0.4).play()
 

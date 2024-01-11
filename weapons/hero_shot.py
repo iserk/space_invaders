@@ -1,11 +1,12 @@
 import numpy as np
 
+from pygame import Vector2
+
 from weapons.weapon import Weapon
 
 from weapons.invader_shot import InvaderShot
 from weapons.shot import Shot, ShotState
 from objects.invader import Invader
-from objects.position import Position
 from scenes.scene import Scene
 
 
@@ -17,7 +18,7 @@ class HeroShot(Shot):
     CRITICAL_HIT_CHANCE = 0.2
     VALID_TARGETS_CLASSES = [Invader, InvaderShot]
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2):
 
         super().__init__(scene, pos, velocity)
 
@@ -45,9 +46,9 @@ class HeroShot(Shot):
 
         old_velocity = self.velocity.copy()
         self.damage = remaining_damage
-        # self.velocity = self.velocity.get_normalized() * self.SPEED * self.damage2speed(self.damage)
+        # self.velocity = self.velocity.normalize() * self.SPEED * self.damage2speed(self.damage)
         print(self.damage / self.DAMAGE)
-        # self.velocity = self.velocity.get_normalized() * self.SPEED * self.damage / self.DAMAGE
+        # self.velocity = self.velocity.normalize() * self.SPEED * self.damage / self.DAMAGE
         # print(f"DMG: {self.damage}, V: {old_velocity} -> {self.velocity}")
 
         if not self.DESTROY_ON_HIT and self.damage > 0:

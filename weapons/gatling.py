@@ -1,12 +1,11 @@
 import random
-import numpy as np
 
 import pygame
+from pygame import Vector2
 
 from utils import audio
 from utils.sprites import get_frames
 
-from objects.position import Position
 from objects.game_object import Sprite
 
 from weapons.hero_shot import HeroWeapon, HeroShot
@@ -27,7 +26,7 @@ class GatlingShot(HeroShot):
     SHIELD_PIERCING = 0.05  # Percentage of initial damage that goes through to armor
     ARMOR_PIERCING = 0.10  # Percentage of initial damage that goes through to hull
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position, scale=1.25):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2, scale=1.25):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)

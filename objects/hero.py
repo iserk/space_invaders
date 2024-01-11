@@ -2,10 +2,11 @@ import random
 
 import pygame
 from pygame.math import lerp
+from pygame import Vector2
 
 from game.game_manager import SceneSwitchException
 from objects.explosion import Explosion
-from objects.position import Position
+
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
@@ -25,7 +26,7 @@ class Hero(Vehicle):
     MAX_SHIELD = 100
     MAX_ARMOR = 100
 
-    def __init__(self, scene: Scene, pos: Position, sprite: Sprite):
+    def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):
         super().__init__(scene, pos, sprite)
         self.hit_points = self.MAX_HIT_POINTS
         self.weapons = [

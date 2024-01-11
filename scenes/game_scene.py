@@ -2,13 +2,13 @@ import random
 from collections import namedtuple
 
 import pygame
+from pygame import Vector2
 
 import settings
 from scenes.scene import Scene
 from game.game_manager import GameManager, GameStatus
 from objects.hero import Hero
 from objects.invader import Invader
-from objects.position import Position
 from objects.game_object import Sprite
 from scenes.star_scene import StarScene
 from utils import audio
@@ -51,7 +51,7 @@ class GameScene(StarScene):
         sprite = Sprite(frames=get_frames(image, 32 * scale, 32 * scale, 6), width=32 * scale, height=32 * scale)
         self.hero = Hero(
             scene=self,
-            pos=Position(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
+            pos=Vector2(x=self.game.screen_center[0], y=self.game.screen_size[1] - sprite.height - 32),
             sprite=sprite
         )
 
@@ -61,7 +61,7 @@ class GameScene(StarScene):
             for col in range(10):
                 obj = Invader(
                     scene=self,
-                    pos=Position(70 + col * (sprite.width + 50), 100 + 80 * row),
+                    pos=Vector2(70 + col * (sprite.width + 50), 100 + 80 * row),
                     sprite=sprite
                 )
                 # obj.shield = obj.MAX_SHIELD = max(0, 2 - row)

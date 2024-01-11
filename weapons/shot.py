@@ -1,11 +1,9 @@
 import random
 from enum import Enum
 
-import pygame.draw
 from pygame import Vector2
 
 from objects.explodable_rigid_body import ExplodableRigidBody
-from objects.position import Position
 from scenes.scene import Scene
 
 
@@ -33,7 +31,7 @@ class Shot(ExplodableRigidBody):
 
     SHOT_SIZE = (16, 16)
 
-    def __init__(self, scene: Scene, pos: Position, velocity: Position):
+    def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2):
         super().__init__(scene, pos, None)
         self.pos = pos
         self.velocity = velocity
