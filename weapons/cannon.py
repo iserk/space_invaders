@@ -51,7 +51,7 @@ class Cannon(HeroWeapon):
     SPEED = 3000
     SHOOT_DELAY = 800
     PELLETS = 1
-    ACCURACY = 0.8
+    ACCURACY = 0.97
 
     CLIP_SIZE = 1
     RELOAD_TIME = 1200

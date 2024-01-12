@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 from pygame import Vector2
@@ -9,6 +11,8 @@ class Weapon:
     SPEED = 500
     SHOOT_DELAY = 200
     ACCURACY = 0.8
+
+    PELLETS = 1
 
     CLIP_SIZE = 10
     RELOAD_TIME = 1000
@@ -46,11 +50,13 @@ class Weapon:
 
     def _send_bullet(self, scene, pos, velocity):
         """Sends a single bullet with the given parameters."""
+        print(f"{self.shot}'s speed: {self.SPEED}")
+        p = pos.copy()
+        dispersion = self.SPEED * (1 - self.ACCURACY)
         return self.shot(
-            scene, pos,
-
+            scene, p,
             # Normal distribution
-            velocity + Vector2((np.random.default_rng().normal() - 0.5) * self.shot.SPEED * (1 - self.ACCURACY), 0)
+            velocity + Vector2((np.random.default_rng().normal(0, dispersion)), 0)
 
             # Uniform distribution
             # velocity + Position(random.uniform(-1, 1) * self.shot.SPEED * (1 - self.ACCURACY), 0)
@@ -58,7 +64,9 @@ class Weapon:
 
     def _perform_shot(self, scene, pos, velocity):
         """Performs a single shot with the given parameters."""
-        self._send_bullet(scene, pos, velocity)
+        for _ in range(self.PELLETS):
+            self._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
+            # self._send_bullet(scene, pos, velocity)
 
     def shoot(self, scene, pos, velocity):
         if not self.can_shoot():

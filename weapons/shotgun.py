@@ -47,11 +47,11 @@ class ShotgunShot(HeroShot):
 class Shotgun(HeroWeapon):
     SPEED = 1000
     PELLETS = 30
-    ACCURACY = 0.6
+    ACCURACY = 0.75
 
     CLIP_SIZE = 4
-    RELOAD_TIME = 2500
-    SHOOT_DELAY = 800
+    RELOAD_TIME = 2000
+    SHOOT_DELAY = 700
     MAX_AMMO = 20
 
     def __init__(self, vehicle=None):
@@ -59,7 +59,5 @@ class Shotgun(HeroWeapon):
         self.shot = ShotgunShot
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-
+        super()._perform_shot(scene, pos, velocity)
         audio.sound(f"assets/audio/gatling/shot{random.randint(1,3):02}.wav").play()

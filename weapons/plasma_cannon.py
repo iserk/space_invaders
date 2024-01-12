@@ -52,7 +52,7 @@ class PlasmaCannon(HeroWeapon):
     SPEED = 1600
     SHOOT_DELAY = 500
     PELLETS = 1
-    ACCURACY = 0.9
+    ACCURACY = 0.92
 
     CLIP_SIZE = 16
     RELOAD_TIME = 1500

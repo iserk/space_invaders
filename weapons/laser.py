@@ -138,7 +138,6 @@ class LaserShot(HeroShot):
 class Laser(HeroWeapon):
     SPEED = 1
     SHOOT_DELAY = 200
-    PELLETS = 1
     ACCURACY = 1
 
     CLIP_SIZE = 50
@@ -151,8 +150,6 @@ class Laser(HeroWeapon):
         self.sound = None
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity)
-
+        super()._perform_shot(scene, pos, velocity)
         sound = audio.sound(f"assets/audio/beam_shot.wav").play()
         self.vehicle.scene.add_timer(500, lambda: sound.fadeout(500) if sound is not None else None)

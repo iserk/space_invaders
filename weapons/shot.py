@@ -1,6 +1,7 @@
 import random
 from enum import Enum
 
+import pygame
 from pygame import Vector2
 
 from objects.explodable_rigid_body import ExplodableRigidBody
@@ -17,7 +18,6 @@ class ShotState(Enum):
 class Shot(ExplodableRigidBody):
     DAMAGE = 100
     DESTROY_ON_HIT = True
-    SPEED = 500
     CRITICAL_HIT_CHANCE = 0.1
     ACCELERATION = -0.5  # Acceleration in pixels per second squared
 
@@ -54,7 +54,7 @@ class Shot(ExplodableRigidBody):
 
     def draw(self, camera):
         super().draw(camera)
-        #
+
         # pygame.draw.line(
         #     camera.screen,
         #     (128, 128, 128),
@@ -62,7 +62,7 @@ class Shot(ExplodableRigidBody):
         #     tuple(self.pos),
         #     1
         # )
-
+        #
         # pygame.draw.rect(
         #     camera.screen,
         #     (255, 0, 0),
@@ -74,12 +74,20 @@ class Shot(ExplodableRigidBody):
         #     ),
         #     1
         # )
+
+        # r =self.get_rect()
         #
         # # Draw red box around the collider
         # pygame.draw.rect(
         #     camera.screen,
-        #     (255, 0, 0),
-        #     r,
+        #     (0, 255, 255),
+        #     # self.get_rect(),
+        #     (
+        #         r[0].x,
+        #         r[0].y,
+        #         r[1].x - r[0].x,
+        #         r[1].y - r[0].y,
+        #     ),
         #     1
         # )
 
@@ -108,6 +116,17 @@ class Shot(ExplodableRigidBody):
 
         if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
+
+    # def get_rect(self):
+    #     # return [
+    #     #     Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
+    #     #     Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
+    #     # ]
+    #
+    #     return (
+    #             Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y - self.SHOT_SIZE[1] / 2),
+    #             Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y + self.SHOT_SIZE[1] / 2),
+    #     )
 
     @staticmethod
     def get_detonation_delay():

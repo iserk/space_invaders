@@ -48,7 +48,7 @@ class Gatling(HeroWeapon):
     SPEED = 3000
     SHOOT_DELAY = 20
     PELLETS = 1
-    ACCURACY = 0.7
+    ACCURACY = 0.95
 
     CLIP_SIZE = 100
     RELOAD_TIME = 1500

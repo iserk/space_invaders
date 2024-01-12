@@ -47,7 +47,7 @@ class HeroShot(Shot):
         old_velocity = self.velocity.copy()
         self.damage = remaining_damage
         # self.velocity = self.velocity.normalize() * self.SPEED * self.damage2speed(self.damage)
-        print(self.damage / self.DAMAGE)
+
         # self.velocity = self.velocity.normalize() * self.SPEED * self.damage / self.DAMAGE
         # print(f"DMG: {self.damage}, V: {old_velocity} -> {self.velocity}")
 

@@ -51,8 +51,7 @@ class AutocannonShot(HeroShot):
 class Autocannon(HeroWeapon):
     SPEED = 3000
     SHOOT_DELAY = 150
-    PELLETS = 1
-    ACCURACY = 0.8
+    ACCURACY = 0.96
 
     CLIP_SIZE = 25
     RELOAD_TIME = 1500
@@ -63,7 +62,5 @@ class Autocannon(HeroWeapon):
         self.shot = AutocannonShot
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-
+        super()._perform_shot(scene, pos, velocity)
         audio.sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()
