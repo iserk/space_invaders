@@ -16,7 +16,7 @@ from utils.sprites import get_frames
 
 class ShotgunShot(HeroShot):
     SCORE_COST = 2
-    DAMAGE = 10
+    DAMAGE = 8
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
@@ -49,10 +49,10 @@ class Shotgun(HeroWeapon):
     PELLETS = 30
     ACCURACY = 0.75
 
-    CLIP_SIZE = 4
+    CLIP_SIZE = 5
     RELOAD_TIME = 2000
     SHOOT_DELAY = 700
-    MAX_AMMO = 20
+    MAX_AMMO = 25
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
