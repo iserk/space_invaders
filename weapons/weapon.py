@@ -108,5 +108,7 @@ class Weapon:
         if self.clip <= 0 < self.ammo and not self.is_reloading:
             self.start_reloading()
 
-        if self.is_reloading and self.ammo > 0 >= self.get_reload_time_left():
+        if (self.is_reloading
+                and self.get_reload_time_left() <= 0
+                and (self.ammo > 0 and self.clip < self.CLIP_SIZE or self.clip > 0)):
             self._reload()

@@ -86,7 +86,7 @@ class Hero(Vehicle):
         Explosion(scene=self.scene, pos=self.pos, scale=12)
 
     def draw_hud(self, camera):
-        if self.weapon.is_reloading and self.weapon.ammo > 0:
+        if self.weapon.is_reloading and (self.weapon.ammo > 0 or self.weapon.clip > 0):
             weapon_name = self.scene.game.font.render(
                 f"{str(self.weapon)} RELOADING   {self.weapon.clip} / {self.weapon.ammo}",
                 True,
