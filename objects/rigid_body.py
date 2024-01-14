@@ -3,6 +3,7 @@ import random
 import pygame
 from pygame import Vector2
 
+import settings
 from objects.game_object import GameObject
 
 from objects.game_object import Sprite
@@ -33,24 +34,31 @@ class RigidBody(GameObject):
         self.sprite = sprite
         self.frame = 0
 
+        self.is_taking_damage = False
         self.is_active = True
 
     def draw(self, camera):
         image = self.sprite.frames[self.frame]
         if self.roll != 0:
             image = pygame.transform.rotate(image, self.roll)
+        if self.is_taking_damage:
+            image = image.copy()
+            # image.fill((255, 255, 255, 0), None, pygame.BLEND_RGBA_ADD)
+            image.fill((32, 255, 255, 240), None, pygame.BLEND_RGBA_MULT)
         camera.screen.blit(
             image,
             tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2))
         )
 
     def update(self, dt):
+        self.is_taking_damage = False
+
         self.prev_pos = self.pos.copy()
 
         super().update(dt)
 
-        self.pos += self.velocity * dt / 1000
-        self.roll += self.roll_speed * dt / 1000
+        self.pos += self.velocity * dt / settings.TIME_UNITS_PER_SECOND
+        self.roll += self.roll_speed * dt / settings.TIME_UNITS_PER_SECOND
 
         self.detect_collisions()
 

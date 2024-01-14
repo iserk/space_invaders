@@ -3,6 +3,7 @@ import math
 
 from pygame import Vector2
 
+import settings
 from utils.draw import draw_stats
 from utils.noise import fractal_noise
 from weapons.invader_shot import InvaderShot
@@ -22,8 +23,9 @@ class Invader(Vehicle):
     SCORE = 10 * MAX_HIT_POINTS
     MAX_ARMOR = 32
     MAX_SHIELD = 32
+    SHOOTING_SPEED = 300
 
-    is_shooting = False
+    is_shooting = True
     is_wobbling = True
 
     def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):
@@ -92,7 +94,7 @@ class Invader(Vehicle):
     def update(self, dt):
         super().update(dt)
 
-        self.frame = round(Invader.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
+        self.frame = round(Invader.ANIMATION_FPS * self.scene.game.total_time / settings.TIME_UNITS_PER_SECOND) % len(self.sprite.frames)
 
         if self.is_active and self.is_wobbling:
             # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
@@ -108,12 +110,12 @@ class Invader(Vehicle):
             self.destroy()
 
         if (self.is_active and self.is_shooting
-                and fractal_noise(self.scene.total_time / 1000 + self.pos.x + self.pos.y, 5, 1) > 0.5
-                and self.scene.total_time % 1000 < 20):
+                and fractal_noise(self.scene.total_time / settings.TIME_UNITS_PER_SECOND + self.pos.x + self.pos.y, 5, 1) > 0.5
+                and self.scene.total_time % settings.TIME_UNITS_PER_SECOND < 20):
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Vector2(0, self.sprite.height / 2),
-                velocity=Vector2(0, InvaderShot.SPEED),
+                velocity=Vector2(0, Invader.SHOOTING_SPEED),
             )
             # pass
 

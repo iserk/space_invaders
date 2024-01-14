@@ -3,7 +3,9 @@ import random
 
 import pygame
 
+import settings
 from utils.noise import fractal_noise
+from utils.time import get_time, get_delta_time
 
 
 class GameStatus(enum.Enum):
@@ -52,7 +54,10 @@ class GameManager:
         pygame.mixer.set_num_channels(num_channels)
 
         self.clock = pygame.time.Clock()
-        self.start_time = pygame.time.get_ticks()
+        # self.start_time = pygame.time.get_ticks()
+
+        self.start_time = get_time()
+
         self.is_running = True
         self.is_paused = False
         self.trauma = 0
@@ -67,15 +72,15 @@ class GameManager:
 
     def update(self, dt):
         if self.trauma > 0:
-            self.trauma -= (dt / 1000)
+            self.trauma -= dt / settings.TIME_UNITS_PER_SECOND
 
             amplitude = self.trauma ** 2 * 10
 
             if self.use_perlin_noise:
                 amplitude *= 3
-                self.current_scene.camera.x = fractal_noise(self.total_time / 1000, 10, 1) * amplitude
-                self.current_scene.camera.y = fractal_noise(self.total_time / 1000 + 1000, 10, 1) * amplitude
-                self.current_scene.camera.roll = fractal_noise(self.total_time / 1000 + 2000, 10, 1) * amplitude / 20
+                self.current_scene.camera.x = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude
+                self.current_scene.camera.y = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude
+                self.current_scene.camera.roll = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20
             else:
                 self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
                 self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
@@ -152,7 +157,9 @@ class GameManager:
 
     def run(self):
         while self.is_running:
-            self.dt = round(self.clock.tick(self.FPS_CAP) * self.time_scale)
+            # self.dt = round(self.clock.tick(self.FPS_CAP) * self.time_scale)
+            self.clock.tick(self.FPS_CAP)
+            self.dt = get_delta_time() * self.time_scale
 
             if not self.is_paused:
                 # game.total_time = pygame.time.get_ticks() - game.start_time

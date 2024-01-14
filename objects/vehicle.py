@@ -1,5 +1,6 @@
 from pygame import Vector2
 
+import settings
 from objects.explodable_rigid_body import ExplodableRigidBody
 from objects.game_object import Sprite
 
@@ -17,7 +18,7 @@ class Vehicle(ExplodableRigidBody):
         super().update(dt)
 
         if self.shield < self.MAX_SHIELD:
-            self.shield += dt / 1000 * self.MAX_SHIELD / 10
+            self.shield += dt / settings.TIME_UNITS_PER_SECOND * self.MAX_SHIELD / 10
             if self.shield > self.MAX_SHIELD:
                 self.shield = self.MAX_SHIELD
 

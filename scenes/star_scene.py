@@ -4,6 +4,7 @@ from collections import namedtuple
 import pygame
 from pygame import Vector2
 
+import settings
 from game.game_manager import GameManager
 from scenes.scene import Scene
 
@@ -29,7 +30,7 @@ class StarScene(Scene):
         super().update(dt)
 
         for star in self.stars:
-            star.pos.y += self.STAR_SPEED * dt / 1000
+            star.pos.y += self.STAR_SPEED * dt / settings.TIME_UNITS_PER_SECOND
             if star.pos.y > self.camera.screen_size[1]:
                 star.pos.y = star.pos.y % self.camera.screen_size[1]
                 star.pos.x = random.randint(0, self.camera.screen_size[0])

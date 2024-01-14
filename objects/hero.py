@@ -4,6 +4,7 @@ import pygame
 from pygame.math import lerp
 from pygame import Vector2
 
+import settings
 from game.game_manager import SceneSwitchException
 from objects.explosion import Explosion
 
@@ -53,19 +54,19 @@ class Hero(Vehicle):
 
     def switch_weapon(self, weapon):
         self.weapon = weapon
-        self.weapon.start_reloading()
+        # self.weapon.start_reloading()
 
     def update(self, dt):
         super().update(dt)
 
-        self.frame = round(Hero.ANIMATION_FPS * self.scene.game.total_time / 1000) % len(self.sprite.frames)
+        self.frame = round(Hero.ANIMATION_FPS * self.scene.game.total_time / settings.TIME_UNITS_PER_SECOND) % len(self.sprite.frames)
 
         if self.scene.is_input_enabled:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                self.pos.x -= self.SPEED * self.scene.game.dt / 1000
+                self.pos.x -= self.SPEED * self.scene.game.dt / settings.TIME_UNITS_PER_SECOND
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                self.pos.x += self.SPEED * self.scene.game.dt / 1000
+                self.pos.x += self.SPEED * self.scene.game.dt / settings.TIME_UNITS_PER_SECOND
             if keys[pygame.K_SPACE]:
                 self.shoot()
 

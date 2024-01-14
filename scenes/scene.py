@@ -1,3 +1,4 @@
+import settings
 from objects.camera import Camera
 from objects.timer import Timer
 from game.game_manager import GameManager
@@ -53,7 +54,7 @@ class Scene:
         # objects_text = self.game.font.render(f'Objects: {len(self.objects):04}', True, pygame.Color("lime"))
         # screen.blit(objects_text, (self.game.screen_size[0] - objects_text.get_width() - 8, 8))
 
-        time_remaining = max(0, self.bonus_time_left) / 1000
+        time_remaining = max(0, self.bonus_time_left) / settings.TIME_UNITS_PER_SECOND
 
         time_text = self.game.font.render(f'Bonus time: {time_remaining:.1f} s', True, pygame.Color("aqua"))
         screen.blit(time_text, (self.game.screen_size[0] - time_text.get_width() - 8, 8))

@@ -106,7 +106,7 @@ class Shot(ExplodableRigidBody):
             super().update(dt)
 
         # if self.state == ShotState.FLYING:
-        #     # self.velocity *= 1 + self.ACCELERATION * dt / 1000 * self.velocity.get_length() / self.SPEED
+        #     # self.velocity *= 1 + self.ACCELERATION * dt / settings.TIME_UNITS_PER_SECOND * self.velocity.get_length() / self.SPEED
         #     # self.damage = self.speed2damage(self.velocity.get_length())
         #     # print(f"{self}.update() ", self.velocity.get_length(), self.damage)
 

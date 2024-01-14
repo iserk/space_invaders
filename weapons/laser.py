@@ -3,6 +3,7 @@ import random
 import pygame
 from pygame import Vector2
 
+import settings
 from utils import audio
 
 from weapons.hero_shot import HeroWeapon, HeroShot
@@ -108,7 +109,7 @@ class LaserShot(HeroShot):
                     damage *= 2
                     print(self, ": critical hit!")
 
-                obj.hit(damage=self.damage * dt / 1000, by=self)
+                obj.hit(damage=self.damage * dt / settings.TIME_UNITS_PER_SECOND, by=self)
 
                 if obj.hit_points <= 0:
                     self.scene.game.score += obj.SCORE

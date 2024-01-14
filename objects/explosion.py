@@ -3,6 +3,7 @@ import random
 import pygame
 from pygame import Vector2
 
+import settings
 from objects.game_object import GameObject, Sprite
 from utils import audio
 from utils.sprites import get_frames
@@ -49,7 +50,7 @@ class Explosion(GameObject):
             camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2)))
 
     def update(self, dt):
-        self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / 1000)
+        self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / settings.TIME_UNITS_PER_SECOND)
         if self.frame >= len(self.sprite.frames):
             self.destroy()
 
