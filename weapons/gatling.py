@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame
@@ -30,7 +31,7 @@ class GatlingShot(HeroShot):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)
 
         super().__init__(scene, pos, velocity)
-        self.roll = velocity.x / velocity.y
+        self.roll = math.atan(velocity.x / velocity.y) / (2 * math.pi) * 360
 
         self.scale = scale
         image = pygame.image.load("assets/images/gatling_shot.png").convert_alpha()
@@ -59,7 +60,5 @@ class Gatling(HeroWeapon):
         self.shot = GatlingShot
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-
+        super()._perform_shot(scene, pos, velocity)
         audio.sound(f"assets/audio/gatling/shot{random.randint(1,4):02}.wav").play()

@@ -117,16 +117,16 @@ class Shot(ExplodableRigidBody):
         if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
             self.destroy()
 
-    # def get_rect(self):
-    #     # return [
-    #     #     Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
-    #     #     Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
-    #     # ]
-    #
-    #     return (
-    #             Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y - self.SHOT_SIZE[1] / 2),
-    #             Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y + self.SHOT_SIZE[1] / 2),
-    #     )
+    def get_rect(self):
+        # return [
+        #     Vector2(self.pos.x - self.sprite.width / 2, self.pos.y - self.sprite.height / 2),
+        #     Vector2(self.pos.x + self.sprite.width / 2, self.pos.y + self.sprite.height / 2),
+        # ]
+
+        return (
+                Vector2(self.pos.x - self.SHOT_SIZE[0] / 2, self.pos.y - self.SHOT_SIZE[1] / 2),
+                Vector2(self.pos.x + self.SHOT_SIZE[0] / 2, self.pos.y + self.SHOT_SIZE[1] / 2),
+        )
 
     @staticmethod
     def get_detonation_delay():

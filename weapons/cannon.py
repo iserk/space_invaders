@@ -62,7 +62,5 @@ class Cannon(HeroWeapon):
         self.shot = CannonShot
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-
+        super()._perform_shot(scene, pos, velocity)
         audio.sound(f"assets/audio/cannon/shot{random.randint(1, 2):02}.wav", volume=3).play()

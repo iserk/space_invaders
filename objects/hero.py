@@ -12,6 +12,7 @@ from objects.game_object import Sprite
 from objects.vehicle import Vehicle
 from scenes.scene import Scene
 from utils.draw import draw_health_bar, draw_stats
+from weapons.missile_launcher import MissileLauncher
 from weapons.plasma_cannon import PlasmaCannon
 from weapons.autocannon import Autocannon
 from weapons.cannon import Cannon
@@ -37,12 +38,13 @@ class Hero(Vehicle):
             Autocannon(vehicle=self),
             Laser(vehicle=self),
             PlasmaCannon(vehicle=self),
+            MissileLauncher(vehicle=self),
         ]
         self.switch_weapon(self.weapons[0])
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6].__contains__(event.key):
+            if [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7].__contains__(event.key):
                 self.switch_weapon(self.weapons[event.key - pygame.K_1])
                 return False
             else:

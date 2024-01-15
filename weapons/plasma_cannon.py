@@ -61,7 +61,5 @@ class PlasmaCannon(HeroWeapon):
         return "Plasma Cannon"
 
     def _perform_shot(self, scene, pos, velocity):
-        for _ in range(self.PELLETS):
-            super()._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-
+        super()._perform_shot(scene, pos, velocity)
         audio.sound(f"assets/audio/plasma/shot{random.randint(1,1):02}.wav", volume=2).play()
