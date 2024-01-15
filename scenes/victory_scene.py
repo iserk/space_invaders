@@ -57,7 +57,7 @@ class VictoryScene(StarScene):
 
         if prev_scene is not None:
             self.bonus_time_left = prev_scene.bonus_time_left
-            self.time_bonus = max(0, self.bonus_time_left)
+            self.time_bonus = max(0, round(self.bonus_time_left))
 
         if prev_scene is not None:
             self.transfer_objects_from(prev_scene)

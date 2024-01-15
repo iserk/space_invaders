@@ -19,7 +19,7 @@ class SceneSwitchException(Exception):
 
 
 class GameManager:
-    BONUS_TIME_LIMIT = 20000  # In milliseconds
+    BONUS_TIME_LIMIT = 60000  # In milliseconds
     MAX_TRAUMA = 1
     MIN_TRAUMA = 0
 
@@ -160,6 +160,7 @@ class GameManager:
             # self.dt = round(self.clock.tick(self.FPS_CAP) * self.time_scale)
             self.clock.tick(self.FPS_CAP)
             self.dt = get_delta_time() * self.time_scale
+            # print(f"dt = {self.dt} ms")
 
             if not self.is_paused:
                 # game.total_time = pygame.time.get_ticks() - game.start_time

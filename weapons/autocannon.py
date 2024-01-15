@@ -42,11 +42,6 @@ class AutocannonShot(HeroShot):
             height=32 * scale,
         )
 
-        # self.scene.game.traumatize(0.1)
-
-        self.frame = 0
-        self.scene.game.score -= self.SCORE_COST
-
 
 class Autocannon(HeroWeapon):
     SPEED = 3000

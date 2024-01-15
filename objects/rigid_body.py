@@ -44,7 +44,7 @@ class RigidBody(GameObject):
         if self.is_taking_damage:
             image = image.copy()
             # image.fill((255, 255, 255, 0), None, pygame.BLEND_RGBA_ADD)
-            image.fill((32, 255, 255, 240), None, pygame.BLEND_RGBA_MULT)
+            image.fill((255, 128, 128, 200), None, pygame.BLEND_RGBA_MULT)
         camera.screen.blit(
             image,
             tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2))
@@ -78,6 +78,8 @@ class RigidBody(GameObject):
         """
         from weapons.shot import Shot
 
+        self.is_taking_damage = True
+
         if not self.is_active:
             return damage
 
@@ -103,9 +105,9 @@ class RigidBody(GameObject):
         excess_damage = max(0, damage_after_armor - max(0, self.hit_points))
         # print(f'{self} hit by {by} for {damage} damage (shield: {shield_damage}, armor: {armor_damage}, hull: {hull_damage}), excess: {excess_damage}')
 
-        self.hit_points -= round(max(0, hull_damage))
-        self.armor -= round(max(0, armor_damage))
-        self.shield -= round(max(0, shield_damage))
+        self.hit_points -= max(0, hull_damage)
+        self.armor -= max(0, armor_damage)
+        self.shield -= max(0, shield_damage)
 
         if self.hit_points <= 0:
             self.is_active = False

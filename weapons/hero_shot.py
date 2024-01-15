@@ -23,7 +23,7 @@ class HeroShot(Shot):
         super().__init__(scene, pos, velocity)
 
         # self.scene.game.traumatize(0.1)
-        self.scene.game.score -= self.SCORE_COST
+        self.scene.game.score -= round(self.SCORE_COST)
 
     def on_collision(self, obj=None):
         if not obj.is_active or not any([isinstance(obj, cls) for cls in self.VALID_TARGETS_CLASSES]):
@@ -40,7 +40,7 @@ class HeroShot(Shot):
         remaining_damage = max(0, obj.hit(damage=self.damage, by=self))
 
         if obj.hit_points <= 0:
-            self.scene.game.score += obj.SCORE
+            self.scene.game.score += round(obj.SCORE)
 
         # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
 
