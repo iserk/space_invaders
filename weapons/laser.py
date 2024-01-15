@@ -13,16 +13,16 @@ from weapons.shot import ShotState
 
 class LaserShot(HeroShot):
     DESTROY_ON_HIT = False
-    SCORE_COST = 1
-    DAMAGE = 80    # per second
+    DAMAGE = 20    # per second
     PULSE_DURATION = 190
+    SCORE_COST = DAMAGE * PULSE_DURATION / 1000
 
     CRITICAL_HIT_CHANCE = 0.05
 
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 3
     AGAINST_ARMOR = 0.01
-    AGAINST_HULL = 0.01
+    AGAINST_HULL = 0.02
 
     SHIELD_PIERCING = 0.50  # Percentage of initial damage that goes through to armor
     ARMOR_PIERCING = 0.00  # Percentage of initial damage that goes through to hull
