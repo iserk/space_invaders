@@ -15,8 +15,9 @@ from scenes.scene import Scene
 
 
 class GatlingShot(HeroShot):
-    SCORE_COST = 1
+    SPEED = 3000
     DAMAGE = 8
+    SCORE_COST = DAMAGE
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
@@ -46,7 +47,6 @@ class GatlingShot(HeroShot):
 
 
 class Gatling(HeroWeapon):
-    SPEED = 3000
     SHOOT_DELAY = 20
     PELLETS = 1
     ACCURACY = 0.95

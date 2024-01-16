@@ -16,6 +16,7 @@ class ShotState(Enum):
 
 
 class Shot(ExplodableRigidBody):
+    SPEED = 1000
     DAMAGE = 100
     DESTROY_ON_HIT = True
     CRITICAL_HIT_CHANCE = 0.1

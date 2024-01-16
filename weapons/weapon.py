@@ -8,7 +8,6 @@ from utils import audio
 
 
 class Weapon:
-    SPEED = 500
     SHOOT_DELAY = 200
     ACCURACY = 0.8
 
@@ -50,9 +49,9 @@ class Weapon:
 
     def _send_bullet(self, scene, pos, velocity):
         """Sends a single bullet with the given parameters."""
-        print(f"{self.shot}'s speed: {self.SPEED}")
+        print(f"{self.shot}'s speed: {self.shot.SPEED}")
         p = pos.copy()
-        dispersion = self.SPEED * (1 - self.ACCURACY)
+        dispersion = self.shot.SPEED * (1 - self.ACCURACY)
         return self.shot(
             scene, p,
             # Normal distribution

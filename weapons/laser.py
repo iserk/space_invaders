@@ -12,6 +12,7 @@ from weapons.shot import ShotState
 
 
 class LaserShot(HeroShot):
+    SPEED = 3000
     DESTROY_ON_HIT = False
     DAMAGE = 20    # per second
     PULSE_DURATION = 190
@@ -137,7 +138,6 @@ class LaserShot(HeroShot):
 
 
 class Laser(HeroWeapon):
-    SPEED = 1
     SHOOT_DELAY = 200
     ACCURACY = 1
 

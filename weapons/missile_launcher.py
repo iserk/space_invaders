@@ -19,6 +19,7 @@ from weapons.shot import ShotState
 
 
 class Missile(HeroShot):
+    SPEED = 150  # Initial speed
     ACCELERATION = 2  # Pixels per second squared
 
     DAMAGE = 1000
@@ -64,7 +65,7 @@ class Missile(HeroShot):
 
         if np.random.default_rng().random() <= self.CRITICAL_HIT_CHANCE:
             damage *= 2
-            print(self, ": critical hit!")
+            print(f"{self}: critical hit!")
 
         remaining_damage = max(0, obj.hit(damage=self.damage, by=self))
 
@@ -72,8 +73,14 @@ class Missile(HeroShot):
             self.scene.game.score += round(obj.SCORE)
 
         for i in range(2, random.randint(3, 16), random.randint(2, 4)):
-            Explosion(scene=self.scene, pos=self.pos, scale=i)
-
+            Explosion(
+                scene=self.scene,
+                pos=self.pos + Vector2(
+                    random.uniform(-1, 1),
+                    random.uniform(-1, 1)
+                ) * 2 * i,
+                scale=i
+            )
 
         # Explosion(scene=self.scene, pos=self.pos, scale=12)
         # Explosion(scene=self.scene, pos=self.pos, scale=9)
@@ -102,13 +109,12 @@ class Missile(HeroShot):
 
 
 class MissileLauncher(HeroWeapon):
-    SPEED = 150
     SHOOT_DELAY = 800
     PELLETS = 1
     ACCURACY = 0.95
 
     CLIP_SIZE = 1
-    RELOAD_TIME = 2000
+    RELOAD_TIME = 1500
     MAX_AMMO = 10
 
     def __init__(self, vehicle=None):

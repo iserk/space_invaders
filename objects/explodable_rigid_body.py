@@ -17,7 +17,8 @@ class ExplodableRigidBody(RigidBody):
         self.scene.add_timer(self.get_detonation_delay(), lambda o=self: o.destroy(explode=True))
         self.roll = torque * 60
         self.roll_speed = torque * 360
-        self.velocity = by.velocity.normalize() * 10
+        if by.velocity.length() > 0:
+            self.velocity = by.velocity.normalize() * 10
         self.pos.y += (1 - torque) * velocity_y_sign * 10
 
     def explode(self):

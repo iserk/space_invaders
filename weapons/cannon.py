@@ -11,9 +11,11 @@ from objects.game_object import Sprite
 from weapons.hero_shot import HeroWeapon, HeroShot
 
 from scenes.scene import Scene
+from weapons.shot import ShotState
 
 
 class CannonShot(HeroShot):
+    SPEED = 3000
     DAMAGE = 400
     SCORE_COST = DAMAGE
     DESTROY_ON_HIT = False
@@ -48,7 +50,6 @@ class CannonShot(HeroShot):
 
 
 class Cannon(HeroWeapon):
-    SPEED = 3000
     SHOOT_DELAY = 800
     PELLETS = 1
     ACCURACY = 0.97

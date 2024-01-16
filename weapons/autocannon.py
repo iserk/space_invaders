@@ -14,8 +14,9 @@ from scenes.scene import Scene
 
 
 class AutocannonShot(HeroShot):
-    SCORE_COST = 2
+    SPEED = 3000
     DAMAGE = 32
+    SCORE_COST = DAMAGE
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
@@ -44,7 +45,6 @@ class AutocannonShot(HeroShot):
 
 
 class Autocannon(HeroWeapon):
-    SPEED = 3000
     SHOOT_DELAY = 150
     ACCURACY = 0.96
 

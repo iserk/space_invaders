@@ -14,6 +14,7 @@ from scenes.scene import Scene
 
 
 class PlasmaCannonShot(HeroShot):
+    SPEED = 1600
     DAMAGE = 200
     SCORE_COST = DAMAGE
     CRITICAL_HIT_CHANCE = 0.1
@@ -44,7 +45,6 @@ class PlasmaCannonShot(HeroShot):
 
 
 class PlasmaCannon(HeroWeapon):
-    SPEED = 1600
     SHOOT_DELAY = 500
     PELLETS = 1
     ACCURACY = 0.92

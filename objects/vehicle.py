@@ -30,5 +30,5 @@ class Vehicle(ExplodableRigidBody):
             self.weapon.shoot(
                 scene=self.scene,
                 pos=self.pos + Vector2(0, -self.sprite.height / 2),
-                velocity=Vector2(0, -self.weapon.SPEED),
+                velocity=Vector2(0, -self.weapon.shot.SPEED),
             )
