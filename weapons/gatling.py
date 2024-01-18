@@ -15,6 +15,8 @@ from scenes.scene import Scene
 
 
 class GatlingShot(HeroShot):
+    WINDAGE = 0.01
+    MASS = 0.32
     SPEED = 3000
     DAMAGE = 8
     SCORE_COST = DAMAGE

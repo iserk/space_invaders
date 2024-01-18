@@ -12,6 +12,8 @@ from weapons.shot import ShotState
 
 
 class LaserShot(HeroShot):
+    WINDAGE = 0.0
+    MASS = 0.001
     SPEED = 3000
     DESTROY_ON_HIT = False
     DAMAGE = 20    # per second
@@ -110,7 +112,7 @@ class LaserShot(HeroShot):
                     damage *= 2
                     print(self, ": critical hit!")
 
-                obj.hit(damage=self.damage * dt / settings.TIME_UNITS_PER_SECOND, by=self)
+                obj.hit(damage=self.get_damage() * dt / settings.TIME_UNITS_PER_SECOND, by=self)
 
                 if obj.hit_points <= 0:
                     self.scene.game.score += obj.SCORE

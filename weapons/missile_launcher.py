@@ -19,6 +19,8 @@ from weapons.shot import ShotState
 
 
 class Missile(HeroShot):
+    WINDAGE = 0.15
+    MASS = 5
     SPEED = 150  # Initial speed
     ACCELERATION = 2  # Pixels per second squared
 
@@ -67,7 +69,7 @@ class Missile(HeroShot):
             damage *= 2
             print(f"{self}: critical hit!")
 
-        remaining_damage = max(0, obj.hit(damage=self.damage, by=self))
+        remaining_damage = max(0, obj.hit(damage=self.get_damage(), by=self))
 
         if obj.hit_points <= 0:
             self.scene.game.score += round(obj.SCORE)

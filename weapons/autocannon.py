@@ -14,6 +14,8 @@ from scenes.scene import Scene
 
 
 class AutocannonShot(HeroShot):
+    WINDAGE = 0.025
+    MASS = 1
     SPEED = 3000
     DAMAGE = 32
     SCORE_COST = DAMAGE

@@ -11,6 +11,9 @@ from scenes.scene import Scene
 
 
 class InvaderShot(Shot):
+    WINDAGE = -0.2
+    MASS = 1
+    SPEED = 500
     SCORE = 50
     DAMAGE = 64
     CRITICAL_HIT_CHANCE = 0.1

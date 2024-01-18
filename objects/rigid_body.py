@@ -9,12 +9,15 @@ from objects.game_object import GameObject
 from objects.game_object import Sprite
 
 from scenes.scene import Scene
+from utils import audio
 
 
 class RigidBody(GameObject):
     MAX_HIT_POINTS = 1
     MAX_ARMOR = 0
     MAX_SHIELD = 0
+    WINDAGE = 0.5
+    MASS = 1
 
     def __init__(self, scene: Scene, pos: Vector2, sprite: Sprite):
         super().__init__(scene)
@@ -50,12 +53,16 @@ class RigidBody(GameObject):
             tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2))
         )
 
+    def get_acceleration(self):
+        return -self.velocity * self.WINDAGE / self.MASS if self.WINDAGE != 0 else Vector2(0, 0)
+
     def update(self, dt):
         self.is_taking_damage = False
 
         self.prev_pos = self.pos.copy()
 
         super().update(dt)
+        self.velocity += self.get_acceleration() * dt / settings.TIME_UNITS_PER_SECOND
 
         self.pos += self.velocity * dt / settings.TIME_UNITS_PER_SECOND
         self.roll += self.roll_speed * dt / settings.TIME_UNITS_PER_SECOND

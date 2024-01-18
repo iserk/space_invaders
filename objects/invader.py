@@ -16,14 +16,15 @@ from game.game_manager import GameStatus, SceneSwitchException
 
 
 class Invader(Vehicle):
+    WINDAGE = 0.0
+    MASS = 1000
     SPEED = 5
     # SPEED = 0
     ANIMATION_FPS = 2
     MAX_HIT_POINTS = 100
     SCORE = 10 * MAX_HIT_POINTS
     MAX_ARMOR = 32
-    MAX_SHIELD = 32
-    SHOOTING_SPEED = 300
+    MAX_SHIELD = 0
 
     is_shooting = True
     is_wobbling = True
@@ -98,7 +99,7 @@ class Invader(Vehicle):
 
         if self.is_active and self.is_wobbling:
             # self.pos.x = self.initial_pos.x + round(math.sin(self.pos.y / 8) * 40)
-            self.velocity.x = round(math.sin(self.pos.y / 8) * self.SPEED * 2)
+            self.velocity.x = round(math.sin(self.pos.y / 8) * self.SPEED)
 
         if (self.pos.y > self.scene.game.screen_size[1] - self.sprite.height
                 and self.scene.game.status == GameStatus.PLAYING):
@@ -115,7 +116,7 @@ class Invader(Vehicle):
             InvaderShot(
                 scene=self.scene,
                 pos=self.pos + Vector2(0, self.sprite.height / 2),
-                velocity=Vector2(0, Invader.SHOOTING_SPEED),
+                velocity=Vector2(0, InvaderShot.SPEED),
             )
             # pass
 

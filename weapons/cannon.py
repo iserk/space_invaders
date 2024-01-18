@@ -3,6 +3,7 @@ import random
 import pygame
 from pygame import Vector2
 
+import utils.time
 from utils import audio
 from utils.sprites import get_frames
 
@@ -15,6 +16,8 @@ from weapons.shot import ShotState
 
 
 class CannonShot(HeroShot):
+    WINDAGE = 0.25
+    MASS = 10
     SPEED = 3000
     DAMAGE = 400
     SCORE_COST = DAMAGE
@@ -47,6 +50,10 @@ class CannonShot(HeroShot):
             width=32 * scale,
             height=32 * scale,
         )
+        print("CannonShot created", self.velocity, self.speed2damage(self.velocity.length()))
+
+    def __del__(self):
+        print("CannonShot deleted", self.velocity, self.speed2damage(self.velocity.length()))
 
 
 class Cannon(HeroWeapon):

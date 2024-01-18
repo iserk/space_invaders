@@ -1,7 +1,11 @@
+import random
+
 import numpy as np
+import pygame
 
 from pygame import Vector2
 
+from utils import audio
 from weapons.weapon import Weapon
 
 from weapons.invader_shot import InvaderShot
@@ -29,36 +33,54 @@ class HeroShot(Shot):
         if not obj.is_active or not any([isinstance(obj, cls) for cls in self.VALID_TARGETS_CLASSES]):
             return
 
-        # Calculate damage based on critical hit chance
-        damage = self.DAMAGE
+        damage = self.get_damage()
         # self.scene.game.traumatize(0.1 * damage)
-
         if np.random.default_rng().random() <= self.CRITICAL_HIT_CHANCE:
             damage *= 2
-            print(self, ": critical hit!")
+            print(f"{self}: damage for {damage}; critical hit!")
+        else:
+            print(f"{self}: damage for {damage}")
 
-        remaining_damage = max(0, obj.hit(damage=self.damage, by=self))
+        if random.random() <= self.RICOCHET_CHANCE:
+            print(f"{self}: ricochet!")
+            # normal = Vector2(0, 1)
+            # normal = normal.rotate(random.randint(-45, 45))
+            # self.velocity = self.velocity.reflect(normal)
+            angle = random.randint(-45, 45)
+            self.velocity = self.velocity.rotate(-angle)
+            self.roll = angle
+            self.roll_speed = random.randint(-100, 100)
+
+            ricochet_damage = damage * self.RICOCHET_DAMAGE_PERCENTAGE
+            damage -= ricochet_damage
+
+            # Play ricochet sound
+            audio.sound(f"assets/audio/ricochet/{random.randint(1,7):02}.mp3").play()
+        else:
+            audio.sound(f"assets/audio/shot_hit{random.randint(1, 2)}.mp3", volume=0.7).play()
+            print("hit!")
+            ricochet_damage = 0
+
+        # audio.sound(f"assets/audio/ricochet/{random.randint(1,7):02}.mp3", volume=0.5).play()
+
+        excess_damage = obj.hit(damage=damage, by=self)
+        print(f"{self}: damage: {damage}, ricochet damage: {ricochet_damage}, excess damage: {excess_damage}")
+        remaining_damage = max(0, excess_damage) + ricochet_damage
 
         if obj.hit_points <= 0:
             self.scene.game.score += round(obj.SCORE)
 
-        # print(f"DMG: {self.damage}, HP: {obj.hit_points}, RD: {remaining_damage}")
-
-        old_velocity = self.velocity.copy()
-        self.damage = remaining_damage
-        # self.velocity = self.velocity.normalize() * self.SPEED * self.damage2speed(self.damage)
-
-        # self.velocity = self.velocity.normalize() * self.SPEED * self.damage / self.DAMAGE
-        # print(f"DMG: {self.damage}, V: {old_velocity} -> {self.velocity}")
-
-        if not self.DESTROY_ON_HIT and self.damage > 0:
-            self.state = ShotState.HITTING
+        if not self.DESTROY_ON_HIT and remaining_damage > 0:
+            speed = self.damage2speed(remaining_damage)
+            if speed < self.SPEED * 0.1:
+                self.state = ShotState.DESTROYED
+            else:
+                self.velocity = self.velocity.normalize() * speed
+                self.state = ShotState.HITTING
         else:
             self.state = ShotState.DESTROYED
 
         self.frame = self.state2frame()
-
-
 
 class HeroWeapon(Weapon):
     """Base class for hero weapons"""

@@ -16,11 +16,14 @@ class ShotState(Enum):
 
 
 class Shot(ExplodableRigidBody):
+    WINDAGE = 0.01
+    MASS = 0.1
     SPEED = 1000
     DAMAGE = 100
-    DESTROY_ON_HIT = True
+    DESTROY_ON_HIT = False
     CRITICAL_HIT_CHANCE = 0.1
-    ACCELERATION = -0.5  # Acceleration in pixels per second squared
+    RICOCHET_CHANCE = 0.3
+    RICOCHET_DAMAGE_PERCENTAGE = 0.75   # Percentage of initial velocity that remains after ricochet
 
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 0.1
@@ -36,8 +39,6 @@ class Shot(ExplodableRigidBody):
         super().__init__(scene, pos, None)
         self.pos = pos
         self.velocity = velocity
-
-        self.damage = self.DAMAGE
 
         self.state = ShotState.STARTING
         self.frame = self.state2frame()
@@ -96,6 +97,10 @@ class Shot(ExplodableRigidBody):
             self.state = ShotState.FLYING
             self.frame = self.state2frame()
 
+        if self.state == ShotState.HITTING:
+            self.state = ShotState.FLYING
+            self.frame = self.state2frame()
+
     def update(self, dt):
         # Forces the shoot to display the 0 frame from the start position
         # by avoiding movement on the first frame
@@ -106,17 +111,15 @@ class Shot(ExplodableRigidBody):
         if self.state != ShotState.STARTING:
             super().update(dt)
 
-        # if self.state == ShotState.FLYING:
-        #     # self.velocity *= 1 + self.ACCELERATION * dt / settings.TIME_UNITS_PER_SECOND * self.velocity.get_length() / self.SPEED
-        #     # self.damage = self.speed2damage(self.velocity.get_length())
-        #     # print(f"{self}.update() ", self.velocity.get_length(), self.damage)
-
-        if self.state == ShotState.DESTROYED:
+        if (self.state == ShotState.DESTROYED
+                or self.pos.y < 0
+                or self.pos.y > self.scene.game.screen_size[1]
+                or self.pos.x < 0
+                or self.pos.x > self.scene.game.screen_size[0]
+                or self.velocity.length() < 10
+        ):
             self.destroy()
             return
-
-        if self.pos.y < 0 or self.pos.y > self.scene.game.screen_size[1]:
-            self.destroy()
 
     def get_rect(self):
         # return [
@@ -138,3 +141,6 @@ class Shot(ExplodableRigidBody):
 
     def damage2speed(self, damage):
         return self.SPEED * damage / self.DAMAGE
+
+    def get_damage(self):
+        return self.DAMAGE * self.velocity.length() / self.SPEED
