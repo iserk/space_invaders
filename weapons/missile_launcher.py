@@ -6,11 +6,12 @@ import pygame
 from pygame import Vector2
 
 import settings
-from objects.explosion import Explosion
+from objects.explosion_effect import ExplosionEffect
 from utils import audio
 from utils.sprites import get_frames
 
 from objects.game_object import Sprite
+from weapons.explosion import Explosion
 
 from weapons.hero_shot import HeroWeapon, HeroShot
 
@@ -24,7 +25,10 @@ class Missile(HeroShot):
     SPEED = 150  # Initial speed
     ACCELERATION = 2  # Pixels per second squared
 
+    DETONATION_CHANCE = 1.0
+
     DAMAGE = 1000
+    EXPLOSION_DAMAGE = 100000
     SCORE_COST = DAMAGE
     DESTROY_ON_HIT = False
 
@@ -57,6 +61,14 @@ class Missile(HeroShot):
             height=32 * scale,
         )
 
+        self.start_time = self.scene.game.total_time
+
+    def detonate(self):
+        Explosion(self.scene, self.pos, damage=self.EXPLOSION_DAMAGE)
+        self.state = ShotState.DESTROYED
+        self.frame = self.state2frame()
+        self.is_active = False
+
     def on_collision(self, obj=None):
         if not obj.is_active or not any([isinstance(obj, cls) for cls in self.VALID_TARGETS_CLASSES]):
             return
@@ -69,29 +81,14 @@ class Missile(HeroShot):
             damage *= 2
             print(f"{self}: critical hit!")
 
-        remaining_damage = max(0, obj.hit(damage=self.get_damage(), by=self))
+        # remaining_damage = max(0, obj.hit(damage=self.get_damage(), by=self))
+        #
+        # if obj.hit_points <= 0:
+        #     self.scene.game.score += round(obj.SCORE)
 
-        if obj.hit_points <= 0:
-            self.scene.game.score += round(obj.SCORE)
+        # if not self.DESTROY_ON_HIT and remaining_damage > 0:
 
-        for i in range(2, random.randint(3, 16), random.randint(2, 4)):
-            Explosion(
-                scene=self.scene,
-                pos=self.pos + Vector2(
-                    random.uniform(-1, 1),
-                    random.uniform(-1, 1)
-                ) * 2 * i,
-                scale=i
-            )
-
-        # Explosion(scene=self.scene, pos=self.pos, scale=12)
-        # Explosion(scene=self.scene, pos=self.pos, scale=9)
-        # Explosion(scene=self.scene, pos=self.pos, scale=4)
-        # Explosion(scene=self.scene, pos=self.pos, scale=2)
-
-        self.state = ShotState.DESTROYED
-
-        self.frame = self.state2frame()
+        self.detonate()
 
     def state2frame(self):
         match self.state:
@@ -109,13 +106,16 @@ class Missile(HeroShot):
         self.frame = self.state2frame()
         self.velocity *= (1 + dt * self.ACCELERATION / settings.TIME_UNITS_PER_SECOND)
 
+        if self.scene.game.total_time - self.start_time > 0.7 * settings.TIME_UNITS_PER_SECOND:
+            self.detonate()
+
 
 class MissileLauncher(HeroWeapon):
     SHOOT_DELAY = 800
     PELLETS = 1
     ACCURACY = 0.95
 
-    CLIP_SIZE = 1
+    CLIP_SIZE = 1000
     RELOAD_TIME = 1500
     MAX_AMMO = 10
 

@@ -20,6 +20,8 @@ class Shot(ExplodableRigidBody):
     MASS = 0.1
     SPEED = 1000
     DAMAGE = 100
+    DETONATION_CHANCE = 0.0
+
     DESTROY_ON_HIT = False
     CRITICAL_HIT_CHANCE = 0.1
     RICOCHET_CHANCE = 0.3

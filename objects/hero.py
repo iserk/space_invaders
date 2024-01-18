@@ -6,7 +6,7 @@ from pygame import Vector2
 
 import settings
 from game.game_manager import SceneSwitchException
-from objects.explosion import Explosion
+from objects.explosion_effect import ExplosionEffect
 
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
@@ -86,7 +86,7 @@ class Hero(Vehicle):
         # self.scene.game.switch_to_scene(self.scene.game.scenes[1])
 
     def explode(self):
-        Explosion(scene=self.scene, pos=self.pos, scale=12)
+        ExplosionEffect(scene=self.scene, pos=self.pos, scale=12)
 
     def draw_hud(self, camera):
         if self.weapon.is_reloading and (self.weapon.ammo > 0 or self.weapon.clip > 0):

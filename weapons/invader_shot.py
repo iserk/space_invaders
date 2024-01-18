@@ -16,6 +16,9 @@ class InvaderShot(Shot):
     SPEED = 500
     SCORE = 50
     DAMAGE = 64
+
+    DETONATION_CHANCE = 1.0
+
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull

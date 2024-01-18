@@ -17,7 +17,7 @@ from weapons.shot import ShotState
 
 class CannonShot(HeroShot):
     WINDAGE = 0.25
-    MASS = 10
+    MASS = 45
     SPEED = 3000
     DAMAGE = 400
     SCORE_COST = DAMAGE

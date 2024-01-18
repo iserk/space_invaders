@@ -10,7 +10,7 @@ from weapons.invader_shot import InvaderShot
 
 from objects.game_object import Sprite
 from objects.vehicle import Vehicle
-from objects.explosion import Explosion
+from objects.explosion_effect import ExplosionEffect
 from scenes.scene import Scene
 from game.game_manager import GameStatus, SceneSwitchException
 
@@ -23,7 +23,7 @@ class Invader(Vehicle):
     ANIMATION_FPS = 2
     MAX_HIT_POINTS = 100
     SCORE = 10 * MAX_HIT_POINTS
-    MAX_ARMOR = 32
+    MAX_ARMOR = 0
     MAX_SHIELD = 0
 
     is_shooting = True
@@ -120,5 +120,3 @@ class Invader(Vehicle):
             )
             # pass
 
-    def explode(self):
-        Explosion(scene=self.scene, pos=self.pos, scale=random.randint(2, 8))

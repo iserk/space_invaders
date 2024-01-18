@@ -10,7 +10,7 @@ from utils.sprites import get_frames
 from scenes.scene import Scene
 
 
-class Explosion(GameObject):
+class ExplosionEffect(GameObject):
     ANIMATION_FPS = 6
     ALPHA = 64
 
@@ -50,7 +50,7 @@ class Explosion(GameObject):
             camera.screen.blit(self.sprite.frames[self.frame], tuple(self.pos - Vector2(self.sprite.width / 2, self.sprite.height / 2)))
 
     def update(self, dt):
-        self.frame = round(Explosion.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / settings.TIME_UNITS_PER_SECOND)
+        self.frame = round(ExplosionEffect.ANIMATION_FPS * (self.scene.game.total_time - self.start_time) / settings.TIME_UNITS_PER_SECOND)
         if self.frame >= len(self.sprite.frames):
             self.destroy()
 

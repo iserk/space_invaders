@@ -157,7 +157,7 @@ class RigidBody(GameObject):
 
                     # print(f'Collision between {self} and {obj}')
                     self.on_collision(obj)
-                    obj.on_collision(obj)
+                    obj.on_collision(self)
                 pass
 
     def will_destroy(self, by=None):

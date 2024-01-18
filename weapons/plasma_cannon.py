@@ -21,6 +21,8 @@ class PlasmaCannonShot(HeroShot):
     SCORE_COST = DAMAGE
     CRITICAL_HIT_CHANCE = 0.1
 
+    DETONATION_CHANCE = 1.0
+
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 1.5
     AGAINST_ARMOR = 0.25
