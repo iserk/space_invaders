@@ -23,8 +23,8 @@ class GatlingShot(HeroShot):
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
-    AGAINST_SHIELD = 0.1
-    AGAINST_ARMOR = 0.5
+    AGAINST_SHIELD = 0.001
+    AGAINST_ARMOR = 0.0125
     AGAINST_HULL = 1.5
 
     SHIELD_PIERCING = 0.05  # Percentage of initial damage that goes through to armor
@@ -53,9 +53,9 @@ class Gatling(HeroWeapon):
     PELLETS = 1
     ACCURACY = 0.95
 
-    CLIP_SIZE = 100
-    RELOAD_TIME = 1500
-    MAX_AMMO = 600
+    CLIP_SIZE = 300
+    RELOAD_TIME = 2200
+    MAX_AMMO = 1500
 
     def __init__(self, vehicle=None):
         super().__init__(vehicle)

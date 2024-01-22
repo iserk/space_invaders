@@ -28,15 +28,15 @@ class Missile(HeroShot):
     DETONATION_CHANCE = 1.0
 
     DAMAGE = 1000
-    EXPLOSION_DAMAGE = 100000
+    EXPLOSION_DAMAGE = 200000
     SCORE_COST = DAMAGE
-    DESTROY_ON_HIT = False
+    DESTROY_ON_HIT = True
 
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
-    AGAINST_SHIELD = 0.1
-    AGAINST_ARMOR = 1.25
+    AGAINST_SHIELD = 0.001
+    AGAINST_ARMOR = 0.02
     AGAINST_HULL = 0.75
 
     SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
@@ -82,9 +82,9 @@ class Missile(HeroShot):
             print(f"{self}: critical hit!")
 
         # remaining_damage = max(0, obj.hit(damage=self.get_damage(), by=self))
-        #
-        # if obj.hit_points <= 0:
-        #     self.scene.game.score += round(obj.SCORE)
+
+        if obj.hit_points <= 0:
+            self.scene.game.score += round(obj.SCORE)
 
         # if not self.DESTROY_ON_HIT and remaining_damage > 0:
 
@@ -106,8 +106,8 @@ class Missile(HeroShot):
         self.frame = self.state2frame()
         self.velocity *= (1 + dt * self.ACCELERATION / settings.TIME_UNITS_PER_SECOND)
 
-        if self.scene.game.total_time - self.start_time > 0.7 * settings.TIME_UNITS_PER_SECOND:
-            self.detonate()
+        # if self.scene.game.total_time - self.start_time > 0.7 * settings.TIME_UNITS_PER_SECOND:
+        #     self.detonate()
 
 
 class MissileLauncher(HeroWeapon):
@@ -115,8 +115,8 @@ class MissileLauncher(HeroWeapon):
     PELLETS = 1
     ACCURACY = 0.95
 
-    CLIP_SIZE = 1000
-    RELOAD_TIME = 1500
+    CLIP_SIZE = 1
+    RELOAD_TIME = 1000
     MAX_AMMO = 10
 
     def __init__(self, vehicle=None):

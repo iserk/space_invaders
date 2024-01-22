@@ -23,8 +23,8 @@ class ShotgunShot(HeroShot):
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
-    AGAINST_SHIELD = 0.1
-    AGAINST_ARMOR = 0.5
+    AGAINST_SHIELD = 0.001
+    AGAINST_ARMOR = 0.01
     AGAINST_HULL = 1.75
 
     SHIELD_PIERCING = 0.05  # Percentage of initial damage that goes through to armor
@@ -53,7 +53,7 @@ class Shotgun(HeroWeapon):
     ACCURACY = 0.75
 
     CLIP_SIZE = 5
-    RELOAD_TIME = 2000
+    RELOAD_TIME = 1500
     SHOOT_DELAY = 700
     MAX_AMMO = 25
 

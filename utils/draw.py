@@ -8,9 +8,9 @@ def draw_health_bar(surface, x, y, width, height, color, value, max_value, value
             surface,
             color,
             (
-                x,
+                x + 1,
                 y - 10,
-                width * value / max_value,
+                width * value / max_value - 2,
                 2,
             )
         )
@@ -20,7 +20,7 @@ def draw_health_bar(surface, x, y, width, height, color, value, max_value, value
                 surface,
                 color,
                 (
-                    x + i * width / max_value + 2,
+                    x + i * width / max_value + 1,
                     y - 10,
                     width / max_value - 2,
                     2,

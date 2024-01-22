@@ -49,7 +49,6 @@ class Weapon:
 
     def _send_bullet(self, scene, pos, velocity):
         """Sends a single bullet with the given parameters."""
-        print(f"{self.shot}'s speed: {self.shot.SPEED}")
         p = pos.copy()
         dispersion = self.shot.SPEED * (1 - self.ACCURACY)
         return self.shot(

@@ -7,12 +7,7 @@ from pygame import Vector2
 import utils.time
 from objects.explosion_effect import ExplosionEffect
 from objects.rigid_body import RigidBody
-from utils import audio
-from utils.sprites import get_frames
-
-from objects.game_object import Sprite
-
-from weapons.hero_shot import HeroWeapon, HeroShot
+from weapons.hero_shot import HeroShot
 
 from scenes.scene import Scene
 from weapons.shot import ShotState
@@ -28,14 +23,14 @@ class Explosion(HeroShot):
     CRITICAL_HIT_CHANCE = 0.1
 
     # Multipliers against armor, shields and hull
-    AGAINST_SHIELD = 0.1
-    AGAINST_ARMOR = 0.1
+    AGAINST_SHIELD = 0.001
+    AGAINST_ARMOR = 0.01
     AGAINST_HULL = 1.25
 
-    SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0.25  # Percentage of initial damage that goes through to hull
+    SHIELD_PIERCING = 0.05  # Percentage of initial damage that goes through to armor
+    ARMOR_PIERCING = 0.10  # Percentage of initial damage that goes through to hull
 
-    SHOT_SIZE = (1000, 1000)
+    SHOT_SIZE = (500, 500)
 
     VALID_TARGETS_CLASSES = [RigidBody]
 
@@ -60,9 +55,10 @@ class Explosion(HeroShot):
             ) for i in range(1, random.randint(3, 16), random.randint(2, 4))
         ]
 
-        print("Explosion created", self.velocity, self.speed2damage(self.velocity.length()))
+        # print(f">>> {self} created with pos={self.pos}, damage={self.damage}")
 
     def on_collision(self, obj=None):
+        # print(f"[><] {self.scene.game.total_time} {self}: Colliding with {obj}")
         if not obj.is_active or not any([isinstance(obj, cls) for cls in self.VALID_TARGETS_CLASSES]):
             return
 
@@ -70,12 +66,15 @@ class Explosion(HeroShot):
         self.state = ShotState.HITTING
 
     def update(self, dt):
+        if self.state == ShotState.STARTING:
+            self.state = ShotState.FLYING
+
         super().update(dt)
 
         if self.scene.game.total_time - self.start_time > 2 * utils.time.TIME_UNITS_PER_SECOND:
             self.destroy()
 
-        print(len(self.affected_targets), self.affected_targets)
+        # print(f"[+] Affected targets: ({len(self.affected_targets)}) {self.affected_targets}")
 
         if self.state == ShotState.HITTING:
             for obj in self.affected_targets:
@@ -84,7 +83,7 @@ class Explosion(HeroShot):
 
                 # Distance between self.pos and obj.pos
                 distance = (self.pos - obj.pos).length()
-                print("Distance", distance)
+                # print("Distance", distance)
 
                 # Calculate damage based on critical hit chance
                 damage = min(self.damage, self.damage * 10 / (distance ** 2)) if distance > 0 else self.damage
@@ -93,7 +92,7 @@ class Explosion(HeroShot):
                 if random.random() <= self.CRITICAL_HIT_CHANCE:
                     damage *= 2
 
-                print(f"{self}: damage {obj} for {damage}")
+                # print(f"{self}: damage {obj} for {damage}")
                 obj.hit(damage=damage, by=self)
 
                 if obj.hit_points <= 0 and hasattr(obj, "SCORE"):
@@ -110,4 +109,20 @@ class Explosion(HeroShot):
     def draw(self, camera):
         for effect in self.explosion_effects:
             effect.draw(camera)
+
+        # # Draw rectangle from get_rect()
+        # r = self.get_rect()
+        # pygame.draw.rect(
+        #     camera.screen,
+        #     (0, 255, 255),
+        #     # self.get_rect(),
+        #     (
+        #         r[0].x,
+        #         r[0].y,
+        #         r[1].x - r[0].x,
+        #         r[1].y - r[0].y,
+        #     ),
+        #     10
+        # )
+
 

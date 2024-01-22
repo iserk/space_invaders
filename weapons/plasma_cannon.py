@@ -23,13 +23,15 @@ class PlasmaCannonShot(HeroShot):
 
     DETONATION_CHANCE = 1.0
 
+    DESTROY_ON_HIT = True
+
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 1.5
-    AGAINST_ARMOR = 0.25
+    AGAINST_ARMOR = 0.05
     AGAINST_HULL = 0.5
 
     SHIELD_PIERCING = 0.25  # Percentage of initial damage that goes through to armor
-    ARMOR_PIERCING = 0.50  # Percentage of initial damage that goes through to hull
+    ARMOR_PIERCING = 0.05  # Percentage of initial damage that goes through to hull
 
     def __init__(self, scene: Scene, pos: Vector2, velocity: Vector2, scale=1):
         # velocity += Position((np.random.default_rng().normal() - 0.5) * self.SPEED * (1 - self.ACCURACY), 0)

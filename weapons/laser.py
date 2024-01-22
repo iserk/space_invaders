@@ -24,7 +24,7 @@ class LaserShot(HeroShot):
 
     # Multipliers against armor, shields and hull
     AGAINST_SHIELD = 3
-    AGAINST_ARMOR = 0.01
+    AGAINST_ARMOR = 0.001
     AGAINST_HULL = 0.02
 
     SHIELD_PIERCING = 0.50  # Percentage of initial damage that goes through to armor
@@ -151,8 +151,24 @@ class Laser(HeroWeapon):
         super().__init__(vehicle)
         self.shot = LaserShot
         self.sound = None
+        self.prev_shot_time = 0
+        self.sound = None
+        self.is_shooting = False
 
     def _perform_shot(self, scene, pos, velocity):
         super()._perform_shot(scene, pos, velocity)
-        sound = audio.sound(f"assets/audio/beam_shot.wav").play()
-        self.vehicle.scene.add_timer(500, lambda: sound.fadeout(500) if sound is not None else None)
+        self.prev_shot_time = scene.game.total_time
+        self.is_shooting = True
+
+        self.sound = audio.sound(f"assets/audio/beam_shot.wav").play()
+        # self.vehicle.scene.add_timer(500, lambda: sound.fadeout(500) if sound is not None else None)
+
+    def update(self, dt):
+        super().update(dt)
+        if (self.is_shooting
+                and self.prev_shot_time is not None
+                and self.vehicle.scene.game.total_time - self.prev_shot_time > self.SHOOT_DELAY):
+            self.is_shooting = False
+            self.sound.fadeout(500)
+            self.sound = None
+
