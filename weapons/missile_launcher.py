@@ -119,6 +119,8 @@ class MissileLauncher(HeroWeapon):
     RELOAD_TIME = 1000
     MAX_AMMO = 10
 
+    RECOIL_FACTOR = 0
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = Missile

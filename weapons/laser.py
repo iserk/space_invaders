@@ -147,6 +147,8 @@ class Laser(HeroWeapon):
     RELOAD_TIME = 2000
     MAX_AMMO = 200
 
+    RECOIL_FACTOR = 0
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = LaserShot

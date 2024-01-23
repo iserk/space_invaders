@@ -1,3 +1,5 @@
+from pygame import Vector2
+
 import settings
 from objects.camera import Camera
 from objects.timer import Timer
@@ -12,7 +14,7 @@ class Scene:
         self.objects = []
         self.total_time = 0
         self.bonus_time_left = 0
-        self.camera = Camera(self.game.screen_size, 0, 0)
+        self.camera = Camera(self.game.screen_size, Vector2(0, 0))
         self.is_input_enabled = False
         self.timers = []
         self.hero = None
@@ -80,6 +82,8 @@ class Scene:
         self.objects = [obj for obj in self.objects if not obj.destroyed]
         for obj in self.objects:
             obj.update(dt)
+
+        self.camera.update(dt)
 
     def handle_event(self, event):
         return True

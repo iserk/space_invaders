@@ -5,6 +5,7 @@ import numpy as np
 from pygame import Vector2
 
 from utils import audio
+from weapons.shot import Shot
 
 
 class Weapon:
@@ -17,7 +18,7 @@ class Weapon:
     RELOAD_TIME = 1000
     MAX_AMMO = 100
 
-    RECOIL = 0.5
+    RECOIL_FACTOR = 2
 
     def __init__(self, vehicle=None):
         self.shot = None
@@ -29,6 +30,8 @@ class Weapon:
 
         self.clip = self.CLIP_SIZE
         self.ammo = self.MAX_AMMO
+
+        self.shot = Shot
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -64,7 +67,9 @@ class Weapon:
         """Performs a single shot with the given parameters."""
         for _ in range(self.PELLETS):
             self._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
-            # self._send_bullet(scene, pos, velocity)
+
+        self.vehicle.scene.camera.displace(Vector2(0, -1) * min(48, self.shot.MASS * self.PELLETS * self.RECOIL_FACTOR), 0)
+        self.vehicle.scene.game.traumatize(0.1 * self.shot.MASS * self.PELLETS)
 
     def shoot(self, scene, pos, velocity):
         if not self.can_shoot():

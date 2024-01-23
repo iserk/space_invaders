@@ -78,13 +78,29 @@ class GameManager:
 
             if self.use_perlin_noise:
                 amplitude *= 3
-                self.current_scene.camera.x = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude
-                self.current_scene.camera.y = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude
-                self.current_scene.camera.roll = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20
+                # self.current_scene.camera.pos.x = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude
+                # self.current_scene.camera.pos.y = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude
+                # self.current_scene.camera.roll = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20
+
+                self.current_scene.camera.displace(
+                    (
+                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude,
+                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude,
+                    ),
+                    fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20,
+                )
             else:
-                self.current_scene.camera.x = random.uniform(-amplitude, amplitude)
-                self.current_scene.camera.y = random.uniform(-amplitude, amplitude)
-                self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
+                # self.current_scene.camera.pos.x = random.uniform(-amplitude, amplitude)
+                # self.current_scene.camera.pos.y = random.uniform(-amplitude, amplitude)
+                # self.current_scene.camera.roll = random.uniform(-amplitude, amplitude) / 20
+
+                self.current_scene.camera.displace(
+                    (
+                        random.uniform(-amplitude, amplitude),
+                        random.uniform(-amplitude, amplitude),
+                    ),
+                    random.uniform(-amplitude, amplitude) / 20,
+                )
         else:
             self.trauma = 0
 
@@ -170,16 +186,14 @@ class GameManager:
             camera = self.current_scene.camera
 
             factor = self.trauma ** 2
-            camera.screen.fill((64 * factor, 32 * factor, 32 * factor))
+            background_color = (64 * factor, 32 * factor, 32 * factor)
+            self.screen.fill(background_color)
+            camera.screen.fill(background_color)
             self.handle_events()
 
             if not self.is_paused:
                 self.update(self.dt)
             self.draw()
-
-            # camera.x = random.randint(-10, 10)
-            # camera.y = random.randint(-10, 10)
-            # camera.roll = random.randint(-100, 100) / 100
 
             # self.screen.blit(camera.transform(), (0, 0))
             camera.display(self.screen)

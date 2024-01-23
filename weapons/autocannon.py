@@ -54,6 +54,8 @@ class Autocannon(HeroWeapon):
     RELOAD_TIME = 1500
     MAX_AMMO = 100
 
+    RECOIL_FACTOR = 5
+
     def __init__(self, vehicle=None):
         super().__init__(vehicle)
         self.shot = AutocannonShot
