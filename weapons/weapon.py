@@ -18,7 +18,7 @@ class Weapon:
     RELOAD_TIME = 1000
     MAX_AMMO = 100
 
-    RECOIL_FACTOR = 2
+    RECOIL_FACTOR = 5
 
     def __init__(self, vehicle=None):
         self.shot = None
@@ -68,8 +68,13 @@ class Weapon:
         for _ in range(self.PELLETS):
             self._send_bullet(scene, pos, velocity * random.uniform(0.7, 1.2))
 
-        self.vehicle.scene.camera.displace(Vector2(0, -1) * min(48, self.shot.MASS * self.PELLETS * self.RECOIL_FACTOR), 0)
-        self.vehicle.scene.game.traumatize(0.1 * self.shot.MASS * self.PELLETS)
+        recoil_force = self.RECOIL_FACTOR * self.shot.MASS * self.PELLETS
+
+        self.vehicle.scene.camera.displace(Vector2(0, -1) * min(64, recoil_force), 0)
+        # trauma = 0.1 * self.shot.MASS * self.PELLETS
+        trauma = 0.05 * recoil_force
+        max_trauma = trauma * 2
+        self.vehicle.scene.game.traumatize(trauma, max_trauma)
 
     def shoot(self, scene, pos, velocity):
         if not self.can_shoot():

@@ -167,7 +167,10 @@ class GameManager:
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
-    def traumatize(self, trauma):
+    def traumatize(self, trauma, limit=MAX_TRAUMA):
+
+        if self.trauma >= limit:
+            return
         self.trauma += trauma
         self.trauma = min(self.trauma, self.MAX_TRAUMA)
 
