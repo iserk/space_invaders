@@ -77,17 +77,17 @@ class GameManager:
             amplitude = self.trauma ** 2 * 10
 
             if self.use_perlin_noise:
-                amplitude *= 3
+                # amplitude *= 3
                 # self.current_scene.camera.pos.x = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude
                 # self.current_scene.camera.pos.y = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude
                 # self.current_scene.camera.roll = fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20
 
                 self.current_scene.camera.displace(
                     (
-                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1) * amplitude,
-                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1) * amplitude,
+                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND, 10, 1.5) * amplitude * dt / 5,
+                        fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 1000, 10, 1.5) * amplitude * dt / 5,
                     ),
-                    fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1) * amplitude / 20,
+                    fractal_noise(self.total_time / settings.TIME_UNITS_PER_SECOND + 2000, 10, 1.5) * amplitude * dt / 150,
                 )
             else:
                 # self.current_scene.camera.pos.x = random.uniform(-amplitude, amplitude)

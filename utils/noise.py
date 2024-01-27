@@ -7,7 +7,7 @@ def perlin_noise(x):
     return math.sin(x)
 
 
-def fractal_noise(x, octaves=8, persistence=0.8):
+def fractal_noise(x, octaves=10, persistence=2):
     total = 0
     frequency = 1
     amplitude = 1
